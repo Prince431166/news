@@ -1,6 +1,6 @@
 // --- CONFIGURATION AND CONSTANTS ---
 // IMPORTANT: This BASE_API_URL must match the URL where your Node.js backend is running.
-const BASE_API_URL = 'http://localhost:3000/api';
+const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api';
 
 const MY_POSTS_AUTHOR_ID = 'user-prince'; // Fixed ID for "my posts" (would come from user authentication in real app)
 const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profile (client-specific)
