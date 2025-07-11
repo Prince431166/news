@@ -83,7 +83,7 @@ const formatDate = (date) => {
 
 // ✅ Serve index.html for the root path
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // This endpoint seems to be for a specific JSON file, keep as is if intended.
