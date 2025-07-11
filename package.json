@@ -13,11 +13,9 @@
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^17.2.0",
-    "express": "^5.1.0",
-    "module": "^1.2.5",
-    "modules": "^0.4.0",
-    "multer": "^2.0.1",
-    "uuid": "^11.1.0"
+    "dotenv": "^16.5.0", // यदि 17.2.0 में कोई समस्या आती है
+    "express": "^4.19.2", // Express v4 पर वापस जाएँ
+    "multer": "^1.4.5-lts.1", // Multer का स्थिर संस्करण
+    "uuid": "^9.0.1" // UUID का स्थिर संस्करण
   }
 }
