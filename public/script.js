@@ -445,6 +445,7 @@ searchInput.addEventListener('keyup', function(e) {
 // --- ADMIN NEWS PUBLISHING / EDITING (Backend Interaction) ---
 newsForm.addEventListener('submit', async function(e) {
     e.preventDefault();
+    console.log('DEBUG: 0. News form submit event triggered.'); // नया लॉग
     showLoading('Processing news...');
 
     const title = document.getElementById('newsTitle').value;
@@ -452,6 +453,10 @@ newsForm.addEventListener('submit', async function(e) {
     const newsImageFile = document.getElementById('newsImage').files[0];
     const content = document.getElementById('newsContent').value;
     const editingId = editNewsIdInput.value;
+
+    console.log('DEBUG: 0.1. Form values collected. Title:', title, 'Category:', category); // नया लॉग
+    console.log('DEBUG: 0.2. Image file:', newsImageFile ? newsImageFile.name : 'No file selected'); // नया लॉग
+    console.log('DEBUG: 0.3. Editing ID:', editingId); // नया लॉग
 
     const authorName = userProfile.name;
     const authorImage = userProfile.avatar;
@@ -467,6 +472,7 @@ newsForm.addEventListener('submit', async function(e) {
 
     if (newsImageFile) {
         formData.append('image', newsImageFile); // Append file if new image is selected
+        console.log('DEBUG: 0.4. Appended new image to FormData.'); // नया लॉग
     } else if (editingId) {
         // If editing and no new file, handle existing image URL.
         const existingNews = allNews.find(item => item.id === editingId);
@@ -479,42 +485,57 @@ newsForm.addEventListener('submit', async function(e) {
             // If it's an external URL, it should still be included if it's not changing.
             if (!existingNews.imageUrl.startsWith('/uploads/')) {
                  formData.append('imageUrl', existingNews.imageUrl);
+                 console.log('DEBUG: 0.5. Appended external existing image URL.'); // नया लॉग
             } else if (currentImagePreview.src === 'https://placehold.co/600x400?text=No+Image' && !newsImageFile) { // CHANGED HERE
                 // If the user explicitly cleared the image (currentImagePreview reset to placeholder)
                 // and no new file was uploaded, tell backend to remove image.
                 formData.append('imageUrl', ''); // Send empty string to signal removal
+                console.log('DEBUG: 0.6. Signaled image removal for existing post.'); // नया लॉग
             }
         } else {
             // If no existing image and no new file, ensure a placeholder is sent for update.
             formData.append('imageUrl', 'https://placehold.co/600x400?text=No+Image'); // CHANGED HERE
+            console.log('DEBUG: 0.7. Appended placeholder for existing post with no image.'); // नया लॉग
         }
     } else {
         // New post with no image selected
         formData.append('imageUrl', 'https://placehold.co/600x400?text=No+Image'); // CHANGED HERE // Default for new post with no image
+        console.log('DEBUG: 0.8. Appended placeholder for new post with no image.'); // नया लॉग
     }
 
     try {
+        console.log('DEBUG: 1. Entering try block for fetch.'); // नया लॉग
+        console.log('DEBUG: 2. Preparing fetch request...'); // नया लॉग
+        console.log('DEBUG: 3. Is Editing (based on editingId):', !!editingId); // नया लॉग
+        const targetUrl = editingId ? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`;
+        console.log('DEBUG: 4. Target URL for fetch:', targetUrl); // नया लॉग
+        console.log('DEBUG: 4.1. Fetch method:', editingId ? 'PUT' : 'POST'); // नया लॉग
+
         let response;
         if (editingId) {
-            // UPDATE News Item
-            response = await fetch(`${BASE_API_URL}/news/${editingId}`, {
+            response = await fetch(targetUrl, {
                 method: 'PUT',
                 body: formData // FormData automatically sets Content-Type to multipart/form-data
             });
         } else {
-            // CREATE New News Item
-            response = await fetch(`${BASE_API_URL}/news`, {
+            response = await fetch(targetUrl, {
                 method: 'POST',
                 body: formData
             });
         }
 
+        // यह लॉग तभी चलेगा जब fetch रिक्वेस्ट सफलतापूर्वक पूरी हो जाए
+        console.log('DEBUG: 5. Fetch request completed. Response status:', response.status); // नया लॉग
+        console.log('DEBUG: 6. Response OK status:', response.ok); // नया लॉग
+
         if (!response.ok) {
             const errorData = await response.json();
+            console.error('DEBUG: 7. Server responded with error:', errorData); // मौजूदा error log को बदला
             throw new Error(errorData.message || 'Server error during news submission.');
         }
 
         const result = await response.json();
+        console.log('DEBUG: 8. News submission successful:', result); // मौजूदा success log को बदला
         displaySuccess(editingId ? 'News updated successfully!' : 'News published successfully!');
         addNotification(
             editingId ? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`,
@@ -532,9 +553,12 @@ newsForm.addEventListener('submit', async function(e) {
         document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
 
     } catch (error) {
-        console.error('Error submitting news:', error);
+        // यह लॉग तब चलेगा जब try ब्लॉक में कोई एरर आए (जैसे नेटवर्क एरर, या सर्वर से !response.ok)
+        console.error('DEBUG: 9. Caught error during news submission:', error); // मौजूदा error log को बदला
         displayError(`Failed to submit news: ${error.message}`);
     } finally {
+        // यह लॉग हमेशा चलेगा, चाहे try ब्लॉक सफल हो या catch ब्लॉक में एरर आए
+        console.log('DEBUG: 10. Finally block executed. Hiding loading.'); // नया लॉग
         hideLoading();
     }
 });
