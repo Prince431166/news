@@ -23,7 +23,7 @@ let allNews = []; // Master array of all news items
 let notifications = []; // Notifications are still client-side for simplicity, but could be backend too.
 let userProfile = { // User profile
     name: 'Guest User',
-    avatar: 'https://via.placeholder.com/100x100?text=User'
+    avatar: 'https://placehold.co/100x100?text=User' // CHANGED HERE
 };
 
 // --- DOM Elements ---
@@ -349,7 +349,7 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage || 'https://via.placeholder.com/28x28?text=A'}" alt="Author">
+                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author"> // CHANGED HERE
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -381,7 +381,7 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage || 'https://via.placeholder.com/28x28?text=A'}" alt="Author">
+                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author"> // CHANGED HERE
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -479,18 +479,18 @@ newsForm.addEventListener('submit', async function(e) {
             // If it's an external URL, it should still be included if it's not changing.
             if (!existingNews.imageUrl.startsWith('/uploads/')) {
                  formData.append('imageUrl', existingNews.imageUrl);
-            } else if (currentImagePreview.src === 'https://via.placeholder.com/600x400?text=No+Image' && !newsImageFile) {
+            } else if (currentImagePreview.src === 'https://placehold.co/600x400?text=No+Image' && !newsImageFile) { // CHANGED HERE
                 // If the user explicitly cleared the image (currentImagePreview reset to placeholder)
                 // and no new file was uploaded, tell backend to remove image.
                 formData.append('imageUrl', ''); // Send empty string to signal removal
             }
         } else {
             // If no existing image and no new file, ensure a placeholder is sent for update.
-            formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
+            formData.append('imageUrl', 'https://placehold.co/600x400?text=No+Image'); // CHANGED HERE
         }
     } else {
         // New post with no image selected
-        formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image'); // Default for new post with no image
+        formData.append('imageUrl', 'https://placehold.co/600x400?text=No+Image'); // CHANGED HERE // Default for new post with no image
     }
 
     try {
@@ -591,7 +591,7 @@ async function fetchNewsDetailAndComments(newsId) {
         modalNewsImage.alt = newsItem.title;
         modalCategoryTag.textContent = newsItem.category;
         modalNewsTitle.textContent = newsItem.title;
-        modalAuthorImage.src = newsItem.authorImage || 'https://via.placeholder.com/40x40?text=A';
+        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A'; // CHANGED HERE
         modalAuthorName.textContent = newsItem.author;
         modalPublishDate.textContent = newsItem.publishDate;
         modalNewsContent.textContent = newsItem.fullContent;
@@ -632,7 +632,7 @@ function displayComments(newsItem) {
                 `;
             }
             commentElement.innerHTML = `
-                <img src="${comment.avatar || 'https://via.placeholder.com/45x45?text=U'}" alt="${comment.author}" class="comment-avatar">
+                <img src="${comment.avatar || 'https://placehold.co/45x45?text=U'}" alt="${comment.author}" class="comment-avatar"> // CHANGED HERE
                 <div class="comment-content">
                     <div class="comment-meta">
                         <div class="comment-author-info">
