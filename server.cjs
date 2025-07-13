@@ -6,9 +6,6 @@ require('dotenv').config();
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
-// REMOVED: const poll = require('./db'); // Removed as you are using direct pg client
-// REMOVED: const result = await Pool.query('SELECT * FROM users'); // Removed top-level await
-
 // --- PostgreSQL Setup ---
 const { Client } = require('pg'); // Import the pg Client
 const client = new Client({
