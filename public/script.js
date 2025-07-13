@@ -1,6 +1,6 @@
 // --- CONFIGURATION AND CONSTANTS ---
 // IMPORTANT: This BASE_API_URL must match the URL where your Node.js backend is running.
-const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api';
+const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // Make sure this is your *actual* deployed backend URL
 
 const MY_POSTS_AUTHOR_ID = 'user-prince'; // Fixed ID for "my posts" (would come from user authentication in real app)
 const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profile (client-specific)
@@ -23,7 +23,7 @@ let allNews = []; // Master array of all news items
 let notifications = []; // Notifications are still client-side for simplicity, but could be backend too.
 let userProfile = { // User profile
     name: 'Guest User',
-    avatar: 'https://placehold.co/100x100?text=User' // CHANGED HERE
+    avatar: 'https://placehold.co/100x100?text=User'
 };
 
 // --- DOM Elements ---
@@ -329,17 +329,17 @@ function createNewsElement(newsItem, type) {
     element.className = type;
     element.setAttribute('data-id', newsItem.id);
     element.setAttribute('data-category', newsItem.category);
-    // data-full-content is not strictly needed on the card for modal, as modal fetches fresh data
-    element.setAttribute('data-author-id', newsItem.authorId);
+    element.setAttribute('data-author-id', newsItem.authorId); // Crucial for edit/delete check
 
-    // *** FIX FOR UNDEFINED ERROR ***
+    // *** FIX FOR UNDEFINED ERROR (already implemented, re-confirming) ***
     // Ensure newsItem.fullContent is a string before calling split
     const safeFullContent = newsItem.fullContent || '';
     const firstParagraph = safeFullContent.split('\n')[0];
     const truncatedContent = firstParagraph.substring(0, 80) + (firstParagraph.length > 80 ? '...' : '');
 
     let actionsHTML = '';
-    if (newsItem.authorId === MY_POSTS_AUTHOR_ID) { // Only allow editing/deleting owned posts
+    // Check if the news item's authorId matches the client's MY_POSTS_AUTHOR_ID
+    if (newsItem.authorId === MY_POSTS_AUTHOR_ID) {
         actionsHTML = `
             <div class="card-actions">
                 <i class="fas fa-edit" data-action="edit"></i>
@@ -350,11 +350,15 @@ function createNewsElement(newsItem, type) {
 
     // Helper function to resolve image URL
     const getImageUrl = (url) => {
-        // Use BASE_API_URL for locally uploaded images
-        // Ensure that BASE_API_URL does not end with '/' and url starts with '/'
-        return url && url.startsWith('/uploads/') ? `${BASE_API_URL.replace(/\/api$/, '')}${url}` : url;
+        // Ensure BASE_API_URL does not end with '/' and url starts with '/' for correct path joining
+        // This is important because BASE_API_URL points to /api, but images are in /uploads
+        // So, we need to remove /api to get the base domain.
+        if (url && url.startsWith('/uploads/')) {
+            const baseUrlWithoutApi = BASE_API_URL.replace(/\/api$/, '');
+            return `${baseUrlWithoutApi}${url}`;
+        }
+        return url;
     };
-
 
     let contentHTML = '';
     if (type === 'main-feature') {
@@ -478,6 +482,13 @@ newsForm.addEventListener('submit', async function(e) {
     console.log('DEBUG: 0.3. Editing ID:', editingId);
     console.log('DEBUG: 0.4. Full Content (trimmed):', content);
 
+    // Basic validation for content
+    if (!content) {
+        displayError('News content cannot be empty.');
+        hideLoading();
+        return;
+    }
+
     const authorName = userProfile.name;
     const authorImage = userProfile.avatar;
     const authorId = MY_POSTS_AUTHOR_ID; // The fixed author ID for client-created posts
@@ -496,27 +507,21 @@ newsForm.addEventListener('submit', async function(e) {
     } else if (editingId) {
         const existingNews = allNews.find(item => item.id === editingId);
         if (existingNews) {
-            if (currentImagePreview.src === 'https://placehold.co/600x400?text=No+Image' && !newsImageFile) {
-                // If the user explicitly cleared the image (currentImagePreview reset to placeholder)
-                // and no new file was uploaded, tell backend to remove image.
-                formData.append('imageUrl', ''); // Send empty string to signal removal
-                console.log('DEBUG: 0.5. Signaled image removal for existing post.');
-            } else if (existingNews.imageUrl) {
-                // If no new file and no explicit clear, keep the existing image URL
-                // Only send imageUrl if it's an external one (local /uploads/ are handled by multer)
-                if (!existingNews.imageUrl.startsWith('/uploads/')) {
-                    formData.append('imageUrl', existingNews.imageUrl);
-                    console.log('DEBUG: 0.6. Appended external existing image URL for update.');
-                }
-            } else {
-                // No existing image, no new file
-                formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
-                console.log('DEBUG: 0.7. Appended placeholder for existing post with no image.');
+            // Check if the user explicitly cleared the image or if it's the default placeholder
+            if (currentImagePreview.src.includes('No+Image') && !newsImageFile) {
+                formData.append('imageUrl', ''); // Send empty string to signal removal or use of default placeholder
+                console.log('DEBUG: 0.5. Signaled image removal for existing post (or use default placeholder).');
+            } else if (existingNews.imageUrl && !existingNews.imageUrl.startsWith('/uploads/')) {
+                // If no new file and the existing image is an external URL, keep it
+                formData.append('imageUrl', existingNews.imageUrl);
+                console.log('DEBUG: 0.6. Appended external existing image URL for update.');
             }
+            // If existing image was a local upload and no new file, backend should handle keeping it.
+            // No need to send 'imageUrl' explicitly if it's a '/uploads/' path and no new file.
         }
     } else {
-        // New post with no image selected
-        formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image'); // Default for new post with no image
+        // New post with no image selected, ensure a placeholder is sent
+        formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
         console.log('DEBUG: 0.8. Appended placeholder for new post with no image.');
     }
 
@@ -565,11 +570,12 @@ newsForm.addEventListener('submit', async function(e) {
             result.id // Use the ID returned from the server
         );
 
+        // Reset form
         newsForm.reset();
         editNewsIdInput.value = '';
         publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publish News';
         imagePreviewContainer.style.display = 'none';
-        currentImagePreview.src = '';
+        currentImagePreview.src = ''; // Clear image preview
 
         await fetchNews(currentActiveCategory, searchInput.value); // Re-fetch and re-render current view
         document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
@@ -603,8 +609,9 @@ newsImage.addEventListener('change', function() {
 clearImageSelection.addEventListener('click', () => {
     newsImage.value = ''; // Clear the file input
     imagePreviewContainer.style.display = 'none';
-    currentImagePreview.src = '';
+    currentImagePreview.src = 'https://via.placeholder.com/600x400?text=No+Image'; // Set a default placeholder if cleared
 });
+
 
 // --- NEWS DETAIL MODAL AND COMMENTS (Backend Interaction) ---
 
@@ -617,22 +624,14 @@ async function fetchNewsDetailAndComments(newsId) {
         }
         const newsItem = await newsResponse.json();
 
-        // No need to fetch comments separately if backend sends them with newsItem
-        // If your backend always sends comments embedded:
-        // newsItem.comments should already be populated.
-
-        // If your backend sends comments separately (like your /news/:newsId/comments endpoint):
-        // const commentsResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-        // if (!commentsResponse.ok) {
-        //     throw new Error(`Failed to fetch comments. Status: ${commentsResponse.status}`);
-        // }
-        // const comments = await commentsResponse.json();
-        // newsItem.comments = comments; // Attach comments to the news item
-
-
         // Helper function to resolve image URL for modal
         const getModalImageUrl = (url) => {
-            return url && url.startsWith('/uploads/') ? `${BASE_API_URL.replace(/\/api$/, '')}${url}` : url;
+            // Apply the same logic as createNewsElement to get the correct image path
+            if (url && url.startsWith('/uploads/')) {
+                const baseUrlWithoutApi = BASE_API_URL.replace(/\/api$/, '');
+                return `${baseUrlWithoutApi}${url}`;
+            }
+            return url;
         };
 
         // Populate modal
@@ -643,7 +642,7 @@ async function fetchNewsDetailAndComments(newsId) {
         modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A';
         modalAuthorName.textContent = newsItem.author;
         modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate); // Use formatDisplayDate
-        modalNewsContent.textContent = newsItem.fullContent;
+        modalNewsContent.textContent = newsItem.fullContent; // This directly uses fullContent
         modalAuthorBio.textContent = `Read more articles by ${newsItem.author}.`;
 
         commentNewsIdInput.value = newsId;
@@ -721,7 +720,7 @@ commentForm.addEventListener('submit', async function(e) {
 
     const commentData = {
         author: commenterName,
-        authorId: MY_POSTS_AUTHOR_ID,
+        authorId: MY_POSTS_AUTHOR_ID, // Use the fixed author ID for comments as well
         avatar: commenterAvatar,
         text: commentText
     };
@@ -761,6 +760,7 @@ commentForm.addEventListener('submit', async function(e) {
 
         commentForm.reset();
         editCommentIdInput.value = '';
+        commentTextInput.value = ''; // Ensure text input is cleared
         postCommentBtn.innerHTML = '<i class="fas fa-comment-dots"></i> Post Comment';
 
     } catch (error) {
@@ -780,7 +780,7 @@ document.addEventListener('click', async function(e) {
         const newsCardElement = target.closest('.news-card, .main-feature, .side-feature');
         if (!newsCardElement) return;
         const newsIdToDelete = newsCardElement.dataset.id;
-        const newsItemAuthorId = newsCardElement.dataset.authorId;
+        const newsItemAuthorId = newsCardElement.dataset.authorId; // Get authorId from data attribute
 
         if (newsItemAuthorId === MY_POSTS_AUTHOR_ID) {
             if (confirm('Are you sure you want to delete this news item?')) {
@@ -812,7 +812,7 @@ document.addEventListener('click', async function(e) {
         const newsCardElement = target.closest('.news-card, .main-feature, .side-feature');
         if (!newsCardElement) return;
         const newsIdToEdit = newsCardElement.dataset.id;
-        const newsItemAuthorId = newsCardElement.dataset.authorId;
+        const newsItemAuthorId = newsCardElement.dataset.authorId; // Get authorId from data attribute
 
         if (newsItemAuthorId === MY_POSTS_AUTHOR_ID) {
             showLoading('Loading news for edit...');
@@ -830,7 +830,7 @@ document.addEventListener('click', async function(e) {
 
                 // Set image preview if exists
                 if (newsItem.imageUrl) {
-                    // Handle local uploads vs external URLs
+                    // Apply the same logic as createNewsElement to get the correct image path
                     currentImagePreview.src = newsItem.imageUrl.startsWith('/uploads/') ? `${BASE_API_URL.replace(/\/api$/, '')}${newsItem.imageUrl}` : newsItem.imageUrl;
                     imagePreviewContainer.style.display = 'flex';
                 } else {
@@ -857,42 +857,35 @@ document.addEventListener('click', async function(e) {
         const commentIdToDelete = commentElement.dataset.commentId;
         const newsId = commentNewsIdInput.value; // News ID from the open modal
 
-        // Fetch the comment to verify ownership (more robust than relying on local allNews copy)
-        showLoading('Verifying comment owner...');
+        // For robustness, always check ownership on the backend or ensure client-side comment data is fresh
+        // For simplicity, we'll assume the comment has the correct authorId set from backend
+        // An even more robust solution would be to fetch the comment details by commentId to verify owner.
+        showLoading('Deleting comment...');
         try {
-            const commentResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-            if (!commentResponse.ok) {
-                throw new Error('Failed to fetch comments to verify ownership.');
-            }
-            const comments = await commentResponse.json();
-            const commentToDelete = comments.find(c => c.id === commentIdToDelete);
+            // Find the comment in the newsItem.comments array to get its authorId
+            const currentNewsInModal = allNews.find(n => n.id === newsId);
+            const commentToDelete = currentNewsInModal?.comments.find(c => c.id === commentIdToDelete);
 
             if (commentToDelete && commentToDelete.authorId === MY_POSTS_AUTHOR_ID) {
-                hideLoading(); // Hide initial verification loading before confirmation
-                if (confirm('Are you sure you want to delete this comment?')) {
-                    showLoading('Deleting comment...');
-                    const response = await fetch(`${BASE_API_URL}/news/${newsId}/comments/${commentIdToDelete}`, {
-                        method: 'DELETE'
-                    });
+                const response = await fetch(`${BASE_API_URL}/news/${newsId}/comments/${commentIdToDelete}`, {
+                    method: 'DELETE'
+                });
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || 'Server error during comment deletion.');
-                    }
-
-                    displaySuccess('Comment deleted!');
-                    addNotification(`A comment on news ID ${newsId} was deleted.`, 'fas fa-trash-alt', newsId);
-                    await fetchNewsDetailAndComments(newsId); // Re-fetch and display comments
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Server error during comment deletion.');
                 }
+
+                displaySuccess('Comment deleted!');
+                addNotification(`A comment on news ID ${newsId} was deleted.`, 'fas fa-trash-alt', newsId);
+                await fetchNewsDetailAndComments(newsId); // Re-fetch and display comments
             } else {
-                hideLoading(); // Hide loading if not authorized
                 alert('You can only delete your own comments.');
             }
         } catch (error) {
             console.error('Error deleting comment:', error);
             displayError(`Failed to delete comment: ${error.message}`);
         } finally {
-            // Ensure loading is hidden in all paths
             hideLoading();
         }
     } else if (target.classList.contains('fa-edit') && target.dataset.action === 'edit-comment') {
@@ -903,12 +896,9 @@ document.addEventListener('click', async function(e) {
 
         showLoading('Loading comment for edit...');
         try {
-            const commentResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-            if (!commentResponse.ok) {
-                throw new Error('Failed to fetch comments to verify ownership.');
-            }
-            const comments = await commentResponse.json();
-            const commentToEdit = comments.find(c => c.id === commentIdToEdit);
+            // Find the comment in the newsItem.comments array to get its authorId
+            const currentNewsInModal = allNews.find(n => n.id === newsId);
+            const commentToEdit = currentNewsInModal?.comments.find(c => c.id === commentIdToEdit);
 
             if (commentToEdit && commentToEdit.authorId === MY_POSTS_AUTHOR_ID) {
                 commentTextInput.value = commentToEdit.text;
@@ -937,8 +927,9 @@ document.addEventListener('click', async function(e) {
     // --- Handle click on news card to show full content in modal ---
     else if (target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature')) {
         const newsCard = target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature');
+        // Prevent opening modal if edit/delete icon was clicked inside the card
         if (target.classList.contains('fa-edit') || target.classList.contains('fa-trash')) {
-            return; // Do not open modal if edit/delete icon was clicked
+            return;
         }
         const newsId = newsCard.dataset.id;
         fetchNewsDetailAndComments(newsId); // Fetch and display detail and comments
