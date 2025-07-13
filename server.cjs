@@ -2,12 +2,24 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
-require('dotenv').config();
-const fs = require('fs');
+require('dotenv').config(); // Load environment variables
+
+const fs = require('fs'); // Still needed for initial directory check but not for actual uploads
 const { v4: uuidv4 } = require('uuid');
 
+// --- Cloudinary Setup ---
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 // --- PostgreSQL Setup ---
-const { Client } = require('pg'); // Import the pg Client
+const { Client } = require('pg');
 const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -31,8 +43,8 @@ async function createTables() {
                 id VARCHAR(255) PRIMARY KEY,
                 category TEXT NOT NULL,
                 title TEXT NOT NULL,
-                fullContent TEXT NOT NULL, -- Ensure this is NOT NULL and correctly handled
-                imageUrl TEXT,
+                fullContent TEXT NOT NULL,
+                imageUrl TEXT, -- This will now store Cloudinary URLs
                 author TEXT NOT NULL,
                 authorImage TEXT,
                 publishDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -71,34 +83,14 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded images statically
-// Ensure your Render deployment has a way to persist the 'uploads' folder
-// For production, consider using cloud storage like Cloudinary or AWS S3.
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Ensure 'uploads' directory exists for images
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    console.log(`Creating uploads directory: ${uploadsDir}`);
-    fs.mkdirSync(uploadsDir);
-}
-
-// Multer storage configuration for images
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // Ensure the uploads directory exists before saving
-        if (!fs.existsSync('uploads/')) {
-            fs.mkdirSync('uploads/');
-        }
-        cb(null, 'uploads/');
+// Multer storage configuration for Cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'flashnews_uploads', // Folder name in Cloudinary
+        format: async (req, file) => 'png', // supports promises as well, ensure valid format
+        public_id: (req, file) => `news_image_${uuidv4()}`, // Unique public ID for Cloudinary
     },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = uuidv4();
-        const fileExtension = path.extname(file.originalname);
-        cb(null, `${uniqueSuffix}${fileExtension}`);
-    }
 });
 
 const upload = multer({
@@ -122,7 +114,7 @@ const upload = multer({
 // GET all news with optional filtering and search
 app.get('/api/news', async (req, res) => {
     try {
-        let query = 'SELECT * FROM news WHERE 1=1'; // Start with a basic query
+        let query = 'SELECT * FROM news WHERE 1=1';
         const queryParams = [];
         let paramIndex = 1;
 
@@ -135,19 +127,18 @@ app.get('/api/news', async (req, res) => {
         if (search) {
             query += ` AND (title ILIKE $${paramIndex} OR fullContent ILIKE $${paramIndex} OR category ILIKE $${paramIndex} OR author ILIKE $${paramIndex})`;
             queryParams.push(`%${search}%`);
-            paramIndex++; // Increment for the next parameter
+            paramIndex++;
         }
         if (authorId) {
             query += ` AND authorId = $${paramIndex++}`;
             queryParams.push(authorId);
         }
 
-        query += ' ORDER BY publishDate DESC'; // Sort by publishDate, newest first
+        query += ' ORDER BY publishDate DESC';
 
         const result = await client.query(query, queryParams);
         const news = result.rows;
 
-        // Fetch comments for each news item (this can be optimized with JOINs in a real app)
         for (const newsItem of news) {
             const commentsResult = await client.query('SELECT * FROM comments WHERE news_id = $1 ORDER BY timestamp DESC', [newsItem.id]);
             newsItem.comments = commentsResult.rows;
@@ -184,38 +175,35 @@ app.get('/api/news/:newsid', async (req, res) => {
 app.post('/api/news', upload.single('image'), async (req, res) => {
     const { title, category, fullContent, author, authorImage, authorId } = req.body;
 
-    // --- LOGGING ---
     console.log('Received POST /api/news request.');
     console.log('req.body:', req.body);
-    console.log('req.file:', req.file);
-    // --- END LOGGING ---
+    console.log('req.file (from Cloudinary):', req.file);
 
-    // Validate required fields and ensure fullContent is not just empty spaces
     if (!title || !category || !fullContent || fullContent.trim() === '' || !author || !authorId) {
         console.error('Missing or invalid required news fields:', { title, category, fullContent, author, authorId });
         return res.status(400).json({ message: 'Missing required news fields or full content is empty.' });
     }
 
-    // Determine imageUrl
     let imageUrl;
     if (req.file) {
-        imageUrl = `/uploads/${req.file.filename}`; // Image uploaded by Multer
-    } else if (req.body.imageUrl && req.body.imageUrl !== 'https://via.placeholder.com/600x400?text=No+Image') {
-        imageUrl = req.body.imageUrl; // Existing external URL passed from frontend
+        imageUrl = req.file.path; // Cloudinary returns the URL in req.file.path
+        console.log('Cloudinary Image URL:', imageUrl);
     } else {
-        imageUrl = 'https://via.placeholder.com/600x400?text=No+Image'; // Default placeholder
+        // If no file uploaded, use placeholder or existing URL from body (if applicable)
+        // Ensure that if frontend sends an empty string, we default to placeholder
+        imageUrl = req.body.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image';
+        console.log('No new image uploaded. Using imageUrl from body or placeholder:', imageUrl);
     }
-
 
     const newNews = {
         id: uuidv4(),
         category,
         title,
-        fullContent: fullContent.trim(), // Ensure content is trimmed
+        fullContent: fullContent.trim(),
         imageUrl,
         author,
         authorImage: authorImage || 'https://via.placeholder.com/28x28?text=A',
-        publishDate: new Date().toISOString(), // Store as ISO string for better date handling
+        publishDate: new Date().toISOString(),
         isFeatured: false,
         isSideFeature: false,
         authorId,
@@ -245,11 +233,9 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
     const newsId = req.params.newsid;
     const { title, category, fullContent, author, authorImage, authorId } = req.body;
 
-    // --- LOGGING ---
     console.log(`Received PUT /api/news/${newsId} request.`);
     console.log('req.body for update:', req.body);
-    console.log('req.file for update:', req.file);
-    // --- END LOGGING ---
+    console.log('req.file for update (from Cloudinary):', req.file);
 
     try {
         const currentNewsResult = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
@@ -259,43 +245,38 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
             return res.status(404).json({ message: 'News item not found' });
         }
 
-        // Validate content for update (ensure it's not null/undefined and if provided, not just empty spaces)
-        let updatedFullContent = existingNews.fullContent; // Default to existing
+        let updatedFullContent = existingNews.fullContent;
         if (fullContent !== undefined && fullContent.trim() !== '') {
             updatedFullContent = fullContent.trim();
         } else if (fullContent !== undefined && fullContent.trim() === '') {
-            // If the client explicitly sent an empty string (e.g., cleared the textarea)
             return res.status(400).json({ message: 'Full content cannot be empty.' });
         }
 
-
-        let imageUrl = existingNews.imageUrl; // Start with existing image URL
+        let imageUrl = existingNews.imageUrl;
 
         if (req.file) {
-            // A new image was uploaded. Delete old local image if it existed.
-            if (existingNews.imageUrl && existingNews.imageUrl.startsWith('/uploads/')) {
-                const oldImagePath = path.join(__dirname, existingNews.imageUrl);
-                if (fs.existsSync(oldImagePath)) {
-                    fs.unlink(oldImagePath, (err) => {
-                        if (err) console.error("Error deleting old image:", oldImagePath, err);
-                    });
-                }
-            }
-            imageUrl = `/uploads/${req.file.filename}`;
-        } else if (req.body.imageUrl === '') { // Client sent empty string for imageUrl, means clear it
+            // A new image was uploaded to Cloudinary.
+            // If the old image was also from Cloudinary, you might want to delete it from Cloudinary.
+            // This requires storing public_id for deletion. For now, we'll just update the URL.
+            // To delete: cloudinary.uploader.destroy(public_id_of_old_image);
+            imageUrl = req.file.path; // New Cloudinary URL
+            console.log('New image uploaded to Cloudinary:', imageUrl);
+        } else if (req.body.imageUrl === 'https://via.placeholder.com/600x400?text=No+Image') {
+            // Client specifically requested to clear the image (by sending the placeholder URL)
             imageUrl = 'https://via.placeholder.com/600x400?text=No+Image'; // Set placeholder
-            // Delete old image if it was a local upload
-            if (existingNews.imageUrl && existingNews.imageUrl.startsWith('/uploads/')) {
-                const oldImagePath = path.join(__dirname, existingNews.imageUrl);
-                if (fs.existsSync(oldImagePath)) {
-                    fs.unlink(oldImagePath, (err) => {
-                        if (err) console.error("Error deleting old image after clear action:", oldImagePath, err);
-                    });
-                }
-            }
+            // If the old image was a Cloudinary image, you might want to delete it here as well.
+            // This would require more complex logic to extract the public_id from the existingNews.imageUrl
+            console.log('Image cleared to placeholder.');
+        } else if (req.body.imageUrl !== undefined && req.body.imageUrl !== null && req.body.imageUrl.startsWith('http')) {
+            // Client sent an existing external URL (not a new upload, not a clear)
+            // This means the user did not select a new file and did not clear the image.
+            // In this case, we rely on the `imageUrl` sent from the frontend as the source of truth
+            // if it's an HTTP URL (i.e., not a local path that Multer would handle).
+            imageUrl = req.body.imageUrl;
+            console.log('Keeping existing external image URL from body:', imageUrl);
         }
-        // If req.file is null and req.body.imageUrl is not an empty string,
-        // then imageUrl remains existingNews.imageUrl (which is the desired behavior).
+        // If req.file is null and req.body.imageUrl is not the placeholder or another HTTP URL,
+        // then imageUrl remains existingNews.imageUrl (which is the desired behavior for an unchanged image that was already a Cloudinary URL).
 
         const updateQuery = `
             UPDATE news
@@ -303,7 +284,7 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
                 title = COALESCE($1, title),
                 category = COALESCE($2, category),
                 fullContent = COALESCE($3, fullContent),
-                imageUrl = COALESCE($4, imageUrl),
+                imageUrl = $4,
                 author = COALESCE($5, author),
                 authorImage = COALESCE($6, authorImage),
                 authorId = COALESCE($7, authorId)
@@ -322,6 +303,7 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
     }
 });
 
+
 // DELETE a news item
 app.delete('/api/news/:newsid', async (req, res) => {
     const newsId = req.params.newsid;
@@ -333,21 +315,37 @@ app.delete('/api/news/:newsid', async (req, res) => {
             return res.status(404).json({ message: 'News item not found' });
         }
 
+        // Delete associated image from Cloudinary if it's a Cloudinary URL
+        if (newsItemToDelete.imageUrl && newsItemToDelete.imageUrl.includes('res.cloudinary.com')) {
+            // Extract public_id from Cloudinary URL
+            // Example URL: https://res.cloudinary.com/<cloud_name>/image/upload/v12345/flashnews_uploads/news_image_abcd123.png
+            const urlParts = newsItemToDelete.imageUrl.split('/');
+            // The public ID is typically the last two parts combined (folder/public_id_with_format)
+            // if we used a folder.
+            const folder = urlParts[urlParts.length - 2]; // e.g., flashnews_uploads
+            const publicIdWithFormat = urlParts[urlParts.length - 1]; // e.g., news_image_abcd123.png
+            const publicId = publicIdWithFormat.split('.')[0]; // e.g., news_image_abcd123
+
+            const fullPublicId = `${folder}/${publicId}`; // e.g., flashnews_uploads/news_image_abcd123
+
+            console.log("Attempting to delete Cloudinary image with public ID:", fullPublicId);
+            try {
+                const cloudinaryDeleteResult = await cloudinary.uploader.destroy(fullPublicId);
+                console.log('Cloudinary delete result:', cloudinaryDeleteResult);
+                if (cloudinaryDeleteResult.result !== 'ok') {
+                    console.warn(`Cloudinary delete for ${fullPublicId} was not 'ok':`, cloudinaryDeleteResult.result);
+                }
+            } catch (clError) {
+                console.error("Error deleting image from Cloudinary:", clError);
+                // Don't block the news item deletion if Cloudinary deletion fails
+                // Log and continue, as the primary goal is to remove the news record
+            }
+        }
+
         // Comments will be deleted automatically due to ON DELETE CASCADE in schema
         const deleteNewsResult = await client.query('DELETE FROM news WHERE id = $1 RETURNING *', [newsId]);
 
         if (deleteNewsResult.rowCount > 0) {
-            // Delete associated image file from uploads folder if it exists
-            if (newsItemToDelete.imageUrl && newsItemToDelete.imageUrl.startsWith('/uploads/')) {
-                const imagePath = path.join(__dirname, newsItemToDelete.imageUrl);
-                fs.unlink(imagePath, (err) => {
-                    if (err) {
-                        console.error("Error deleting image file:", imagePath, err);
-                    } else {
-                        console.log(`Deleted image file: ${imagePath}`);
-                    }
-                });
-            }
             res.status(200).json({ message: 'News item deleted successfully' });
         } else {
             res.status(500).json({ message: 'Failed to delete news item due to internal error.' });
@@ -357,6 +355,7 @@ app.delete('/api/news/:newsid', async (req, res) => {
         res.status(500).json({ message: 'Error deleting news item' });
     }
 });
+
 
 // --- API Endpoints for Comments ---
 // GET comments for a specific news item
