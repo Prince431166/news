@@ -5,8 +5,9 @@ const path = require('path');
 require('dotenv').config();
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const poll = require('./db');
-const result = await Pool.query('SELECT * FROM users');
+
+// REMOVED: const poll = require('./db'); // Removed as you are using direct pg client
+// REMOVED: const result = await Pool.query('SELECT * FROM users'); // Removed top-level await
 
 // --- PostgreSQL Setup ---
 const { Client } = require('pg'); // Import the pg Client
@@ -23,7 +24,7 @@ client.connect()
         console.log('Connected to PostgreSQL database');
         // You might want to run schema creation here if not already done
         // For example, if you want to ensure tables exist on startup:
-        // createTables();
+        createTables(); // UNCOMMENTED: Calling createTables on connect
     })
     .catch(err => console.error('Error connecting to PostgreSQL:', err.stack));
 
@@ -33,27 +34,27 @@ async function createTables() {
         await client.query(`
             CREATE TABLE IF NOT EXISTS news (
                 id VARCHAR(255) PRIMARY KEY,
-                category VARCHAR(255) NOT NULL,
-                title VARCHAR(255) NOT NULL,
+                category TEXT NOT NULL,          -- CHANGED from VARCHAR(255) to TEXT
+                title TEXT NOT NULL,             -- CHANGED from VARCHAR(255) to TEXT
                 fullContent TEXT NOT NULL,
-                imageUrl VARCHAR(255),
-                author VARCHAR(255) NOT NULL,
-                authorImage VARCHAR(255),
-                publishDate VARCHAR(255), -- Or TIMESTAMP WITH TIME ZONE
+                imageUrl TEXT,                   -- CHANGED from VARCHAR(255) to TEXT
+                author TEXT NOT NULL,            -- CHANGED from VARCHAR(255) to TEXT
+                authorImage TEXT,                -- CHANGED from VARCHAR(255) to TEXT
+                publishDate TEXT,                -- CHANGED from VARCHAR(255) to TEXT (or TIMESTAMP WITH TIME ZONE if you prefer)
                 isFeatured BOOLEAN DEFAULT FALSE,
                 isSideFeature BOOLEAN DEFAULT FALSE,
-                authorId VARCHAR(255) NOT NULL
+                authorId TEXT NOT NULL           -- CHANGED from VARCHAR(255) to TEXT
             );
         `);
         await client.query(`
             CREATE TABLE IF NOT EXISTS comments (
                 id VARCHAR(255) PRIMARY KEY,
                 news_id VARCHAR(255) REFERENCES news(id) ON DELETE CASCADE,
-                author VARCHAR(255) NOT NULL,
-                authorId VARCHAR(255) NOT NULL,
-                avatar VARCHAR(255),
+                author TEXT NOT NULL,            -- CHANGED from VARCHAR(255) to TEXT
+                authorId TEXT NOT NULL,          -- CHANGED from VARCHAR(255) to TEXT
+                avatar TEXT,                     -- CHANGED from VARCHAR(255) to TEXT
                 text TEXT NOT NULL,
-                timestamp VARCHAR(255) -- Or TIMESTAMP WITH TIME ZONE
+                timestamp TEXT                   -- CHANGED from VARCHAR(255) to TEXT (or TIMESTAMP WITH TIME ZONE)
             );
         `);
         console.log('News and Comments tables ensured.');
