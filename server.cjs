@@ -1,4 +1,4 @@
-const express = require('express');
+Const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
@@ -68,7 +68,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- Middleware ---
-app.use(cors());
+// CORS कॉन्फ़िगरेशन यहाँ अपडेट किया गया है
+app.use(cors({
+    origin: 'https://flashnews1.netlify.app', // **आपका Netlify डोमेन**
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
