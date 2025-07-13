@@ -31,11 +31,11 @@ async function createTables() {
                 id VARCHAR(255) PRIMARY KEY,
                 category TEXT NOT NULL,
                 title TEXT NOT NULL,
-                fullContent TEXT NOT NULL,
+                fullContent TEXT NOT NULL, -- Ensure this is NOT NULL and correctly handled
                 imageUrl TEXT,
                 author TEXT NOT NULL,
                 authorImage TEXT,
-                publishDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, -- Changed to TIMESTAMP for better handling
+                publishDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 isFeatured BOOLEAN DEFAULT FALSE,
                 isSideFeature BOOLEAN DEFAULT FALSE,
                 authorId TEXT NOT NULL
@@ -49,7 +49,7 @@ async function createTables() {
                 authorId TEXT NOT NULL,
                 avatar TEXT,
                 text TEXT NOT NULL,
-                timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP -- Changed to TIMESTAMP
+                timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
         `);
         console.log('News and Comments tables ensured.');
@@ -57,7 +57,6 @@ async function createTables() {
         console.error('Error creating tables:', err);
     }
 }
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -73,6 +72,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded images statically
+// Ensure your Render deployment has a way to persist the 'uploads' folder
+// For production, consider using cloud storage like Cloudinary or AWS S3.
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -87,6 +88,10 @@ if (!fs.existsSync(uploadsDir)) {
 // Multer storage configuration for images
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
+        // Ensure the uploads directory exists before saving
+        if (!fs.existsSync('uploads/')) {
+            fs.mkdirSync('uploads/');
+        }
         cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
@@ -181,8 +186,8 @@ app.post('/api/news', upload.single('image'), async (req, res) => {
 
     // --- LOGGING ---
     console.log('Received POST /api/news request.');
-    console.log('req.body.fullContent:', fullContent);
-    console.log('Type of req.body.fullContent:', typeof fullContent);
+    console.log('req.body:', req.body);
+    console.log('req.file:', req.file);
     // --- END LOGGING ---
 
     // Validate required fields and ensure fullContent is not just empty spaces
@@ -191,7 +196,16 @@ app.post('/api/news', upload.single('image'), async (req, res) => {
         return res.status(400).json({ message: 'Missing required news fields or full content is empty.' });
     }
 
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : (req.body.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image');
+    // Determine imageUrl
+    let imageUrl;
+    if (req.file) {
+        imageUrl = `/uploads/${req.file.filename}`; // Image uploaded by Multer
+    } else if (req.body.imageUrl && req.body.imageUrl !== 'https://via.placeholder.com/600x400?text=No+Image') {
+        imageUrl = req.body.imageUrl; // Existing external URL passed from frontend
+    } else {
+        imageUrl = 'https://via.placeholder.com/600x400?text=No+Image'; // Default placeholder
+    }
+
 
     const newNews = {
         id: uuidv4(),
@@ -233,8 +247,8 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
 
     // --- LOGGING ---
     console.log(`Received PUT /api/news/${newsId} request.`);
-    console.log('req.body.fullContent for update:', fullContent);
-    console.log('Type of req.body.fullContent for update:', typeof fullContent);
+    console.log('req.body for update:', req.body);
+    console.log('req.file for update:', req.file);
     // --- END LOGGING ---
 
     try {
@@ -250,15 +264,15 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
         if (fullContent !== undefined && fullContent.trim() !== '') {
             updatedFullContent = fullContent.trim();
         } else if (fullContent !== undefined && fullContent.trim() === '') {
-            // If client explicitly sent empty string (e.g., cleared the textarea)
+            // If the client explicitly sent an empty string (e.g., cleared the textarea)
             return res.status(400).json({ message: 'Full content cannot be empty.' });
         }
 
 
-        let imageUrl = req.body.imageUrl;
+        let imageUrl = existingNews.imageUrl; // Start with existing image URL
 
         if (req.file) {
-            // Delete old image if it was a local upload
+            // A new image was uploaded. Delete old local image if it existed.
             if (existingNews.imageUrl && existingNews.imageUrl.startsWith('/uploads/')) {
                 const oldImagePath = path.join(__dirname, existingNews.imageUrl);
                 if (fs.existsSync(oldImagePath)) {
@@ -268,21 +282,20 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
                 }
             }
             imageUrl = `/uploads/${req.file.filename}`;
-        } else if (req.body.imageUrl === '') { // Client sent empty string for image, means clear it
+        } else if (req.body.imageUrl === '') { // Client sent empty string for imageUrl, means clear it
             imageUrl = 'https://via.placeholder.com/600x400?text=No+Image'; // Set placeholder
             // Delete old image if it was a local upload
             if (existingNews.imageUrl && existingNews.imageUrl.startsWith('/uploads/')) {
                 const oldImagePath = path.join(__dirname, existingNews.imageUrl);
                 if (fs.existsSync(oldImagePath)) {
                     fs.unlink(oldImagePath, (err) => {
-                        if (err) console.error("Error deleting old image after clear:", oldImagePath, err);
+                        if (err) console.error("Error deleting old image after clear action:", oldImagePath, err);
                     });
                 }
             }
-        } else {
-            // If no new file and not explicitly cleared, keep existing image URL
-            imageUrl = existingNews.imageUrl;
         }
+        // If req.file is null and req.body.imageUrl is not an empty string,
+        // then imageUrl remains existingNews.imageUrl (which is the desired behavior).
 
         const updateQuery = `
             UPDATE news
@@ -321,16 +334,17 @@ app.delete('/api/news/:newsid', async (req, res) => {
         }
 
         // Comments will be deleted automatically due to ON DELETE CASCADE in schema
-        // No need for client.query('DELETE FROM comments WHERE news_id = $1', [newsId]);
-
         const deleteNewsResult = await client.query('DELETE FROM news WHERE id = $1 RETURNING *', [newsId]);
 
         if (deleteNewsResult.rowCount > 0) {
+            // Delete associated image file from uploads folder if it exists
             if (newsItemToDelete.imageUrl && newsItemToDelete.imageUrl.startsWith('/uploads/')) {
                 const imagePath = path.join(__dirname, newsItemToDelete.imageUrl);
                 fs.unlink(imagePath, (err) => {
                     if (err) {
                         console.error("Error deleting image file:", imagePath, err);
+                    } else {
+                        console.log(`Deleted image file: ${imagePath}`);
                     }
                 });
             }
@@ -376,7 +390,7 @@ app.post('/api/news/:newsId/comments', async (req, res) => {
         authorId: authorId || 'guest',
         avatar: avatar || 'https://via.placeholder.com/45x45?text=U',
         text: text.trim(),
-        timestamp: new Date().toISOString() // Store as ISO string
+        timestamp: new Date().toISOString()
     };
 
     try {
@@ -457,6 +471,7 @@ app.delete('/api/news/:newsId/comments/:commentId', async (req, res) => {
 // --- Error Handling Middleware (should be last app.use) ---
 app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {
+        console.error("Multer error:", err);
         return res.status(400).json({ message: err.message || 'File upload error.' });
     } else if (err) {
         console.error('Generic server error:', err);
