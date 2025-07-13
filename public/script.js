@@ -99,6 +99,19 @@ function displaySuccess(message = 'Operation successful!') {
     setTimeout(hideLoading, 1500);
 }
 
+// Function to format date for display
+function formatDisplayDate(dateString) {
+    // Attempt to parse as ISO string or regular date string
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+        // Fallback for non-standard date strings (like the ones in DEFAULT_NEWS_DATA)
+        // You might need a more robust parsing for diverse date formats.
+        return dateString;
+    }
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
+    return date.toLocaleString('en-US', options);
+}
+
 function timeAgo(dateString) {
     const now = new Date();
     const date = new Date(dateString);
@@ -269,6 +282,7 @@ function renderNewsCards(filterCategory = 'all', searchTerm = '') {
     latestNewsSection.innerHTML = '';
 
     // Sort all news by publishDate (newest first)
+    // Ensure publishDate is handled as a Date object for proper sorting
     const sortedNewsData = [...allNews].sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
 
     const featuredNewsItems = sortedNewsData.filter(news => news.isFeatured);
@@ -318,7 +332,10 @@ function createNewsElement(newsItem, type) {
     // data-full-content is not strictly needed on the card for modal, as modal fetches fresh data
     element.setAttribute('data-author-id', newsItem.authorId);
 
-    const firstParagraph = newsItem.fullContent.split('\n')[0];
+    // *** FIX FOR UNDEFINED ERROR ***
+    // Ensure newsItem.fullContent is a string before calling split
+    const safeFullContent = newsItem.fullContent || '';
+    const firstParagraph = safeFullContent.split('\n')[0];
     const truncatedContent = firstParagraph.substring(0, 80) + (firstParagraph.length > 80 ? '...' : '');
 
     let actionsHTML = '';
@@ -334,8 +351,10 @@ function createNewsElement(newsItem, type) {
     // Helper function to resolve image URL
     const getImageUrl = (url) => {
         // Use BASE_API_URL for locally uploaded images
-        return url.startsWith('/uploads/') ? `${BASE_API_URL}${url}` : url;
+        // Ensure that BASE_API_URL does not end with '/' and url starts with '/'
+        return url && url.startsWith('/uploads/') ? `${BASE_API_URL.replace(/\/api$/, '')}${url}` : url;
     };
+
 
     let contentHTML = '';
     if (type === 'main-feature') {
@@ -349,7 +368,7 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author"> // CHANGED HERE
+                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author">
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -381,7 +400,7 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author"> // CHANGED HERE
+                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author">
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -445,18 +464,19 @@ searchInput.addEventListener('keyup', function(e) {
 // --- ADMIN NEWS PUBLISHING / EDITING (Backend Interaction) ---
 newsForm.addEventListener('submit', async function(e) {
     e.preventDefault();
-    console.log('DEBUG: 0. News form submit event triggered.'); // नया लॉग
+    console.log('DEBUG: 0. News form submit event triggered.');
     showLoading('Processing news...');
 
-    const title = document.getElementById('newsTitle').value;
+    const title = document.getElementById('newsTitle').value.trim();
     const category = document.getElementById('newsCategory').value;
     const newsImageFile = document.getElementById('newsImage').files[0];
-    const content = document.getElementById('newsContent').value;
+    const content = document.getElementById('newsContent').value.trim(); // Trim content
     const editingId = editNewsIdInput.value;
 
-    console.log('DEBUG: 0.1. Form values collected. Title:', title, 'Category:', category); // नया लॉग
-    console.log('DEBUG: 0.2. Image file:', newsImageFile ? newsImageFile.name : 'No file selected'); // नया लॉग
-    console.log('DEBUG: 0.3. Editing ID:', editingId); // नया लॉग
+    console.log('DEBUG: 0.1. Form values collected. Title:', title, 'Category:', category);
+    console.log('DEBUG: 0.2. Image file:', newsImageFile ? newsImageFile.name : 'No file selected');
+    console.log('DEBUG: 0.3. Editing ID:', editingId);
+    console.log('DEBUG: 0.4. Full Content (trimmed):', content);
 
     const authorName = userProfile.name;
     const authorImage = userProfile.avatar;
@@ -472,44 +492,41 @@ newsForm.addEventListener('submit', async function(e) {
 
     if (newsImageFile) {
         formData.append('image', newsImageFile); // Append file if new image is selected
-        console.log('DEBUG: 0.4. Appended new image to FormData.'); // नया लॉग
+        console.log('DEBUG: 0.4. Appended new image to FormData.');
     } else if (editingId) {
-        // If editing and no new file, handle existing image URL.
         const existingNews = allNews.find(item => item.id === editingId);
-        if (existingNews && existingNews.imageUrl) {
-            // If the existing image is a local upload, the backend will handle its replacement/retention.
-            // If it's an external URL, ensure it's sent back to the backend.
-            // The backend's PUT endpoint already handles this logic efficiently.
-            // No need to explicitly append 'imageUrl' if it's already a local '/uploads/' path
-            // as multer handles the file upload.
-            // If it's an external URL, it should still be included if it's not changing.
-            if (!existingNews.imageUrl.startsWith('/uploads/')) {
-                 formData.append('imageUrl', existingNews.imageUrl);
-                 console.log('DEBUG: 0.5. Appended external existing image URL.'); // नया लॉग
-            } else if (currentImagePreview.src === 'https://placehold.co/600x400?text=No+Image' && !newsImageFile) { // CHANGED HERE
+        if (existingNews) {
+            if (currentImagePreview.src === 'https://placehold.co/600x400?text=No+Image' && !newsImageFile) {
                 // If the user explicitly cleared the image (currentImagePreview reset to placeholder)
                 // and no new file was uploaded, tell backend to remove image.
                 formData.append('imageUrl', ''); // Send empty string to signal removal
-                console.log('DEBUG: 0.6. Signaled image removal for existing post.'); // नया लॉग
+                console.log('DEBUG: 0.5. Signaled image removal for existing post.');
+            } else if (existingNews.imageUrl) {
+                // If no new file and no explicit clear, keep the existing image URL
+                // Only send imageUrl if it's an external one (local /uploads/ are handled by multer)
+                if (!existingNews.imageUrl.startsWith('/uploads/')) {
+                    formData.append('imageUrl', existingNews.imageUrl);
+                    console.log('DEBUG: 0.6. Appended external existing image URL for update.');
+                }
+            } else {
+                // No existing image, no new file
+                formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
+                console.log('DEBUG: 0.7. Appended placeholder for existing post with no image.');
             }
-        } else {
-            // If no existing image and no new file, ensure a placeholder is sent for update.
-            formData.append('imageUrl', 'https://placehold.co/600x400?text=No+Image'); // CHANGED HERE
-            console.log('DEBUG: 0.7. Appended placeholder for existing post with no image.'); // नया लॉग
         }
     } else {
         // New post with no image selected
-        formData.append('imageUrl', 'https://placehold.co/600x400?text=No+Image'); // CHANGED HERE // Default for new post with no image
-        console.log('DEBUG: 0.8. Appended placeholder for new post with no image.'); // नया लॉग
+        formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image'); // Default for new post with no image
+        console.log('DEBUG: 0.8. Appended placeholder for new post with no image.');
     }
 
     try {
-        console.log('DEBUG: 1. Entering try block for fetch.'); // नया लॉग
-        console.log('DEBUG: 2. Preparing fetch request...'); // नया लॉग
-        console.log('DEBUG: 3. Is Editing (based on editingId):', !!editingId); // नया लॉग
+        console.log('DEBUG: 1. Entering try block for fetch.');
+        console.log('DEBUG: 2. Preparing fetch request...');
+        console.log('DEBUG: 3. Is Editing (based on editingId):', !!editingId);
         const targetUrl = editingId ? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`;
-        console.log('DEBUG: 4. Target URL for fetch:', targetUrl); // नया लॉग
-        console.log('DEBUG: 4.1. Fetch method:', editingId ? 'PUT' : 'POST'); // नया लॉग
+        console.log('DEBUG: 4. Target URL for fetch:', targetUrl);
+        console.log('DEBUG: 4.1. Fetch method:', editingId ? 'PUT' : 'POST');
 
         let response;
         if (editingId) {
@@ -524,18 +541,23 @@ newsForm.addEventListener('submit', async function(e) {
             });
         }
 
-        // यह लॉग तभी चलेगा जब fetch रिक्वेस्ट सफलतापूर्वक पूरी हो जाए
-        console.log('DEBUG: 5. Fetch request completed. Response status:', response.status); // नया लॉग
-        console.log('DEBUG: 6. Response OK status:', response.ok); // नया लॉग
+        console.log('DEBUG: 5. Fetch request completed. Response status:', response.status);
+        console.log('DEBUG: 6. Response OK status:', response.ok);
 
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error('DEBUG: 7. Server responded with error:', errorData); // मौजूदा error log को बदला
-            throw new Error(errorData.message || 'Server error during news submission.');
+            const errorText = await response.text(); // Get raw text to help debug if JSON parsing fails
+            try {
+                const errorData = JSON.parse(errorText);
+                console.error('DEBUG: 7. Server responded with error JSON:', errorData);
+                throw new Error(errorData.message || 'Server error during news submission.');
+            } catch (jsonParseError) {
+                console.error('DEBUG: 7.1. Server responded with non-JSON error:', errorText);
+                throw new Error(`Server error: ${errorText} (Status: ${response.status})`);
+            }
         }
 
         const result = await response.json();
-        console.log('DEBUG: 8. News submission successful:', result); // मौजूदा success log को बदला
+        console.log('DEBUG: 8. News submission successful:', result);
         displaySuccess(editingId ? 'News updated successfully!' : 'News published successfully!');
         addNotification(
             editingId ? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`,
@@ -553,12 +575,10 @@ newsForm.addEventListener('submit', async function(e) {
         document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
 
     } catch (error) {
-        // यह लॉग तब चलेगा जब try ब्लॉक में कोई एरर आए (जैसे नेटवर्क एरर, या सर्वर से !response.ok)
-        console.error('DEBUG: 9. Caught error during news submission:', error); // मौजूदा error log को बदला
+        console.error('DEBUG: 9. Caught error during news submission:', error);
         displayError(`Failed to submit news: ${error.message}`);
     } finally {
-        // यह लॉग हमेशा चलेगा, चाहे try ब्लॉक सफल हो या catch ब्लॉक में एरर आए
-        console.log('DEBUG: 10. Finally block executed. Hiding loading.'); // नया लॉग
+        console.log('DEBUG: 10. Finally block executed. Hiding loading.');
         hideLoading();
     }
 });
@@ -597,17 +617,22 @@ async function fetchNewsDetailAndComments(newsId) {
         }
         const newsItem = await newsResponse.json();
 
-        // Fetch comments for this news item
-        const commentsResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-        if (!commentsResponse.ok) {
-            throw new Error(`Failed to fetch comments. Status: ${commentsResponse.status}`);
-        }
-        const comments = await commentsResponse.json();
-        newsItem.comments = comments; // Attach comments to the news item
+        // No need to fetch comments separately if backend sends them with newsItem
+        // If your backend always sends comments embedded:
+        // newsItem.comments should already be populated.
+
+        // If your backend sends comments separately (like your /news/:newsId/comments endpoint):
+        // const commentsResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
+        // if (!commentsResponse.ok) {
+        //     throw new Error(`Failed to fetch comments. Status: ${commentsResponse.status}`);
+        // }
+        // const comments = await commentsResponse.json();
+        // newsItem.comments = comments; // Attach comments to the news item
+
 
         // Helper function to resolve image URL for modal
         const getModalImageUrl = (url) => {
-            return url.startsWith('/uploads/') ? `${BASE_API_URL}${url}` : url;
+            return url && url.startsWith('/uploads/') ? `${BASE_API_URL.replace(/\/api$/, '')}${url}` : url;
         };
 
         // Populate modal
@@ -615,9 +640,9 @@ async function fetchNewsDetailAndComments(newsId) {
         modalNewsImage.alt = newsItem.title;
         modalCategoryTag.textContent = newsItem.category;
         modalNewsTitle.textContent = newsItem.title;
-        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A'; // CHANGED HERE
+        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A';
         modalAuthorName.textContent = newsItem.author;
-        modalPublishDate.textContent = newsItem.publishDate;
+        modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate); // Use formatDisplayDate
         modalNewsContent.textContent = newsItem.fullContent;
         modalAuthorBio.textContent = `Read more articles by ${newsItem.author}.`;
 
@@ -656,7 +681,7 @@ function displayComments(newsItem) {
                 `;
             }
             commentElement.innerHTML = `
-                <img src="${comment.avatar || 'https://placehold.co/45x45?text=U'}" alt="${comment.author}" class="comment-avatar"> // CHANGED HERE
+                <img src="${comment.avatar || 'https://placehold.co/45x45?text=U'}" alt="${comment.author}" class="comment-avatar">
                 <div class="comment-content">
                     <div class="comment-meta">
                         <div class="comment-author-info">
@@ -806,7 +831,7 @@ document.addEventListener('click', async function(e) {
                 // Set image preview if exists
                 if (newsItem.imageUrl) {
                     // Handle local uploads vs external URLs
-                    currentImagePreview.src = newsItem.imageUrl.startsWith('/uploads/') ? `${BASE_API_URL}${newsItem.imageUrl}` : newsItem.imageUrl;
+                    currentImagePreview.src = newsItem.imageUrl.startsWith('/uploads/') ? `${BASE_API_URL.replace(/\/api$/, '')}${newsItem.imageUrl}` : newsItem.imageUrl;
                     imagePreviewContainer.style.display = 'flex';
                 } else {
                     imagePreviewContainer.style.display = 'none';
@@ -1031,8 +1056,8 @@ profileAvatarUpload.addEventListener('change', function() {
         };
         reader.readAsDataURL(file);
     } else {
-        // If file input is cleared, hide preview
-        profileAvatarPreview.src = userProfile.avatar; // Revert to current avatar if no new file selected
+        // If file input is cleared, revert to current avatar or a default placeholder
+        profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User';
     }
 });
 
