@@ -19,39 +19,37 @@ const client = new Client({
 client.connect()
     .then(() => {
         console.log('Connected to PostgreSQL database');
-        // You might want to run schema creation here if not already done
-        // For example, if you want to ensure tables exist on startup:
-        createTables(); // UNCOMMENTED: Calling createTables on connect
+        createTables(); // Ensure tables are created on connect
     })
     .catch(err => console.error('Error connecting to PostgreSQL:', err.stack));
 
-// Function to create tables if they don't exist (optional, for initial setup)
+// Function to create tables if they don't exist
 async function createTables() {
     try {
         await client.query(`
             CREATE TABLE IF NOT EXISTS news (
                 id VARCHAR(255) PRIMARY KEY,
-                category TEXT NOT NULL,          -- CHANGED from VARCHAR(255) to TEXT
-                title TEXT NOT NULL,             -- CHANGED from VARCHAR(255) to TEXT
+                category TEXT NOT NULL,
+                title TEXT NOT NULL,
                 fullContent TEXT NOT NULL,
-                imageUrl TEXT,                   -- CHANGED from VARCHAR(255) to TEXT
-                author TEXT NOT NULL,            -- CHANGED from VARCHAR(255) to TEXT
-                authorImage TEXT,                -- CHANGED from VARCHAR(255) to TEXT
-                publishDate TEXT,                -- CHANGED from VARCHAR(255) to TEXT (or TIMESTAMP WITH TIME ZONE if you prefer)
+                imageUrl TEXT,
+                author TEXT NOT NULL,
+                authorImage TEXT,
+                publishDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, -- Changed to TIMESTAMP for better handling
                 isFeatured BOOLEAN DEFAULT FALSE,
                 isSideFeature BOOLEAN DEFAULT FALSE,
-                authorId TEXT NOT NULL           -- CHANGED from VARCHAR(255) to TEXT
+                authorId TEXT NOT NULL
             );
         `);
         await client.query(`
             CREATE TABLE IF NOT EXISTS comments (
                 id VARCHAR(255) PRIMARY KEY,
                 news_id VARCHAR(255) REFERENCES news(id) ON DELETE CASCADE,
-                author TEXT NOT NULL,            -- CHANGED from VARCHAR(255) to TEXT
-                authorId TEXT NOT NULL,          -- CHANGED from VARCHAR(255) to TEXT
-                avatar TEXT,                     -- CHANGED from VARCHAR(255) to TEXT
+                author TEXT NOT NULL,
+                authorId TEXT NOT NULL,
+                avatar TEXT,
                 text TEXT NOT NULL,
-                timestamp TEXT                   -- CHANGED from VARCHAR(255) to TEXT (or TIMESTAMP WITH TIME ZONE)
+                timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP -- Changed to TIMESTAMP
             );
         `);
         console.log('News and Comments tables ensured.');
@@ -65,7 +63,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- Middleware ---
-// CORS कॉन्फ़िगरेशन यहाँ अपडेट किया गया है
 app.use(cors({
     origin: 'https://flashnews1.netlify.app', // **आपका Netlify डोमेन**
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -114,12 +111,6 @@ const upload = multer({
         }
     }
 });
-
-// Utility to format date
-const formatDate = (date) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    return new Date(date).toLocaleString('en-US', options);
-};
 
 // --- API Endpoints for News ---
 
@@ -188,10 +179,16 @@ app.get('/api/news/:newsid', async (req, res) => {
 app.post('/api/news', upload.single('image'), async (req, res) => {
     const { title, category, fullContent, author, authorImage, authorId } = req.body;
 
-    if (!title || !category || !fullContent || !author || !authorId) {
-        // You might want to add more specific validation for field lengths here
-        // if your database schema has stricter limits than the client-side.
-        return res.status(400).json({ message: 'Missing required news fields.' });
+    // --- LOGGING ---
+    console.log('Received POST /api/news request.');
+    console.log('req.body.fullContent:', fullContent);
+    console.log('Type of req.body.fullContent:', typeof fullContent);
+    // --- END LOGGING ---
+
+    // Validate required fields and ensure fullContent is not just empty spaces
+    if (!title || !category || !fullContent || fullContent.trim() === '' || !author || !authorId) {
+        console.error('Missing or invalid required news fields:', { title, category, fullContent, author, authorId });
+        return res.status(400).json({ message: 'Missing required news fields or full content is empty.' });
     }
 
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : (req.body.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image');
@@ -200,11 +197,11 @@ app.post('/api/news', upload.single('image'), async (req, res) => {
         id: uuidv4(),
         category,
         title,
-        fullContent,
+        fullContent: fullContent.trim(), // Ensure content is trimmed
         imageUrl,
         author,
         authorImage: authorImage || 'https://via.placeholder.com/28x28?text=A',
-        publishDate: formatDate(new Date()), // Store as formatted string
+        publishDate: new Date().toISOString(), // Store as ISO string for better date handling
         isFeatured: false,
         isSideFeature: false,
         authorId,
@@ -234,6 +231,12 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
     const newsId = req.params.newsid;
     const { title, category, fullContent, author, authorImage, authorId } = req.body;
 
+    // --- LOGGING ---
+    console.log(`Received PUT /api/news/${newsId} request.`);
+    console.log('req.body.fullContent for update:', fullContent);
+    console.log('Type of req.body.fullContent for update:', typeof fullContent);
+    // --- END LOGGING ---
+
     try {
         const currentNewsResult = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
         const existingNews = currentNewsResult.rows[0];
@@ -241,6 +244,16 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
         if (!existingNews) {
             return res.status(404).json({ message: 'News item not found' });
         }
+
+        // Validate content for update (ensure it's not null/undefined and if provided, not just empty spaces)
+        let updatedFullContent = existingNews.fullContent; // Default to existing
+        if (fullContent !== undefined && fullContent.trim() !== '') {
+            updatedFullContent = fullContent.trim();
+        } else if (fullContent !== undefined && fullContent.trim() === '') {
+            // If client explicitly sent empty string (e.g., cleared the textarea)
+            return res.status(400).json({ message: 'Full content cannot be empty.' });
+        }
+
 
         let imageUrl = req.body.imageUrl;
 
@@ -285,7 +298,7 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
             RETURNING *;
         `;
         const values = [
-            title, category, fullContent, imageUrl, author, authorImage, authorId, newsId
+            title, category, updatedFullContent, imageUrl, author, authorImage, authorId, newsId
         ];
         const result = await client.query(updateQuery, values);
         res.json(result.rows[0]);
@@ -307,11 +320,8 @@ app.delete('/api/news/:newsid', async (req, res) => {
             return res.status(404).json({ message: 'News item not found' });
         }
 
-        // Delete associated comments first (if CASCADE DELETE is not set up in schema)
-        // If your database schema has ON DELETE CASCADE for comments table,
-        // then you don't need to explicitly delete comments here.
-        await client.query('DELETE FROM comments WHERE news_id = $1', [newsId]);
-
+        // Comments will be deleted automatically due to ON DELETE CASCADE in schema
+        // No need for client.query('DELETE FROM comments WHERE news_id = $1', [newsId]);
 
         const deleteNewsResult = await client.query('DELETE FROM news WHERE id = $1 RETURNING *', [newsId]);
 
@@ -361,12 +371,12 @@ app.post('/api/news/:newsId/comments', async (req, res) => {
 
     const newComment = {
         id: uuidv4(),
-        news_id: newsId, // This needs to match the column name in DB
+        news_id: newsId,
         author: author,
         authorId: authorId || 'guest',
         avatar: avatar || 'https://via.placeholder.com/45x45?text=U',
         text: text.trim(),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString() // Store as ISO string
     };
 
     try {
@@ -447,8 +457,6 @@ app.delete('/api/news/:newsId/comments/:commentId', async (req, res) => {
 // --- Error Handling Middleware (should be last app.use) ---
 app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {
-        // Use err.message to get the specific Multer error message
-        // which could be 'File too large', 'Too many files', etc.
         return res.status(400).json({ message: err.message || 'File upload error.' });
     } else if (err) {
         console.error('Generic server error:', err);
@@ -460,6 +468,4 @@ app.use((err, req, res, next) => {
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-    // Optional: Call createTables() here if you want to ensure tables exist on every server start
-    // createTables();
 });
