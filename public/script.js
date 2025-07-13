@@ -323,6 +323,12 @@ function shouldDisplayNews(news, filterCategory, searchTerm) {
     return matchesCategory && matchesSearch;
 }
 
+// Helper function to resolve image URL for display
+// Simplified for Cloudinary integration: URLs from backend will be absolute.
+const getImageUrl = (url) => {
+    return url || 'https://via.placeholder.com/600x400?text=No+Image'; // Use the URL directly, or a placeholder
+};
+
 function createNewsElement(newsItem, type) {
     const element = document.createElement('a');
     element.href = 'javascript:void(0)';
@@ -331,7 +337,6 @@ function createNewsElement(newsItem, type) {
     element.setAttribute('data-category', newsItem.category);
     element.setAttribute('data-author-id', newsItem.authorId); // Crucial for edit/delete check
 
-    // *** FIX FOR UNDEFINED ERROR (already implemented, re-confirming) ***
     // Ensure newsItem.fullContent is a string before calling split
     const safeFullContent = newsItem.fullContent || '';
     const firstParagraph = safeFullContent.split('\n')[0];
@@ -347,18 +352,6 @@ function createNewsElement(newsItem, type) {
             </div>
         `;
     }
-
-    // Helper function to resolve image URL
-    const getImageUrl = (url) => {
-        // Ensure BASE_API_URL does not end with '/' and url starts with '/' for correct path joining
-        // This is important because BASE_API_URL points to /api, but images are in /uploads
-        // So, we need to remove /api to get the base domain.
-        if (url && url.startsWith('/uploads/')) {
-            const baseUrlWithoutApi = BASE_API_URL.replace(/\/api$/, '');
-            return `${baseUrlWithoutApi}${url}`;
-        }
-        return url;
-    };
 
     let contentHTML = '';
     if (type === 'main-feature') {
@@ -503,21 +496,23 @@ newsForm.addEventListener('submit', async function(e) {
 
     if (newsImageFile) {
         formData.append('image', newsImageFile); // Append file if new image is selected
-        console.log('DEBUG: 0.4. Appended new image to FormData.');
+        console.log('DEBUG: 0.4. Appended new image to FormData for Cloudinary upload.');
     } else if (editingId) {
         const existingNews = allNews.find(item => item.id === editingId);
         if (existingNews) {
             // Check if the user explicitly cleared the image or if it's the default placeholder
             if (currentImagePreview.src.includes('No+Image') && !newsImageFile) {
-                formData.append('imageUrl', ''); // Send empty string to signal removal or use of default placeholder
+                // Sending placeholder URL indicates clearing/defaulting the image on backend
+                formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
                 console.log('DEBUG: 0.5. Signaled image removal for existing post (or use default placeholder).');
-            } else if (existingNews.imageUrl && !existingNews.imageUrl.startsWith('/uploads/')) {
-                // If no new file and the existing image is an external URL, keep it
+            } else if (existingNews.imageUrl && existingNews.imageUrl.startsWith('http') && !newsImageFile) {
+                // If no new file and the existing image is an external URL (e.g., from Cloudinary), keep it
+                // We send it back so the backend knows to retain this specific URL
                 formData.append('imageUrl', existingNews.imageUrl);
-                console.log('DEBUG: 0.6. Appended external existing image URL for update.');
+                console.log('DEBUG: 0.6. Appended existing Cloudinary/external image URL for update.');
             }
-            // If existing image was a local upload and no new file, backend should handle keeping it.
-            // No need to send 'imageUrl' explicitly if it's a '/uploads/' path and no new file.
+            // If existing image was a Cloudinary URL and no new file, we don't need to send imageUrl.
+            // The backend will use the existing one from the database if imageUrl is not sent in the form data.
         }
     } else {
         // New post with no image selected, ensure a placeholder is sent
@@ -624,14 +619,9 @@ async function fetchNewsDetailAndComments(newsId) {
         }
         const newsItem = await newsResponse.json();
 
-        // Helper function to resolve image URL for modal
+        // Helper function to resolve image URL for modal - direct use for Cloudinary
         const getModalImageUrl = (url) => {
-            // Apply the same logic as createNewsElement to get the correct image path
-            if (url && url.startsWith('/uploads/')) {
-                const baseUrlWithoutApi = BASE_API_URL.replace(/\/api$/, '');
-                return `${baseUrlWithoutApi}${url}`;
-            }
-            return url;
+            return url || 'https://via.placeholder.com/600x400?text=No+Image';
         };
 
         // Populate modal
@@ -828,10 +818,9 @@ document.addEventListener('click', async function(e) {
                 document.getElementById('newsContent').value = newsItem.fullContent;
                 document.getElementById('editNewsId').value = newsItem.id;
 
-                // Set image preview if exists
+                // Set image preview if exists (now directly from Cloudinary URL)
                 if (newsItem.imageUrl) {
-                    // Apply the same logic as createNewsElement to get the correct image path
-                    currentImagePreview.src = newsItem.imageUrl.startsWith('/uploads/') ? `${BASE_API_URL.replace(/\/api$/, '')}${newsItem.imageUrl}` : newsItem.imageUrl;
+                    currentImagePreview.src = newsItem.imageUrl;
                     imagePreviewContainer.style.display = 'flex';
                 } else {
                     imagePreviewContainer.style.display = 'none';
