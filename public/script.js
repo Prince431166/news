@@ -8,19 +8,18 @@ const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profi
 // Initial default news data (This is now primarily for initial setup of the backend,
 // the frontend will fetch from the backend. This data is not actively used by script.js
 // once the backend is running and providing data.)
-const DEFAULT_NEWS_DATA = [
-    { id: 'feature1', category: 'Technology', title: 'Breakthrough in Quantum Computing Announced', fullContent: 'Scientists have achieved a major milestone in quantum computing that could revolutionize how we process information and solve complex problems, opening up new frontiers in cryptography, drug discovery, and artificial intelligence.\n\nThis breakthrough could accelerate the development of next-generation technologies.', imageUrl: 'https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', author: 'Robert Chen', authorImage: 'https://randomuser.me/api/portraits/men/32.jpg', publishDate: 'July 5, 2025 at 10:00 AM', isFeatured: true, authorId: 'admin', comments: [] },
-    { id: 'sidefeature1', category: 'Business', title: 'Global Markets React to New Economic Policies', fullContent: 'Global markets are showing significant volatility as new economic policies are introduced. Analysts are closely watching how these changes will impact various sectors and international trade agreements.\n\nEconomic forecasts suggest potential shifts in investment strategies.', imageUrl: 'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Emily White', authorImage: 'https://randomuser.me/api/portraits/women/67.jpg', publishDate: 'July 5, 2025 at 1:00 PM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
-    { id: 'sidefeature2', category: 'Sports', title: 'National Team Qualifies for Finals', fullContent: 'In an exhilarating display of skill and determination, the national team has successfully secured its spot in the championship finals after a series of intense matches against top-ranked opponents.\n\nFans are eagerly anticipating the final showdown.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'David Lee', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 5, 2025 at 11:30 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
-    { id: 'sidefeature3', category: 'Automotive', title: 'Electric Vehicle Sales Surpass Traditional Models', fullContent: 'For the first time in history, sales of electric vehicles have officially surpassed traditional gasoline-powered models, signaling a significant shift in consumer preferences and the automotive industry\'s future.\n\nThis trend is expected to continue as infrastructure improves.', imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Olivia Clark', authorImage: 'https://randomuser.me/api/portraits/women/55.jpg', publishDate: 'July 5, 2025 at 9:15 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
-    { id: 'news1', category: 'Environment', title: 'New Climate Agreement Signed by 40 Nations', fullContent: 'Global leaders from 40 nations have signed a landmark climate agreement, committing to ambitious targets aimed at significantly reducing carbon emissions by the year 2030, marking a crucial step towards combating climate change.\n\nThe agreement emphasizes renewable energy investments and sustainable practices.', imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Sarah Johnson', authorImage: 'https://randomuser.me/api/portraits/women/44.jpg', publishDate: 'July 4, 2025 at 3:00 PM', isFeatured: false, authorId: 'admin', comments: [] },
-    { id: 'news2', category: 'Sports', title: 'Underdog Team Advances to Championship Finals', fullContent: 'In a stunning upset, the underdog team defeats the reigning champions in a nail-biting finish, securing their spot in the championship finals and thrilling fans worldwide.\n\nTheir journey has captured the hearts of many.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Michael Torres', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 4, 2025 at 6:45 PM', isFeatured: false, authorId: 'admin', comments: [] },
-    { id: 'news3', category: 'Finance', title: 'Central Bank Announces Interest Rate Changes', fullContent: 'In response to recent economic indicators and inflation concerns, the central bank has announced a series of interest rate adjustments, a move that is expected to have a significant impact on borrowing costs and investment across the country.\n\nAnalysts predict a period of market adjustment.', imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'David Kim', authorImage: 'https://randomuser.me/api/portraits/men/65.jpg', publishDate: 'July 4, 2025 at 1:00 PM', isFeatured: false, authorId: 'admin', comments: [] }
+const DEFAULT_NEWS_DATA = },
+    { id: 'sidefeature1', category: 'Business', title: 'Global Markets React to New Economic Policies', fullContent: 'Global markets are showing significant volatility as new economic policies are introduced. Analysts are closely watching how these changes will impact various sectors and international trade agreements.\n\nEconomic forecasts suggest potential shifts in investment strategies.', imageUrl: 'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Emily White', authorImage: 'https://randomuser.me/api/portraits/women/67.jpg', publishDate: 'July 5, 2025 at 1:00 PM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: },
+    { id: 'sidefeature2', category: 'Sports', title: 'National Team Qualifies for Finals', fullContent: 'In an exhilarating display of skill and determination, the national team has successfully secured its spot in the championship finals after a series of intense matches against top-ranked opponents.\n\nFans are eagerly anticipating the final showdown.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'David Lee', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 5, 2025 at 11:30 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: },
+    { id: 'sidefeature3', category: 'Automotive', title: 'Electric Vehicle Sales Surpass Traditional Models', fullContent: 'For the first time in history, sales of electric vehicles have officially surpassed traditional gasoline-powered models, signaling a significant shift in consumer preferences and the automotive industry\'s future.\n\nThis trend is expected to continue as infrastructure improves.', imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Olivia Clark', authorImage: 'https://randomuser.me/api/portraits/women/55.jpg', publishDate: 'July 5, 2025 at 9:15 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: },
+    { id: 'news1', category: 'Environment', title: 'New Climate Agreement Signed by 40 Nations', fullContent: 'Global leaders from 40 nations have signed a landmark climate agreement, committing to ambitious targets aimed at significantly reducing carbon emissions by the year 2030, marking a crucial step towards combating climate change.\n\nThe agreement emphasizes renewable energy investments and sustainable practices.', imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Sarah Johnson', authorImage: 'https://randomuser.me/api/portraits/women/44.jpg', publishDate: 'July 4, 2025 at 3:00 PM', isFeatured: false, authorId: 'admin', comments: },
+    { id: 'news2', category: 'Sports', title: 'Underdog Team Advances to Championship Finals', fullContent: 'In a stunning upset, the underdog team defeats the reigning champions in a nail-biting finish, securing their spot in the championship finals and thrilling fans worldwide.\n\nTheir journey has captured the hearts of many.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Michael Torres', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 4, 2025 at 6:45 PM', isFeatured: false, authorId: 'admin', comments: },
+    { id: 'news3', category: 'Finance', title: 'Central Bank Announces Interest Rate Changes', fullContent: 'In response to recent economic indicators and inflation concerns, the central bank has announced a series of interest rate adjustments, a move that is expected to have a significant impact on borrowing costs and investment across the country.\n\nAnalysts predict a period of market adjustment.', imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'David Kim', authorImage: 'https://randomuser.me/api/portraits/men/65.jpg', publishDate: 'July 4, 2025 at 1:00 PM', isFeatured: false, authorId: 'admin', comments: }
 ];
 
 // --- GLOBAL STATE (will be fetched from backend) ---
-let allNews = []; // Master array of all news items
-let notifications = []; // Notifications are still client-side for simplicity, but could be backend too.
+let allNews =; // Master array of all news items
+let notifications =; // Notifications are still client-side for simplicity, but could be backend too.
 let userProfile = { // User profile
     name: 'Guest User',
     avatar: 'https://placehold.co/100x100?text=User'
@@ -81,7 +80,7 @@ const scrollToTopBtn = document.querySelector('.scroll-to-top');
 function showLoading(message = 'Loading...', iconClass = 'fas fa-spinner', animate = true) {
     loadingMessage.textContent = message;
     loadingIcon.className = iconClass;
-    loadingIcon.style.animation = animate ? 'spin 1s linear infinite' : 'none';
+    loadingIcon.style.animation = animate? 'spin 1s linear infinite' : 'none';
     loadingOverlay.classList.add('visible');
 }
 
@@ -146,7 +145,9 @@ const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 const currentTheme = localStorage.getItem('theme');
 
 // Set initial theme
-if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
+if (currentTheme === 'dark' |
+
+| (!currentTheme && prefersDarkScheme.matches)) {
     document.documentElement.setAttribute('data-theme', 'dark');
     themeIcon.classList.remove('fa-sun');
     themeIcon.classList.add('fa-moon');
@@ -202,7 +203,7 @@ function updateNotificationDisplay() {
         });
     }
     notificationBadge.textContent = notifications.length;
-    notificationBadge.style.display = notifications.length > 0 ? 'flex' : 'none';
+    notificationBadge.style.display = notifications.length > 0? 'flex' : 'none';
 }
 
 function addNotification(message, icon = 'fas fa-info-circle', newsId = null) {
@@ -233,7 +234,7 @@ notificationToggle.addEventListener('click', (event) => {
 });
 
 document.addEventListener('click', (event) => {
-    if (!notificationDropdown.contains(event.target) && !notificationToggle.contains(event.target)) {
+    if (!notificationDropdown.contains(event.target) &&!notificationToggle.contains(event.target)) {
         notificationDropdown.classList.remove('active');
     }
 });
@@ -246,7 +247,7 @@ async function fetchNews(category = 'all', searchTerm = '') {
     try {
         let url = `${BASE_API_URL}/news`;
         const params = new URLSearchParams();
-        if (category !== 'all' && category !== 'my-posts') {
+        if (category!== 'all' && category!== 'my-posts') {
             params.append('category', category);
         }
         if (searchTerm) {
@@ -286,10 +287,10 @@ function renderNewsCards(filterCategory = 'all', searchTerm = '') {
     const sortedNewsData = [...allNews].sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
 
     const featuredNewsItems = sortedNewsData.filter(news => news.isFeatured);
-    const latestNewsItems = sortedNewsData.filter(news => !news.isFeatured);
+    const latestNewsItems = sortedNewsData.filter(news =>!news.isFeatured);
 
     // Render Featured News
-    const mainFeature = featuredNewsItems.find(news => !news.isSideFeature);
+    const mainFeature = featuredNewsItems.find(news =>!news.isSideFeature);
     if (mainFeature && shouldDisplayNews(mainFeature, filterCategory, searchTerm)) {
         featuredSection.appendChild(createNewsElement(mainFeature, 'main-feature'));
     }
@@ -318,15 +319,25 @@ function renderNewsCards(filterCategory = 'all', searchTerm = '') {
 }
 
 function shouldDisplayNews(news, filterCategory, searchTerm) {
-    const matchesCategory = filterCategory === 'all' || news.category === filterCategory || (filterCategory === 'my-posts' && news.authorId === MY_POSTS_AUTHOR_ID);
-    const matchesSearch = searchTerm === '' || news.title.toLowerCase().includes(searchTerm.toLowerCase()) || news.fullContent.toLowerCase().includes(searchTerm.toLowerCase()) || news.category.toLowerCase().includes(searchTerm.toLowerCase()) || news.author.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory === 'all' |
+
+| news.category === filterCategory |
+| (filterCategory === 'my-posts' && news.authorId === MY_POSTS_AUTHOR_ID);
+    const matchesSearch = searchTerm === '' |
+
+| news.title.toLowerCase().includes(searchTerm.toLowerCase()) |
+| news.fullContent.toLowerCase().includes(searchTerm.toLowerCase()) |
+| news.category.toLowerCase().includes(searchTerm.toLowerCase()) |
+| news.author.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
 }
 
 // Helper function to resolve image URL for display
 // Simplified for Cloudinary integration: URLs from backend will be absolute.
 const getImageUrl = (url) => {
-    return url || 'https://via.placeholder.com/600x400?text=No+Image'; // Use the URL directly, or a placeholder
+    return url |
+
+| 'https://via.placeholder.com/600x400?text=No+Image'; // Use the URL directly, or a placeholder
 };
 
 function createNewsElement(newsItem, type) {
@@ -338,9 +349,11 @@ function createNewsElement(newsItem, type) {
     element.setAttribute('data-author-id', newsItem.authorId); // Crucial for edit/delete check
 
     // Ensure newsItem.fullContent is a string before calling split
-    const safeFullContent = newsItem.fullContent || '';
-    const firstParagraph = safeFullContent.split('\n')[0];
-    const truncatedContent = firstParagraph.substring(0, 80) + (firstParagraph.length > 80 ? '...' : '');
+    const safeFullContent = newsItem.fullContent |
+
+| '';
+    const firstParagraph = safeFullContent.split('\n');
+    const truncatedContent = firstParagraph.substring(0, 80) + (firstParagraph.length > 80? '...' : '');
 
     let actionsHTML = '';
     // Check if the news item's authorId matches the client's MY_POSTS_AUTHOR_ID
@@ -365,7 +378,9 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author">
+                        <img src="${newsItem.authorImage |
+
+| 'https://placehold.co/28x28?text=A'}" alt="Author">
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -397,7 +412,9 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author">
+                        <img src="${newsItem.authorImage |
+
+| 'https://placehold.co/28x28?text=A'}" alt="Author">
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -466,12 +483,12 @@ newsForm.addEventListener('submit', async function(e) {
 
     const title = document.getElementById('newsTitle').value.trim();
     const category = document.getElementById('newsCategory').value;
-    const newsImageFile = document.getElementById('newsImage').files[0];
+    const newsImageFile = document.getElementById('newsImage').files;
     const content = document.getElementById('newsContent').value.trim(); // Trim content
     const editingId = editNewsIdInput.value;
 
     console.log('DEBUG: 0.1. Form values collected. Title:', title, 'Category:', category);
-    console.log('DEBUG: 0.2. Image file:', newsImageFile ? newsImageFile.name : 'No file selected');
+    console.log('DEBUG: 0.2. Image file:', newsImageFile? newsImageFile.name : 'No file selected');
     console.log('DEBUG: 0.3. Editing ID:', editingId);
     console.log('DEBUG: 0.4. Full Content (trimmed):', content);
 
@@ -486,82 +503,110 @@ newsForm.addEventListener('submit', async function(e) {
     const authorImage = userProfile.avatar;
     const authorId = MY_POSTS_AUTHOR_ID; // The fixed author ID for client-created posts
 
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('category', category);
-    formData.append('fullContent', content);
-    formData.append('author', authorName);
-    formData.append('authorImage', authorImage);
-    formData.append('authorId', authorId);
-
-    if (newsImageFile) {
-        formData.append('image', newsImageFile); // Append file if new image is selected
-        console.log('DEBUG: 0.4. Appended new image to FormData for Cloudinary upload.');
-    } else if (editingId) {
-        const existingNews = allNews.find(item => item.id === editingId);
-        if (existingNews) {
-            // Check if the user explicitly cleared the image or if it's the default placeholder
-            if (currentImagePreview.src.includes('No+Image') && !newsImageFile) {
-                // Sending placeholder URL indicates clearing/defaulting the image on backend
-                formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
-                console.log('DEBUG: 0.5. Signaled image removal for existing post (or use default placeholder).');
-            } else if (existingNews.imageUrl && existingNews.imageUrl.startsWith('http') && !newsImageFile) {
-                // If no new file and the existing image is an external URL (e.g., from Cloudinary), keep it
-                // We send it back so the backend knows to retain this specific URL
-                formData.append('imageUrl', existingNews.imageUrl);
-                console.log('DEBUG: 0.6. Appended existing Cloudinary/external image URL for update.');
-            }
-            // If existing image was a Cloudinary URL and no new file, we don't need to send imageUrl.
-            // The backend will use the existing one from the database if imageUrl is not sent in the form data.
-        }
-    } else {
-        // New post with no image selected, ensure a placeholder is sent
-        formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
-        console.log('DEBUG: 0.8. Appended placeholder for new post with no image.');
-    }
+    let finalImageUrl = ''; // This will hold the Cloudinary URL or placeholder
 
     try {
-        console.log('DEBUG: 1. Entering try block for fetch.');
-        console.log('DEBUG: 2. Preparing fetch request...');
-        console.log('DEBUG: 3. Is Editing (based on editingId):', !!editingId);
-        const targetUrl = editingId ? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`;
-        console.log('DEBUG: 4. Target URL for fetch:', targetUrl);
-        console.log('DEBUG: 4.1. Fetch method:', editingId ? 'PUT' : 'POST');
-
-        let response;
-        if (editingId) {
-            response = await fetch(targetUrl, {
-                method: 'PUT',
-                body: formData // FormData automatically sets Content-Type to multipart/form-data
-            });
-        } else {
-            response = await fetch(targetUrl, {
+        if (newsImageFile) {
+            // Step 1: Get Cloudinary signature from your backend
+            const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder: 'flashnews_uploads' }) // Optional: send folder name
             });
+
+            if (!signatureResponse.ok) {
+                const errorData = await signatureResponse.json();
+                throw new Error(errorData.message |
+
+| 'Failed to get Cloudinary signature.');
+            }
+            const { signature, timestamp, api_key, cloud_name, folder } = await signatureResponse.json();
+            console.log('DEBUG: Cloudinary Signature received:', { signature, timestamp, api_key, cloud_name, folder });
+
+            // Step 2: Directly upload image to Cloudinary using the signature
+            const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
+            const cloudinaryFormData = new FormData();
+            cloudinaryFormData.append('file', newsImageFile);
+            cloudinaryFormData.append('api_key', api_key);
+            cloudinaryFormData.append('timestamp', timestamp);
+            cloudinaryFormData.append('signature', signature);
+            cloudinaryFormData.append('folder', folder); // Add folder to direct upload
+
+            const cloudinaryResponse = await fetch(cloudinaryUploadUrl, {
+                method: 'POST',
+                body: cloudinaryFormData
+            });
+
+            if (!cloudinaryResponse.ok) {
+                const errorData = await cloudinaryResponse.json();
+                throw new Error(errorData.error.message |
+
+| 'Failed to upload image to Cloudinary.');
+            }
+            const cloudinaryResult = await cloudinaryResponse.json();
+            finalImageUrl = cloudinaryResult.secure_url; // Get the secure URL from Cloudinary
+            console.log('DEBUG: Cloudinary Upload successful. URL:', finalImageUrl);
+
+        } else if (editingId) {
+            const existingNews = allNews.find(item => item.id === editingId);
+            if (existingNews) {
+                // If no new file selected, check if user cleared image or wants to keep existing
+                if (currentImagePreview.src.includes('No+Image')) {
+                    finalImageUrl = 'https://via.placeholder.com/600x400?text=No+Image'; // User cleared image
+                    console.log('DEBUG: Image cleared for existing post.');
+                } else if (existingNews.imageUrl) {
+                    finalImageUrl = existingNews.imageUrl; // Keep existing image URL
+                    console.log('DEBUG: Keeping existing image URL for update.');
+                }
+            }
+        } else {
+            finalImageUrl = 'https://via.placeholder.com/600x400?text=No+Image'; // New post with no image
+            console.log('DEBUG: Using placeholder for new post with no image.');
         }
 
-        console.log('DEBUG: 5. Fetch request completed. Response status:', response.status);
-        console.log('DEBUG: 6. Response OK status:', response.ok);
+        // Step 3: Submit news data (including Cloudinary URL) to your backend
+        console.log('DEBUG: Preparing final news submission to backend...');
+        const newsDataToBackend = {
+            title: title,
+            category: category,
+            fullContent: content,
+            imageUrl: finalImageUrl, // Send the Cloudinary URL or placeholder
+            author: authorName,
+            authorImage: authorImage,
+            authorId: authorId
+        };
+
+        const targetUrl = editingId? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`;
+        const method = editingId? 'PUT' : 'POST';
+
+        const response = await fetch(targetUrl, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' }, // Send as JSON now
+            body: JSON.stringify(newsDataToBackend)
+        });
+
+        console.log('DEBUG: Fetch request completed. Response status:', response.status);
 
         if (!response.ok) {
-            const errorText = await response.text(); // Get raw text to help debug if JSON parsing fails
+            const errorText = await response.text();
             try {
                 const errorData = JSON.parse(errorText);
-                console.error('DEBUG: 7. Server responded with error JSON:', errorData);
-                throw new Error(errorData.message || 'Server error during news submission.');
+                console.error('DEBUG: Server responded with error JSON:', errorData);
+                throw new Error(errorData.message |
+
+| 'Server error during news submission.');
             } catch (jsonParseError) {
-                console.error('DEBUG: 7.1. Server responded with non-JSON error:', errorText);
+                console.error('DEBUG: Server responded with non-JSON error:', errorText);
                 throw new Error(`Server error: ${errorText} (Status: ${response.status})`);
             }
         }
 
         const result = await response.json();
-        console.log('DEBUG: 8. News submission successful:', result);
-        displaySuccess(editingId ? 'News updated successfully!' : 'News published successfully!');
+        console.log('DEBUG: News submission successful:', result);
+        displaySuccess(editingId? 'News updated successfully!' : 'News published successfully!');
         addNotification(
-            editingId ? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`,
-            editingId ? 'fas fa-pen' : 'fas fa-newspaper',
+            editingId? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`,
+            editingId? 'fas fa-pen' : 'fas fa-newspaper',
             result.id // Use the ID returned from the server
         );
 
@@ -571,22 +616,23 @@ newsForm.addEventListener('submit', async function(e) {
         publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publish News';
         imagePreviewContainer.style.display = 'none';
         currentImagePreview.src = ''; // Clear image preview
+        newsImage.value = ''; // Clear file input
 
         await fetchNews(currentActiveCategory, searchInput.value); // Re-fetch and re-render current view
         document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
 
     } catch (error) {
-        console.error('DEBUG: 9. Caught error during news submission:', error);
+        console.error('DEBUG: Caught error during news submission:', error);
         displayError(`Failed to submit news: ${error.message}`);
     } finally {
-        console.log('DEBUG: 10. Finally block executed. Hiding loading.');
+        console.log('DEBUG: Finally block executed. Hiding loading.');
         hideLoading();
     }
 });
 
 // Image preview and clear functionality for news image
 newsImage.addEventListener('change', function() {
-    const file = this.files[0];
+    const file = this.files;
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -621,7 +667,9 @@ async function fetchNewsDetailAndComments(newsId) {
 
         // Helper function to resolve image URL for modal - direct use for Cloudinary
         const getModalImageUrl = (url) => {
-            return url || 'https://via.placeholder.com/600x400?text=No+Image';
+            return url |
+
+| 'https://via.placeholder.com/600x400?text=No+Image';
         };
 
         // Populate modal
@@ -629,7 +677,9 @@ async function fetchNewsDetailAndComments(newsId) {
         modalNewsImage.alt = newsItem.title;
         modalCategoryTag.textContent = newsItem.category;
         modalNewsTitle.textContent = newsItem.title;
-        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A';
+        modalAuthorImage.src = newsItem.authorImage |
+
+| 'https://placehold.co/40x40?text=A';
         modalAuthorName.textContent = newsItem.author;
         modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate); // Use formatDisplayDate
         modalNewsContent.textContent = newsItem.fullContent; // This directly uses fullContent
@@ -670,7 +720,9 @@ function displayComments(newsItem) {
                 `;
             }
             commentElement.innerHTML = `
-                <img src="${comment.avatar || 'https://placehold.co/45x45?text=U'}" alt="${comment.author}" class="comment-avatar">
+                <img src="${comment.avatar |
+
+| 'https://placehold.co/45x45?text=U'}" alt="${comment.author}" class="comment-avatar">
                 <div class="comment-content">
                     <div class="comment-meta">
                         <div class="comment-author-info">
@@ -735,13 +787,15 @@ commentForm.addEventListener('submit', async function(e) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Server error during comment submission.');
+            throw new Error(errorData.message |
+
+| 'Server error during comment submission.');
         }
 
-        displaySuccess(editCommentId ? 'Comment updated!' : 'Comment posted!');
+        displaySuccess(editCommentId? 'Comment updated!' : 'Comment posted!');
         addNotification(
-            editCommentId ? `Your comment on news ID ${newsId} was updated.` : `New comment on news ID ${newsId} by ${commenterName}.`,
-            editCommentId ? 'fas fa-pen' : 'fas fa-comment',
+            editCommentId? `Your comment on news ID ${newsId} was updated.` : `New comment on news ID ${newsId} by ${commenterName}.`,
+            editCommentId? 'fas fa-pen' : 'fas fa-comment',
             newsId
         );
 
@@ -767,7 +821,7 @@ document.addEventListener('click', async function(e) {
 
     // --- News Card Actions (Edit/Delete) ---
     if (target.classList.contains('fa-trash') && target.dataset.action === 'delete') {
-        const newsCardElement = target.closest('.news-card, .main-feature, .side-feature');
+        const newsCardElement = target.closest('.news-card,.main-feature,.side-feature');
         if (!newsCardElement) return;
         const newsIdToDelete = newsCardElement.dataset.id;
         const newsItemAuthorId = newsCardElement.dataset.authorId; // Get authorId from data attribute
@@ -782,7 +836,9 @@ document.addEventListener('click', async function(e) {
 
                     if (!response.ok) {
                         const errorData = await response.json();
-                        throw new Error(errorData.message || 'Server error during deletion.');
+                        throw new Error(errorData.message |
+
+| 'Server error during deletion.');
                     }
 
                     displaySuccess('News item deleted!');
@@ -799,7 +855,7 @@ document.addEventListener('click', async function(e) {
             alert('You can only delete your own posts.');
         }
     } else if (target.classList.contains('fa-edit') && target.dataset.action === 'edit') {
-        const newsCardElement = target.closest('.news-card, .main-feature, .side-feature');
+        const newsCardElement = target.closest('.news-card,.main-feature,.side-feature');
         if (!newsCardElement) return;
         const newsIdToEdit = newsCardElement.dataset.id;
         const newsItemAuthorId = newsCardElement.dataset.authorId; // Get authorId from data attribute
@@ -862,7 +918,9 @@ document.addEventListener('click', async function(e) {
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.message || 'Server error during comment deletion.');
+                    throw new Error(errorData.message |
+
+| 'Server error during comment deletion.');
                 }
 
                 displaySuccess('Comment deleted!');
@@ -914,10 +972,18 @@ document.addEventListener('click', async function(e) {
         }
     }
     // --- Handle click on news card to show full content in modal ---
-    else if (target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature')) {
-        const newsCard = target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature');
+    else if (target.closest('.news-card') |
+
+| target.closest('.main-feature') |
+| target.closest('.side-feature')) {
+        const newsCard = target.closest('.news-card') |
+
+| target.closest('.main-feature') |
+| target.closest('.side-feature');
         // Prevent opening modal if edit/delete icon was clicked inside the card
-        if (target.classList.contains('fa-edit') || target.classList.contains('fa-trash')) {
+        if (target.classList.contains('fa-edit') |
+
+| target.classList.contains('fa-trash')) {
             return;
         }
         const newsId = newsCard.dataset.id;
@@ -969,10 +1035,12 @@ scrollToTopBtn.addEventListener('click', () => {
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         const href = this.getAttribute('href');
-        if (this.classList.contains('nav-link-category') || this.classList.contains('footer-link-category')) {
+        if (this.classList.contains('nav-link-category') |
+
+| this.classList.contains('footer-link-category')) {
             return;
         }
-        if (href !== '#' && href !== '#!' && href !== 'javascript:void(0)') {
+        if (href!== '#' && href!== '#!' && href!== 'javascript:void(0)') {
             e.preventDefault();
             const targetElement = document.querySelector(href);
             if (targetElement) {
@@ -1028,7 +1096,7 @@ profileModal.addEventListener('click', (e) => {
 });
 
 profileAvatarUpload.addEventListener('change', function() {
-    const file = this.files[0];
+    const file = this.files;
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -1037,7 +1105,9 @@ profileAvatarUpload.addEventListener('change', function() {
         reader.readAsDataURL(file);
     } else {
         // If file input is cleared, revert to current avatar or a default placeholder
-        profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User';
+        profileAvatarPreview.src = userProfile.avatar |
+
+| 'https://placehold.co/100x100?text=User';
     }
 });
 
@@ -1071,7 +1141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (e) {
         console.error("Error loading notifications from localStorage:", e);
-        notifications = [];
+        notifications =;
     }
     updateNotificationDisplay();
     await fetchNews('all'); // Initial fetch of all news from backend
