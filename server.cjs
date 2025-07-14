@@ -37,11 +37,11 @@ const client = new Client({
 
 // Connect to PostgreSQL when the server starts
 client.connect()
-   .then(() => {
+  .then(() => {
         console.log('Connected to PostgreSQL database');
         createTables(); // Ensure tables are created on connect
     })
-   .catch(err => console.error('Error connecting to PostgreSQL:', err.stack));
+  .catch(err => console.error('Error connecting to PostgreSQL:', err.stack));
 
 // Function to create tables if they don't exist
 async function createTables() {
@@ -86,8 +86,8 @@ const PORT = process.env.PORT |
 // --- Middleware ---
 app.use(cors({
     origin: 'https://flashnews1.netlify.app', // **आपका Netlify डोमेन**
-    methods:, // FIX: Added missing array
-    allowedHeaders: // FIX: Added missing array
+    methods:, // FIX: Added missing array values
+    allowedHeaders: // FIX: Added missing array values
 }));
 
 app.use(express.json());
@@ -310,6 +310,7 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
         const values = [
             title, category, updatedFullContent, imageUrl, author, authorImage, authorId, newsId
         ];
+        const result = await client.query(updateQuery, values); // FIX: Added missing await
         res.json(result.rows); // FIX: Return first element
 
     } catch (err) {
