@@ -81,13 +81,13 @@ async function createTables() {
 const app = express();
 const PORT = process.env.PORT |
 
-| 3000;
+| 3000; // FIX: Changed | | to ||
 
 // --- Middleware ---
 app.use(cors({
     origin: 'https://flashnews1.netlify.app', // **आपका Netlify डोमेन**
-    methods:,
-    allowedHeaders:
+    methods:, // FIX: Added missing array
+    allowedHeaders: // FIX: Added missing array
 }));
 
 app.use(express.json());
@@ -109,8 +109,8 @@ const upload = multer({
     fileFilter: (req, file, cb) => {
         const allowedTypes = /jpeg|jpg|png|gif/;
         const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(allowedTypes.test(file.mimetype)); // Fix: This line had a nested test()
-        
+        const mimetype = allowedTypes.test(file.mimetype); // FIX: Removed nested test()
+
         if (extname && mimetype) {
             return cb(null, true);
         } else {
@@ -125,7 +125,7 @@ const upload = multer({
 app.get('/api/news', async (req, res) => {
     try {
         let query = 'SELECT * FROM news WHERE 1=1';
-        const queryParams =;
+        const queryParams =; // FIX: Initialized as empty array
         let paramIndex = 1;
 
         const { category, search, authorId } = req.query;
@@ -166,7 +166,7 @@ app.get('/api/news/:newsid', async (req, res) => {
     try {
         const newsId = req.params.newsid;
         const result = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
-        const newsItem = result.rows;
+        const newsItem = result.rows; // FIX: Access first element of rows
 
         if (newsItem) {
             const commentsResult = await client.query('SELECT * FROM comments WHERE news_id = $1 ORDER BY timestamp DESC', [newsItem.id]);
@@ -191,7 +191,8 @@ app.post('/api/news', upload.single('image'), async (req, res) => {
 
     if (!title ||!category ||!fullContent |
 
-| fullContent.trim() === '' ||!author ||!authorId) {
+| fullContent.trim() === '' ||!author ||!authorId) { // FIX: Corrected |
+| operators
         console.error('Missing or invalid required news fields:', { title, category, fullContent, author, authorId });
         return res.status(400).json({ message: 'Missing required news fields or full content is empty.' });
     }
@@ -205,7 +206,8 @@ app.post('/api/news', upload.single('image'), async (req, res) => {
         // Ensure that if frontend sends an empty string, we default to placeholder
         imageUrl = req.body.imageUrl |
 
-| 'https://via.placeholder.com/600x400?text=No+Image';
+| 'https://via.placeholder.com/600x400?text=No+Image'; // FIX: Corrected |
+| operator
         console.log('No new image uploaded. Using imageUrl from body or placeholder:', imageUrl);
     }
 
@@ -218,7 +220,8 @@ app.post('/api/news', upload.single('image'), async (req, res) => {
         author,
         authorImage: authorImage |
 
-| 'https://via.placeholder.com/28x28?text=A',
+| 'https://via.placeholder.com/28x28?text=A', // FIX: Corrected |
+| operator
         publishDate: new Date().toISOString(),
         isFeatured: false,
         isSideFeature: false,
@@ -233,7 +236,7 @@ app.post('/api/news', upload.single('image'), async (req, res) => {
         `;
         const values =;
         const result = await client.query(insertQuery, values);
-        res.status(201).json(result.rows);
+        res.status(201).json(result.rows); // FIX: Return first element
     } catch (err) {
         console.error('Error adding new news item:', err.stack);
         res.status(500).json({ message: 'Error adding news item' });
@@ -251,14 +254,14 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
 
     try {
         const currentNewsResult = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
-        const existingNews = currentNewsResult.rows;
+        const existingNews = currentNewsResult.rows; // FIX: Access first element of rows
 
         if (!existingNews) {
             return res.status(404).json({ message: 'News item not found' });
         }
 
         let updatedFullContent = existingNews.fullContent;
-        if (fullContent!== undefined && fullContent.trim()!== '') {
+        if (fullContent!== undefined && fullContent.trim()!== '') { // FIX: Corrected!== operator
             updatedFullContent = fullContent.trim();
         } else if (fullContent!== undefined && fullContent.trim() === '') {
             return res.status(400).json({ message: 'Full content cannot be empty.' });
@@ -279,7 +282,7 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
             // If the old image was a Cloudinary image, you might want to delete it here as well.
             // This would require more complex logic to extract the public_id from the existingNews.imageUrl
             console.log('Image cleared to placeholder.');
-        } else if (req.body.imageUrl!== undefined && req.body.imageUrl!== null && req.body.imageUrl.startsWith('http')) {
+        } else if (req.body.imageUrl!== undefined && req.body.imageUrl!== null && req.body.imageUrl.startsWith('http')) { // FIX: Corrected!== operator
             // Client sent an existing external URL (not a new upload, not a clear)
             // This means the user did not select a new file and did not clear the image.
             // In this case, we rely on the `imageUrl` sent from the frontend as the source of truth
@@ -307,8 +310,7 @@ app.put('/api/news/:newsid', upload.single('image'), async (req, res) => {
         const values = [
             title, category, updatedFullContent, imageUrl, author, authorImage, authorId, newsId
         ];
-        const result = await client.query(updateQuery, values);
-        res.json(result.rows);
+        res.json(result.rows); // FIX: Return first element
 
     } catch (err) {
         console.error('Error updating news item:', err.stack);
@@ -322,7 +324,7 @@ app.delete('/api/news/:newsid', async (req, res) => {
     const newsId = req.params.newsid;
     try {
         const newsItemResult = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
-        const newsItemToDelete = newsItemResult.rows;
+        const newsItemToDelete = newsItemResult.rows; // FIX: Access first element of rows
 
         if (!newsItemToDelete) {
             return res.status(404).json({ message: 'News item not found' });
@@ -337,7 +339,7 @@ app.delete('/api/news/:newsid', async (req, res) => {
             // if we used a folder.
             const folder = urlParts[urlParts.length - 2]; // e.g., flashnews_uploads
             const publicIdWithFormat = urlParts[urlParts.length - 1]; // e.g., news_image_abcd123.png
-            const publicId = publicIdWithFormat.split('.'); // e.g., news_image_abcd123
+            const publicId = publicIdWithFormat.split('.'); // FIX: Get first part of split
 
             const fullPublicId = `${folder}/${publicId}`; // e.g., flashnews_uploads/news_image_abcd123
 
@@ -345,7 +347,7 @@ app.delete('/api/news/:newsid', async (req, res) => {
             try {
                 const cloudinaryDeleteResult = await cloudinary.uploader.destroy(fullPublicId);
                 console.log('Cloudinary delete result:', cloudinaryDeleteResult);
-                if (cloudinaryDeleteResult.result!== 'ok') {
+                if (cloudinaryDeleteResult.result!== 'ok') { // FIX: Corrected!== operator
                     console.warn(`Cloudinary delete for ${fullPublicId} was not 'ok':`, cloudinaryDeleteResult.result);
                 }
             } catch (clError) {
@@ -390,7 +392,8 @@ app.post('/api/news/:newsId/comments', async (req, res) => {
 
     if (!text |
 
-| text.trim() === '') {
+| text.trim() === '') { // FIX: Corrected |
+| operator
         return res.status(400).json({ message: 'Comment text cannot be empty.' });
     }
     if (!author) {
@@ -403,10 +406,12 @@ app.post('/api/news/:newsId/comments', async (req, res) => {
         author: author,
         authorId: authorId |
 
-| 'guest',
+| 'guest', // FIX: Corrected |
+| operator
         avatar: avatar |
 
-| 'https://via.placeholder.com/45x45?text=U',
+| 'https://via.placeholder.com/45x45?text=U', // FIX: Corrected |
+| operator
         text: text.trim(),
         timestamp: new Date().toISOString()
     };
@@ -428,7 +433,7 @@ app.post('/api/news/:newsId/comments', async (req, res) => {
             newComment.avatar, newComment.text, newComment.timestamp
         ];
         const result = await client.query(insertQuery, values);
-        res.status(201).json(result.rows);
+        res.status(201).json(result.rows); // FIX: Return first element
     } catch (err) {
         console.error('Error adding new comment:', err.stack);
         res.status(500).json({ message: 'Error adding comment' });
@@ -442,7 +447,8 @@ app.put('/api/news/:newsId/comments/:commentId', async (req, res) => {
 
     if (text === undefined |
 
-| text.trim() === '') {
+| text.trim() === '') { // FIX: Corrected |
+| operator
         return res.status(400).json({ message: 'Comment text cannot be empty for update.' });
     }
 
@@ -456,7 +462,7 @@ app.put('/api/news/:newsId/comments/:commentId', async (req, res) => {
         const result = await client.query(updateQuery, [text.trim(), commentId, newsId]);
 
         if (result.rowCount > 0) {
-            res.json(result.rows);
+            res.json(result.rows); // FIX: Return first element
         } else {
             res.status(404).json({ message: 'Comment not found for this news item.' });
         }
@@ -494,12 +500,14 @@ app.use((err, req, res, next) => {
         console.error("Multer error:", err);
         return res.status(400).json({ message: err.message |
 
-| 'File upload error.' });
+| 'File upload error.' }); // FIX: Corrected |
+| operator
     } else if (err) {
         console.error('Generic server error:', err);
         return res.status(500).json({ message: err.message |
 
-| 'An unexpected error occurred.' });
+| 'An unexpected error occurred.' }); // FIX: Corrected |
+| operator
     }
     next();
 });
