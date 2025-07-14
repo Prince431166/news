@@ -8,18 +8,19 @@ const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profi
 // Initial default news data (This is now primarily for initial setup of the backend,
 // the frontend will fetch from the backend. This data is not actively used by script.js
 // once the backend is running and providing data.)
-const DEFAULT_NEWS_DATA = },
-    { id: 'sidefeature1', category: 'Business', title: 'Global Markets React to New Economic Policies', fullContent: 'Global markets are showing significant volatility as new economic policies are introduced. Analysts are closely watching how these changes will impact various sectors and international trade agreements.\n\nEconomic forecasts suggest potential shifts in investment strategies.', imageUrl: 'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Emily White', authorImage: 'https://randomuser.me/api/portraits/women/67.jpg', publishDate: 'July 5, 2025 at 1:00 PM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: },
-    { id: 'sidefeature2', category: 'Sports', title: 'National Team Qualifies for Finals', fullContent: 'In an exhilarating display of skill and determination, the national team has successfully secured its spot in the championship finals after a series of intense matches against top-ranked opponents.\n\nFans are eagerly anticipating the final showdown.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'David Lee', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 5, 2025 at 11:30 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: },
-    { id: 'sidefeature3', category: 'Automotive', title: 'Electric Vehicle Sales Surpass Traditional Models', fullContent: 'For the first time in history, sales of electric vehicles have officially surpassed traditional gasoline-powered models, signaling a significant shift in consumer preferences and the automotive industry\'s future.\n\nThis trend is expected to continue as infrastructure improves.', imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Olivia Clark', authorImage: 'https://randomuser.me/api/portraits/women/55.jpg', publishDate: 'July 5, 2025 at 9:15 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: },
-    { id: 'news1', category: 'Environment', title: 'New Climate Agreement Signed by 40 Nations', fullContent: 'Global leaders from 40 nations have signed a landmark climate agreement, committing to ambitious targets aimed at significantly reducing carbon emissions by the year 2030, marking a crucial step towards combating climate change.\n\nThe agreement emphasizes renewable energy investments and sustainable practices.', imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Sarah Johnson', authorImage: 'https://randomuser.me/api/portraits/women/44.jpg', publishDate: 'July 4, 2025 at 3:00 PM', isFeatured: false, authorId: 'admin', comments: },
-    { id: 'news2', category: 'Sports', title: 'Underdog Team Advances to Championship Finals', fullContent: 'In a stunning upset, the underdog team defeats the reigning champions in a nail-biting finish, securing their spot in the championship finals and thrilling fans worldwide.\n\nTheir journey has captured the hearts of many.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Michael Torres', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 4, 2025 at 6:45 PM', isFeatured: false, authorId: 'admin', comments: },
-    { id: 'news3', category: 'Finance', title: 'Central Bank Announces Interest Rate Changes', fullContent: 'In response to recent economic indicators and inflation concerns, the central bank has announced a series of interest rate adjustments, a move that is expected to have a significant impact on borrowing costs and investment across the country.\n\nAnalysts predict a period of market adjustment.', imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'David Kim', authorImage: 'https://randomuser.me/api/portraits/men/65.jpg', publishDate: 'July 4, 2025 at 1:00 PM', isFeatured: false, authorId: 'admin', comments: }
-];
+const DEFAULT_NEWS_DATA = [
+    { id: 'mainfeature', category: 'Technology', title: 'Revolutionary AI Chip Unveiled, Promising New Era of Computing', fullContent: 'A groundbreaking artificial intelligence chip has been unveiled, poised to revolutionize computing with its unprecedented processing capabilities and energy efficiency. Industry experts anticipate a new era of innovation across various sectors, from healthcare to autonomous systems.\n\nThe chip\'s architecture allows for complex computations at speeds previously thought impossible, opening doors for advanced AI applications and machine learning models.', imageUrl: 'https://images.unsplash.com/photo-1593642532400-2682810df593?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', author: 'Jane Doe', authorImage: 'https://randomuser.me/api/portraits/women/32.jpg', publishDate: 'July 6, 2025 at 10:30 AM', isFeatured: true, isSideFeature: false, authorId: 'admin', comments: [] },
+    { id: 'sidefeature1', category: 'Business', title: 'Global Markets React to New Economic Policies', fullContent: 'Global markets are showing significant volatility as new economic policies are introduced. Analysts are closely watching how these changes will impact various sectors and international trade agreements.\n\nEconomic forecasts suggest potential shifts in investment strategies.', imageUrl: 'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Emily White', authorImage: 'https://randomuser.me/api/portraits/women/67.jpg', publishDate: 'July 5, 2025 at 1:00 PM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
+    { id: 'sidefeature2', category: 'Sports', title: 'National Team Qualifies for Finals', fullContent: 'In an exhilarating display of skill and determination, the national team has successfully secured its spot in the championship finals after a series of intense matches against top-ranked opponents.\n\nFans are eagerly anticipating the final showdown.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'David Lee', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 5, 2025 at 11:30 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
+    { id: 'sidefeature3', category: 'Automotive', title: 'Electric Vehicle Sales Surpass Traditional Models', fullContent: 'For the first time in history, sales of electric vehicles have officially surpassed traditional gasoline-powered models, signaling a significant shift in consumer preferences and the automotive industry\'s future.\n\nThis trend is expected to continue as infrastructure improves.', imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Olivia Clark', authorImage: 'https://randomuser.me/api/portraits/women/55.jpg', publishDate: 'July 5, 2025 at 9:15 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
+    { id: 'news1', category: 'Environment', title: 'New Climate Agreement Signed by 40 Nations', fullContent: 'Global leaders from 40 nations have signed a landmark climate agreement, committing to ambitious targets aimed at significantly reducing carbon emissions by the year 2030, marking a crucial step towards combating climate change.\n\nThe agreement emphasizes renewable energy investments and sustainable practices.', imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Sarah Johnson', authorImage: 'https://randomuser.me/api/portraits/women/44.jpg', publishDate: 'July 4, 2025 at 3:00 PM', isFeatured: false, authorId: 'admin', comments: [] },
+    { id: 'news2', category: 'Sports', title: 'Underdog Team Advances to Championship Finals', fullContent: 'In a stunning upset, the underdog team defeats the reigning champions in a nail-biting finish, securing their spot in the championship finals and thrilling fans worldwide.\n\nTheir journey has captured the hearts of many.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Michael Torres', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 4, 2025 at 6:45 PM', isFeatured: false, authorId: 'admin', comments: [] },
+    { id: 'news3', category: 'Finance', title: 'Central Bank Announces Interest Rate Changes', fullContent: 'In response to recent economic indicators and inflation concerns, the central bank has announced a series of interest rate adjustments, a move that is expected to have a significant impact on borrowing costs and investment across the country.\n\nAnalysts predict a period of market adjustment.', imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'David Kim', authorImage: 'https://randomuser.me/api/portraits/men/65.jpg', publishDate: 'July 4, 2025 at 1:00 PM', isFeatured: false, authorId: 'admin', comments: [] }
+]; // FIX: Corrected DEFAULT_NEWS_DATA initialization
 
 // --- GLOBAL STATE (will be fetched from backend) ---
-let allNews =; // Master array of all news items // FIX: Initialized as empty array
-let notifications =; // Notifications are still client-side for simplicity, but could be backend too. // FIX: Initialized as empty array
+let allNews = []; // Master array of all news items // FIX: Initialized as empty array
+let notifications = []; // Notifications are still client-side for simplicity, but could be backend too. // FIX: Initialized as empty array
 let userProfile = { // User profile
     name: 'Guest User',
     avatar: 'https://placehold.co/100x100?text=User'
@@ -80,7 +81,7 @@ const scrollToTopBtn = document.querySelector('.scroll-to-top');
 function showLoading(message = 'Loading...', iconClass = 'fas fa-spinner', animate = true) {
     loadingMessage.textContent = message;
     loadingIcon.className = iconClass;
-    loadingIcon.style.animation = animate? 'spin 1s linear infinite' : 'none'; // FIX: Corrected? operator
+    loadingIcon.style.animation = animate ? 'spin 1s linear infinite' : 'none'; // FIX: Corrected ? operator
     loadingOverlay.classList.add('visible');
 }
 
@@ -145,10 +146,7 @@ const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 const currentTheme = localStorage.getItem('theme');
 
 // Set initial theme
-if (currentTheme === 'dark' |
-
-| (!currentTheme && prefersDarkScheme.matches)) { // FIX: Corrected |
-| operator
+if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) { // FIX: Corrected || operator
     document.documentElement.setAttribute('data-theme', 'dark');
     themeIcon.classList.remove('fa-sun');
     themeIcon.classList.add('fa-moon');
@@ -156,6 +154,7 @@ if (currentTheme === 'dark' |
     document.documentElement.setAttribute('data-theme', 'light');
     themeIcon.classList.remove('fa-moon');
     themeIcon.classList.add('fa-sun');
+    localStorage.setItem('theme', 'light');
 }
 
 // Toggle theme
@@ -204,7 +203,7 @@ function updateNotificationDisplay() {
         });
     }
     notificationBadge.textContent = notifications.length;
-    notificationBadge.style.display = notifications.length > 0? 'flex' : 'none'; // FIX: Corrected? operator
+    notificationBadge.style.display = notifications.length > 0 ? 'flex' : 'none'; // FIX: Corrected ? operator
 }
 
 function addNotification(message, icon = 'fas fa-info-circle', newsId = null) {
@@ -235,7 +234,7 @@ notificationToggle.addEventListener('click', (event) => {
 });
 
 document.addEventListener('click', (event) => {
-    if (!notificationDropdown.contains(event.target) &&!notificationToggle.contains(event.target)) { // FIX: Corrected && operator
+    if (!notificationDropdown.contains(event.target) && !notificationToggle.contains(event.target)) { // FIX: Corrected && operator
         notificationDropdown.classList.remove('active');
     }
 });
@@ -248,7 +247,7 @@ async function fetchNews(category = 'all', searchTerm = '') {
     try {
         let url = `${BASE_API_URL}/news`;
         const params = new URLSearchParams();
-        if (category!== 'all' && category!== 'my-posts') {
+        if (category !== 'all' && category !== 'my-posts') {
             params.append('category', category);
         }
         if (searchTerm) {
@@ -288,10 +287,10 @@ function renderNewsCards(filterCategory = 'all', searchTerm = '') {
     const sortedNewsData = [...allNews].sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
 
     const featuredNewsItems = sortedNewsData.filter(news => news.isFeatured);
-    const latestNewsItems = sortedNewsData.filter(news =>!news.isFeatured); // FIX: Corrected! operator
+    const latestNewsItems = sortedNewsData.filter(news => !news.isFeatured); // FIX: Corrected ! operator
 
     // Render Featured News
-    const mainFeature = featuredNewsItems.find(news =>!news.isSideFeature); // FIX: Corrected! operator
+    const mainFeature = featuredNewsItems.find(news => !news.isSideFeature); // FIX: Corrected ! operator
     if (mainFeature && shouldDisplayNews(mainFeature, filterCategory, searchTerm)) {
         featuredSection.appendChild(createNewsElement(mainFeature, 'main-feature'));
     }
@@ -320,28 +319,15 @@ function renderNewsCards(filterCategory = 'all', searchTerm = '') {
 }
 
 function shouldDisplayNews(news, filterCategory, searchTerm) {
-    const matchesCategory = filterCategory === 'all' |
-
-| news.category === filterCategory |
-| (filterCategory === 'my-posts' && news.authorId === MY_POSTS_AUTHOR_ID); // FIX: Corrected |
-| operator
-    const matchesSearch = searchTerm === '' |
-
-| news.title.toLowerCase().includes(searchTerm.toLowerCase()) |
-| news.fullContent.toLowerCase().includes(searchTerm.toLowerCase()) |
-| news.category.toLowerCase().includes(searchTerm.toLowerCase()) |
-| news.author.toLowerCase().includes(searchTerm.toLowerCase()); // FIX: Corrected |
-| operator
+    const matchesCategory = filterCategory === 'all' || news.category === filterCategory || (filterCategory === 'my-posts' && news.authorId === MY_POSTS_AUTHOR_ID); // FIX: Corrected || operator
+    const matchesSearch = searchTerm === '' || news.title.toLowerCase().includes(searchTerm.toLowerCase()) || news.fullContent.toLowerCase().includes(searchTerm.toLowerCase()) || news.category.toLowerCase().includes(searchTerm.toLowerCase()) || news.author.toLowerCase().includes(searchTerm.toLowerCase()); // FIX: Corrected || operator
     return matchesCategory && matchesSearch;
 }
 
 // Helper function to resolve image URL for display
 // Simplified for Cloudinary integration: URLs from backend will be absolute.
 const getImageUrl = (url) => {
-    return url |
-
-| 'https://via.placeholder.com/600x400?text=No+Image'; // Use the URL directly, or a placeholder // FIX: Corrected |
-| operator
+    return url || 'https://via.placeholder.com/600x400?text=No+Image'; // Use the URL directly, or a placeholder // FIX: Corrected || operator
 };
 
 function createNewsElement(newsItem, type) {
@@ -353,12 +339,9 @@ function createNewsElement(newsItem, type) {
     element.setAttribute('data-author-id', newsItem.authorId); // Crucial for edit/delete check
 
     // Ensure newsItem.fullContent is a string before calling split
-    const safeFullContent = newsItem.fullContent |
-
-| ''; // FIX: Corrected |
-| operator
-    const firstParagraph = safeFullContent.split('\n'); // FIX: Access first element of split array
-    const truncatedContent = firstParagraph.substring(0, 80) + (firstParagraph.length > 80? '...' : ''); // FIX: Corrected? operator
+    const safeFullContent = newsItem.fullContent || ''; // FIX: Corrected || operator
+    const firstParagraph = safeFullContent.split('\n')[0]; // FIX: Access first element of split array
+    const truncatedContent = firstParagraph.substring(0, 80) + (firstParagraph.length > 80 ? '...' : ''); // FIX: Corrected ? operator
 
     let actionsHTML = '';
     // Check if the news item's authorId matches the client's MY_POSTS_AUTHOR_ID
@@ -383,10 +366,7 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage |
-
-| 'https://placehold.co/28x28?text=A'}" alt="Author"> // FIX: Corrected |
-| operator
+                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author"> // FIX: Corrected || operator
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -418,10 +398,7 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage |
-
-| 'https://placehold.co/28x28?text=A'}" alt="Author"> // FIX: Corrected |
-| operator
+                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author"> // FIX: Corrected || operator
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -490,12 +467,12 @@ newsForm.addEventListener('submit', async function(e) {
 
     const title = document.getElementById('newsTitle').value.trim();
     const category = document.getElementById('newsCategory').value;
-    const newsImageFile = document.getElementById('newsImage').files; // FIX: Access the first file
+    const newsImageFile = document.getElementById('newsImage').files[0]; // FIX: Access the first file
     const content = document.getElementById('newsContent').value.trim(); // Trim content
     const editingId = editNewsIdInput.value;
 
     console.log('DEBUG: 0.1. Form values collected. Title:', title, 'Category:', category);
-    console.log('DEBUG: 0.2. Image file:', newsImageFile? newsImageFile.name : 'No file selected'); // FIX: Corrected? operator
+    console.log('DEBUG: 0.2. Image file:', newsImageFile ? newsImageFile.name : 'No file selected'); // FIX: Corrected ? operator
     console.log('DEBUG: 0.3. Editing ID:', editingId);
     console.log('DEBUG: 0.4. Full Content (trimmed):', content);
 
@@ -523,10 +500,7 @@ newsForm.addEventListener('submit', async function(e) {
 
             if (!signatureResponse.ok) {
                 const errorData = await signatureResponse.json();
-                throw new Error(errorData.message |
-
-| 'Failed to get Cloudinary signature.'); // FIX: Corrected |
-| operator
+                throw new Error(errorData.message || 'Failed to get Cloudinary signature.'); // FIX: Corrected || operator
             }
             const { signature, timestamp, api_key, cloud_name, folder } = await signatureResponse.json();
             console.log('DEBUG: Cloudinary Signature received:', { signature, timestamp, api_key, cloud_name, folder });
@@ -547,10 +521,7 @@ newsForm.addEventListener('submit', async function(e) {
 
             if (!cloudinaryResponse.ok) {
                 const errorData = await cloudinaryResponse.json();
-                throw new Error(errorData.error.message |
-
-| 'Failed to upload image to Cloudinary.'); // FIX: Corrected |
-| operator
+                throw new Error(errorData.error.message || 'Failed to upload image to Cloudinary.'); // FIX: Corrected || operator
             }
             const cloudinaryResult = await cloudinaryResponse.json();
             finalImageUrl = cloudinaryResult.secure_url; // Get the secure URL from Cloudinary
@@ -585,8 +556,8 @@ newsForm.addEventListener('submit', async function(e) {
             authorId: authorId
         };
 
-        const targetUrl = editingId? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`; // FIX: Corrected? operator
-        const method = editingId? 'PUT' : 'POST'; // FIX: Corrected? operator
+        const targetUrl = editingId ? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`; // FIX: Corrected ? operator
+        const method = editingId ? 'PUT' : 'POST'; // FIX: Corrected ? operator
 
         const response = await fetch(targetUrl, {
             method: method,
@@ -601,10 +572,7 @@ newsForm.addEventListener('submit', async function(e) {
             try {
                 const errorData = JSON.parse(errorText);
                 console.error('DEBUG: Server responded with error JSON:', errorData);
-                throw new Error(errorData.message |
-
-| 'Server error during news submission.'); // FIX: Corrected |
-| operator
+                throw new Error(errorData.message || 'Server error during news submission.'); // FIX: Corrected || operator
             } catch (jsonParseError) {
                 console.error('DEBUG: Server responded with non-JSON error:', errorText);
                 throw new Error(`Server error: ${errorText} (Status: ${response.status})`);
@@ -613,10 +581,10 @@ newsForm.addEventListener('submit', async function(e) {
 
         const result = await response.json();
         console.log('DEBUG: News submission successful:', result);
-        displaySuccess(editingId? 'News updated successfully!' : 'News published successfully!'); // FIX: Corrected? operator
+        displaySuccess(editingId ? 'News updated successfully!' : 'News published successfully!'); // FIX: Corrected ? operator
         addNotification(
-            editingId? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`, // FIX: Corrected? operator
-            editingId? 'fas fa-pen' : 'fas fa-newspaper', // FIX: Corrected? operator
+            editingId ? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`, // FIX: Corrected ? operator
+            editingId ? 'fas fa-pen' : 'fas fa-newspaper', // FIX: Corrected ? operator
             result.id // Use the ID returned from the server
         );
 
@@ -626,7 +594,7 @@ newsForm.addEventListener('submit', async function(e) {
         publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publish News';
         imagePreviewContainer.style.display = 'none';
         currentImagePreview.src = ''; // Clear image preview
-        newsImage.value = ''; // Clear file input
+        document.getElementById('newsImage').value = ''; // Clear file input
 
         await fetchNews(currentActiveCategory, searchInput.value); // Re-fetch and re-render current view
         document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
@@ -641,8 +609,8 @@ newsForm.addEventListener('submit', async function(e) {
 });
 
 // Image preview and clear functionality for news image
-newsImage.addEventListener('change', function() {
-    const file = this.files; // FIX: Access the first file
+document.getElementById('newsImage').addEventListener('change', function() {
+    const file = this.files[0]; // FIX: Access the first file
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -658,7 +626,7 @@ newsImage.addEventListener('change', function() {
 });
 
 clearImageSelection.addEventListener('click', () => {
-    newsImage.value = ''; // Clear the file input
+    document.getElementById('newsImage').value = ''; // Clear the file input
     imagePreviewContainer.style.display = 'none';
     currentImagePreview.src = 'https://via.placeholder.com/600x400?text=No+Image'; // Set a default placeholder if cleared
 });
@@ -677,10 +645,7 @@ async function fetchNewsDetailAndComments(newsId) {
 
         // Helper function to resolve image URL for modal - direct use for Cloudinary
         const getModalImageUrl = (url) => {
-            return url |
-
-| 'https://via.placeholder.com/600x400?text=No+Image'; // FIX: Corrected |
-| operator
+            return url || 'https://via.placeholder.com/600x400?text=No+Image'; // FIX: Corrected || operator
         };
 
         // Populate modal
@@ -688,10 +653,7 @@ async function fetchNewsDetailAndComments(newsId) {
         modalNewsImage.alt = newsItem.title;
         modalCategoryTag.textContent = newsItem.category;
         modalNewsTitle.textContent = newsItem.title;
-        modalAuthorImage.src = newsItem.authorImage |
-
-| 'https://placehold.co/40x40?text=A'; // FIX: Corrected |
-| operator
+        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A'; // FIX: Corrected || operator
         modalAuthorName.textContent = newsItem.author;
         modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate); // Use formatDisplayDate
         modalNewsContent.textContent = newsItem.fullContent; // This directly uses fullContent
@@ -732,10 +694,7 @@ function displayComments(newsItem) {
                 `;
             }
             commentElement.innerHTML = `
-                <img src="${comment.avatar |
-
-| 'https://placehold.co/45x45?text=U'}" alt="${comment.author}" class="comment-avatar"> // FIX: Corrected |
-| operator
+                <img src="${comment.avatar || 'https://placehold.co/45x45?text=U'}" alt="${comment.author}" class="comment-avatar"> // FIX: Corrected || operator
                 <div class="comment-content">
                     <div class="comment-meta">
                         <div class="comment-author-info">
@@ -800,16 +759,13 @@ commentForm.addEventListener('submit', async function(e) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message |
-
-| 'Server error during comment submission.'); // FIX: Corrected |
-| operator
+            throw new Error(errorData.message || 'Server error during comment submission.'); // FIX: Corrected || operator
         }
 
-        displaySuccess(editCommentId? 'Comment updated!' : 'Comment posted!'); // FIX: Corrected? operator
+        displaySuccess(editCommentId ? 'Comment updated!' : 'Comment posted!'); // FIX: Corrected ? operator
         addNotification(
-            editCommentId? `Your comment on news ID ${newsId} was updated.` : `New comment on news ID ${newsId} by ${commenterName}.`, // FIX: Corrected? operator
-            editCommentId? 'fas fa-pen' : 'fas fa-comment', // FIX: Corrected? operator
+            editCommentId ? `Your comment on news ID ${newsId} was updated.` : `New comment on news ID ${newsId} by ${commenterName}.`, // FIX: Corrected ? operator
+            editCommentId ? 'fas fa-pen' : 'fas fa-comment', // FIX: Corrected ? operator
             newsId
         );
 
@@ -850,10 +806,7 @@ document.addEventListener('click', async function(e) {
 
                     if (!response.ok) {
                         const errorData = await response.json();
-                        throw new Error(errorData.message |
-
-| 'Server error during deletion.'); // FIX: Corrected |
-| operator
+                        throw new Error(errorData.message || 'Server error during deletion.'); // FIX: Corrected || operator
                     }
 
                     displaySuccess('News item deleted!');
@@ -897,7 +850,7 @@ document.addEventListener('click', async function(e) {
                     imagePreviewContainer.style.display = 'none';
                     currentImagePreview.src = '';
                 }
-                newsImage.value = ''; // Clear file input so new file can be selected
+                document.getElementById('newsImage').value = ''; // Clear file input so new file can be selected
 
                 publishBtn.innerHTML = '<i class="fas fa-upload"></i> Update News';
                 document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
@@ -933,10 +886,7 @@ document.addEventListener('click', async function(e) {
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.message |
-
-| 'Server error during comment deletion.'); // FIX: Corrected |
-| operator
+                    throw new Error(errorData.message || 'Server error during comment deletion.'); // FIX: Corrected || operator
                 }
 
                 displaySuccess('Comment deleted!');
@@ -988,21 +938,10 @@ document.addEventListener('click', async function(e) {
         }
     }
     // --- Handle click on news card to show full content in modal ---
-    else if (target.closest('.news-card') |
-
-| target.closest('.main-feature') |
-| target.closest('.side-feature')) { // FIX: Corrected |
-| operator
-        const newsCard = target.closest('.news-card') |
-
-| target.closest('.main-feature') |
-| target.closest('.side-feature'); // FIX: Corrected |
-| operator
+    else if (target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature')) { // FIX: Corrected || operator
+        const newsCard = target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature'); // FIX: Corrected || operator
         // Prevent opening modal if edit/delete icon was clicked inside the card
-        if (target.classList.contains('fa-edit') |
-
-| target.classList.contains('fa-trash')) { // FIX: Corrected |
-| operator
+        if (target.classList.contains('fa-edit') || target.classList.contains('fa-trash')) { // FIX: Corrected || operator
             return;
         }
         const newsId = newsCard.dataset.id;
@@ -1054,13 +993,10 @@ scrollToTopBtn.addEventListener('click', () => {
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         const href = this.getAttribute('href');
-        if (this.classList.contains('nav-link-category') |
-
-| this.classList.contains('footer-link-category')) { // FIX: Corrected |
-| operator
+        if (this.classList.contains('nav-link-category') || this.classList.contains('footer-link-category')) { // FIX: Corrected || operator
             return;
         }
-        if (href!== '#' && href!== '#!' && href!== 'javascript:void(0)') {
+        if (href !== '#' && href !== '#!' && href !== 'javascript:void(0)') {
             e.preventDefault();
             const targetElement = document.querySelector(href);
             if (targetElement) {
@@ -1116,7 +1052,7 @@ profileModal.addEventListener('click', (e) => {
 });
 
 profileAvatarUpload.addEventListener('change', function() {
-    const file = this.files; // FIX: Access the first file
+    const file = this.files[0]; // FIX: Access the first file
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -1125,10 +1061,7 @@ profileAvatarUpload.addEventListener('change', function() {
         reader.readAsDataURL(file);
     } else {
         // If file input is cleared, revert to current avatar or a default placeholder
-        profileAvatarPreview.src = userProfile.avatar |
-
-| 'https://placehold.co/100x100?text=User'; // FIX: Corrected |
-| operator
+        profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User'; // FIX: Corrected || operator
     }
 });
 
@@ -1162,7 +1095,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (e) {
         console.error("Error loading notifications from localStorage:", e);
-        notifications =; // FIX: Initialized as empty array
+        notifications = []; // FIX: Initialized as empty array
     }
     updateNotificationDisplay();
     await fetchNews('all'); // Initial fetch of all news from backend
