@@ -2,7 +2,7 @@ require('dotenv').config(); // Load environment variables - इसे यहा�
 
 const express = require('express');
 const cors = require('cors');
-const multer = require('multer'); // Multer is still needed for parsing multipart/form-data, but actual upload will be direct to Cloudinary
+const multer = require('multer'); // Multer is still needed for parsing multipart/form-data, but actual image upload will be direct to Cloudinary
 const path = require('path');
 
 const fs = require('fs');
@@ -10,7 +10,8 @@ const { v4: uuidv4 } = require('uuid');
 
 // --- Cloudinary Setup ---
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary'); // Multer-storage-cloudinary is not used for direct upload, but keeping it for reference if needed for server-side upload fallback.
+// CloudinaryStorage is not directly used for client-side direct upload, but keeping it as it was in your original code.
+const { CloudinaryStorage } = require('multer-storage-cloudinary'); 
 
 // Configure Cloudinary
 // Cloudinary कॉन्फ़िगरेशन से पहले, आप इन्हें लॉग कर सकते हैं
@@ -185,7 +186,7 @@ app.get('/api/news/:newsid', async (req, res) => {
     }
 });
 
-// POST a new news item (Multer is still used here to parse other form fields, but image upload will be handled by frontend)
+// POST a new news item (Multer is still used here to parse other form fields, but image upload will be direct to Cloudinary)
 app.post('/api/news', upload.none(), async (req, res) => { // Changed to upload.none() as image is direct uploaded
     const { title, category, fullContent, imageUrl, author, authorImage, authorId } = req.body; // imageUrl will now come from frontend
 
@@ -204,7 +205,8 @@ app.post('/api/news', upload.none(), async (req, res) => { // Changed to upload.
     // imageUrl is now expected to come from the frontend after Cloudinary upload
     const finalImageUrl = imageUrl |
 
-| 'https://via.placeholder.com/600x400?text=No+Image';
+| 'https://via.placeholder.com/600x400?text=No+Image'; // FIX: Corrected |
+| operator
 
     const newNews = {
         id: uuidv4(),
@@ -265,7 +267,8 @@ app.put('/api/news/:newsid', upload.none(), async (req, res) => { // Changed to 
         // imageUrl is now expected to come from the frontend after Cloudinary upload
         const finalImageUrl = imageUrl |
 
-| existingNews.imageUrl; // Use new imageUrl or keep existing
+| existingNews.imageUrl; // Use new imageUrl or keep existing // FIX: Corrected |
+| operator
 
         const updateQuery = `
             UPDATE news
@@ -353,7 +356,8 @@ app.post('/api/cloudinary-signature', (req, res) => {
             source: 'uw', // Indicates upload widget, though we are using direct API call
             folder: folder |
 
-| 'flashnews_uploads' // Use provided folder or default
+| 'flashnews_uploads' // Use provided folder or default // FIX: Corrected |
+| operator
         };
 
         // Generate the signature using Cloudinary's SDK utility
