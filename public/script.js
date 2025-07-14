@@ -1,10 +1,6 @@
 // --- CONFIGURATION AND CONSTANTS ---
 // IMPORTANT: This BASE_API_URL must match the URL where your Node.js backend is running.
-<<<<<<< HEAD
 const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // Make sure this is your *actual* deployed backend URL
-=======
-const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api';
->>>>>>> 74cb0dd (updated files)
 
 const MY_POSTS_AUTHOR_ID = 'user-prince'; // Fixed ID for "my posts" (would come from user authentication in real app)
 const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profile (client-specific)
@@ -357,15 +353,6 @@ function createNewsElement(newsItem, type) {
         `;
     }
 
-<<<<<<< HEAD
-=======
-    // Helper function to resolve image URL
-    const getImageUrl = (url) => {
-        // Use BASE_API_URL for locally uploaded images
-        return url.startsWith('/uploads/') ? `${BASE_API_URL}${url}` : url;
-    };
-
->>>>>>> 74cb0dd (updated files)
     let contentHTML = '';
     if (type === 'main-feature') {
         contentHTML = `
@@ -511,7 +498,6 @@ newsForm.addEventListener('submit', async function(e) {
         formData.append('image', newsImageFile); // Append file if new image is selected
         console.log('DEBUG: 0.4. Appended new image to FormData for Cloudinary upload.');
     } else if (editingId) {
-<<<<<<< HEAD
         const existingNews = allNews.find(item => item.id === editingId);
         if (existingNews) {
             // Check if the user explicitly cleared the image or if it's the default placeholder
@@ -527,27 +513,6 @@ newsForm.addEventListener('submit', async function(e) {
             }
             // If existing image was a Cloudinary URL and no new file, we don't need to send imageUrl.
             // The backend will use the existing one from the database if imageUrl is not sent in the form data.
-=======
-        // If editing and no new file, handle existing image URL.
-        const existingNews = allNews.find(item => item.id === editingId);
-        if (existingNews && existingNews.imageUrl) {
-            // If the existing image is a local upload, the backend will handle its replacement/retention.
-            // If it's an external URL, ensure it's sent back to the backend.
-            // The backend's PUT endpoint already handles this logic efficiently.
-            // No need to explicitly append 'imageUrl' if it's already a local '/uploads/' path
-            // as multer handles the file upload.
-            // If it's an external URL, it should still be included if it's not changing.
-            if (!existingNews.imageUrl.startsWith('/uploads/')) {
-                 formData.append('imageUrl', existingNews.imageUrl);
-            } else if (currentImagePreview.src === 'https://via.placeholder.com/600x400?text=No+Image' && !newsImageFile) {
-                // If the user explicitly cleared the image (currentImagePreview reset to placeholder)
-                // and no new file was uploaded, tell backend to remove image.
-                formData.append('imageUrl', ''); // Send empty string to signal removal
-            }
-        } else {
-            // If no existing image and no new file, ensure a placeholder is sent for update.
-            formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
->>>>>>> 74cb0dd (updated files)
         }
     } else {
         // New post with no image selected, ensure a placeholder is sent
@@ -565,22 +530,12 @@ newsForm.addEventListener('submit', async function(e) {
 
         let response;
         if (editingId) {
-<<<<<<< HEAD
             response = await fetch(targetUrl, {
-=======
-            // UPDATE News Item
-            response = await fetch(`${BASE_API_URL}/news/${editingId}`, {
->>>>>>> 74cb0dd (updated files)
                 method: 'PUT',
                 body: formData // FormData automatically sets Content-Type to multipart/form-data
             });
         } else {
-<<<<<<< HEAD
             response = await fetch(targetUrl, {
-=======
-            // CREATE New News Item
-            response = await fetch(`${BASE_API_URL}/news`, {
->>>>>>> 74cb0dd (updated files)
                 method: 'POST',
                 body: formData
             });
@@ -664,23 +619,9 @@ async function fetchNewsDetailAndComments(newsId) {
         }
         const newsItem = await newsResponse.json();
 
-<<<<<<< HEAD
         // Helper function to resolve image URL for modal - direct use for Cloudinary
         const getModalImageUrl = (url) => {
             return url || 'https://via.placeholder.com/600x400?text=No+Image';
-=======
-        // Fetch comments for this news item
-        const commentsResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-        if (!commentsResponse.ok) {
-            throw new Error(`Failed to fetch comments. Status: ${commentsResponse.status}`);
-        }
-        const comments = await commentsResponse.json();
-        newsItem.comments = comments; // Attach comments to the news item
-
-        // Helper function to resolve image URL for modal
-        const getModalImageUrl = (url) => {
-            return url.startsWith('/uploads/') ? `${BASE_API_URL}${url}` : url;
->>>>>>> 74cb0dd (updated files)
         };
 
         // Populate modal
@@ -879,12 +820,7 @@ document.addEventListener('click', async function(e) {
 
                 // Set image preview if exists (now directly from Cloudinary URL)
                 if (newsItem.imageUrl) {
-<<<<<<< HEAD
                     currentImagePreview.src = newsItem.imageUrl;
-=======
-                    // Handle local uploads vs external URLs
-                    currentImagePreview.src = newsItem.imageUrl.startsWith('/uploads/') ? `${BASE_API_URL}${newsItem.imageUrl}` : newsItem.imageUrl;
->>>>>>> 74cb0dd (updated files)
                     imagePreviewContainer.style.display = 'flex';
                 } else {
                     imagePreviewContainer.style.display = 'none';
@@ -915,7 +851,6 @@ document.addEventListener('click', async function(e) {
         // An even more robust solution would be to fetch the comment details by commentId to verify owner.
         showLoading('Deleting comment...');
         try {
-<<<<<<< HEAD
             // Find the comment in the newsItem.comments array to get its authorId
             const currentNewsInModal = allNews.find(n => n.id === newsId);
             const commentToDelete = currentNewsInModal?.comments.find(c => c.id === commentIdToDelete);
@@ -924,22 +859,6 @@ document.addEventListener('click', async function(e) {
                 const response = await fetch(`${BASE_API_URL}/news/${newsId}/comments/${commentIdToDelete}`, {
                     method: 'DELETE'
                 });
-=======
-            const commentResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-            if (!commentResponse.ok) {
-                throw new Error('Failed to fetch comments to verify ownership.');
-            }
-            const comments = await commentResponse.json();
-            const commentToDelete = comments.find(c => c.id === commentIdToDelete);
-
-            if (commentToDelete && commentToDelete.authorId === MY_POSTS_AUTHOR_ID) {
-                hideLoading(); // Hide initial verification loading before confirmation
-                if (confirm('Are you sure you want to delete this comment?')) {
-                    showLoading('Deleting comment...');
-                    const response = await fetch(`${BASE_API_URL}/news/${newsId}/comments/${commentIdToDelete}`, {
-                        method: 'DELETE'
-                    });
->>>>>>> 74cb0dd (updated files)
 
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -966,18 +885,9 @@ document.addEventListener('click', async function(e) {
 
         showLoading('Loading comment for edit...');
         try {
-<<<<<<< HEAD
             // Find the comment in the newsItem.comments array to get its authorId
             const currentNewsInModal = allNews.find(n => n.id === newsId);
             const commentToEdit = currentNewsInModal?.comments.find(c => c.id === commentIdToEdit);
-=======
-            const commentResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-            if (!commentResponse.ok) {
-                throw new Error('Failed to fetch comments to verify ownership.');
-            }
-            const comments = await commentResponse.json();
-            const commentToEdit = comments.find(c => c.id === commentIdToEdit);
->>>>>>> 74cb0dd (updated files)
 
             if (commentToEdit && commentToEdit.authorId === MY_POSTS_AUTHOR_ID) {
                 commentTextInput.value = commentToEdit.text;
@@ -1165,8 +1075,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     updateNotificationDisplay();
     await fetchNews('all'); // Initial fetch of all news from backend
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> 74cb0dd (updated files)
