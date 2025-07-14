@@ -1,3 +1,5 @@
+// script.js (Frontend Code - assuming it's in a file named script.js or similar)
+
 // --- CONFIGURATION AND CONSTANTS ---
 // IMPORTANT: This BASE_API_URL must match the URL where your Node.js backend is running.
 const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // Make sure this is your *actual* deployed backend URL
@@ -16,11 +18,11 @@ const DEFAULT_NEWS_DATA = [
     { id: 'news1', category: 'Environment', title: 'New Climate Agreement Signed by 40 Nations', fullContent: 'Global leaders from 40 nations have signed a landmark climate agreement, committing to ambitious targets aimed at significantly reducing carbon emissions by the year 2030, marking a crucial step towards combating climate change.\n\nThe agreement emphasizes renewable energy investments and sustainable practices.', imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Sarah Johnson', authorImage: 'https://randomuser.me/api/portraits/women/44.jpg', publishDate: 'July 4, 2025 at 3:00 PM', isFeatured: false, authorId: 'admin', comments: [] },
     { id: 'news2', category: 'Sports', title: 'Underdog Team Advances to Championship Finals', fullContent: 'In a stunning upset, the underdog team defeats the reigning champions in a nail-biting finish, securing their spot in the championship finals and thrilling fans worldwide.\n\nTheir journey has captured the hearts of many.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Michael Torres', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 4, 2025 at 6:45 PM', isFeatured: false, authorId: 'admin', comments: [] },
     { id: 'news3', category: 'Finance', title: 'Central Bank Announces Interest Rate Changes', fullContent: 'In response to recent economic indicators and inflation concerns, the central bank has announced a series of interest rate adjustments, a move that is expected to have a significant impact on borrowing costs and investment across the country.\n\nAnalysts predict a period of market adjustment.', imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'David Kim', authorImage: 'https://randomuser.me/api/portraits/men/65.jpg', publishDate: 'July 4, 2025 at 1:00 PM', isFeatured: false, authorId: 'admin', comments: [] }
-]; // FIX: Corrected DEFAULT_NEWS_DATA initialization
+];
 
 // --- GLOBAL STATE (will be fetched from backend) ---
-let allNews = []; // Master array of all news items // FIX: Initialized as empty array
-let notifications = []; // Notifications are still client-side for simplicity, but could be backend too. // FIX: Initialized as empty array
+let allNews = []; // Master array of all news items
+let notifications = []; // Notifications are still client-side for simplicity, but could be backend too.
 let userProfile = { // User profile
     name: 'Guest User',
     avatar: 'https://placehold.co/100x100?text=User'
@@ -81,7 +83,7 @@ const scrollToTopBtn = document.querySelector('.scroll-to-top');
 function showLoading(message = 'Loading...', iconClass = 'fas fa-spinner', animate = true) {
     loadingMessage.textContent = message;
     loadingIcon.className = iconClass;
-    loadingIcon.style.animation = animate ? 'spin 1s linear infinite' : 'none'; // FIX: Corrected ? operator
+    loadingIcon.style.animation = animate ? 'spin 1s linear infinite' : 'none';
     loadingOverlay.classList.add('visible');
 }
 
@@ -101,12 +103,9 @@ function displaySuccess(message = 'Operation successful!') {
 
 // Function to format date for display
 function formatDisplayDate(dateString) {
-    // Attempt to parse as ISO string or regular date string
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-        // Fallback for non-standard date strings (like the ones in DEFAULT_NEWS_DATA)
-        // You might need a more robust parsing for diverse date formats.
-        return dateString;
+        return dateString; // Return original if invalid date
     }
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
     return date.toLocaleString('en-US', options);
@@ -146,7 +145,7 @@ const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 const currentTheme = localStorage.getItem('theme');
 
 // Set initial theme
-if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) { // FIX: Corrected || operator
+if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
     document.documentElement.setAttribute('data-theme', 'dark');
     themeIcon.classList.remove('fa-sun');
     themeIcon.classList.add('fa-moon');
@@ -203,7 +202,7 @@ function updateNotificationDisplay() {
         });
     }
     notificationBadge.textContent = notifications.length;
-    notificationBadge.style.display = notifications.length > 0 ? 'flex' : 'none'; // FIX: Corrected ? operator
+    notificationBadge.style.display = notifications.length > 0 ? 'flex' : 'none';
 }
 
 function addNotification(message, icon = 'fas fa-info-circle', newsId = null) {
@@ -234,7 +233,7 @@ notificationToggle.addEventListener('click', (event) => {
 });
 
 document.addEventListener('click', (event) => {
-    if (!notificationDropdown.contains(event.target) && !notificationToggle.contains(event.target)) { // FIX: Corrected && operator
+    if (!notificationDropdown.contains(event.target) && !notificationToggle.contains(event.target)) {
         notificationDropdown.classList.remove('active');
     }
 });
@@ -283,14 +282,13 @@ function renderNewsCards(filterCategory = 'all', searchTerm = '') {
     latestNewsSection.innerHTML = '';
 
     // Sort all news by publishDate (newest first)
-    // Ensure publishDate is handled as a Date object for proper sorting
     const sortedNewsData = [...allNews].sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
 
     const featuredNewsItems = sortedNewsData.filter(news => news.isFeatured);
-    const latestNewsItems = sortedNewsData.filter(news => !news.isFeatured); // FIX: Corrected ! operator
+    const latestNewsItems = sortedNewsData.filter(news => !news.isFeatured);
 
     // Render Featured News
-    const mainFeature = featuredNewsItems.find(news => !news.isSideFeature); // FIX: Corrected ! operator
+    const mainFeature = featuredNewsItems.find(news => !news.isSideFeature);
     if (mainFeature && shouldDisplayNews(mainFeature, filterCategory, searchTerm)) {
         featuredSection.appendChild(createNewsElement(mainFeature, 'main-feature'));
     }
@@ -319,15 +317,14 @@ function renderNewsCards(filterCategory = 'all', searchTerm = '') {
 }
 
 function shouldDisplayNews(news, filterCategory, searchTerm) {
-    const matchesCategory = filterCategory === 'all' || news.category === filterCategory || (filterCategory === 'my-posts' && news.authorId === MY_POSTS_AUTHOR_ID); // FIX: Corrected || operator
-    const matchesSearch = searchTerm === '' || news.title.toLowerCase().includes(searchTerm.toLowerCase()) || news.fullContent.toLowerCase().includes(searchTerm.toLowerCase()) || news.category.toLowerCase().includes(searchTerm.toLowerCase()) || news.author.toLowerCase().includes(searchTerm.toLowerCase()); // FIX: Corrected || operator
+    const matchesCategory = filterCategory === 'all' || news.category === filterCategory || (filterCategory === 'my-posts' && news.authorId === MY_POSTS_AUTHOR_ID);
+    const matchesSearch = searchTerm === '' || news.title.toLowerCase().includes(searchTerm.toLowerCase()) || news.fullContent.toLowerCase().includes(searchTerm.toLowerCase()) || news.category.toLowerCase().includes(searchTerm.toLowerCase()) || news.author.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
 }
 
 // Helper function to resolve image URL for display
-// Simplified for Cloudinary integration: URLs from backend will be absolute.
 const getImageUrl = (url) => {
-    return url || 'https://via.placeholder.com/600x400?text=No+Image'; // Use the URL directly, or a placeholder // FIX: Corrected || operator
+    return url || 'https://via.placeholder.com/600x400?text=No+Image';
 };
 
 function createNewsElement(newsItem, type) {
@@ -338,10 +335,9 @@ function createNewsElement(newsItem, type) {
     element.setAttribute('data-category', newsItem.category);
     element.setAttribute('data-author-id', newsItem.authorId); // Crucial for edit/delete check
 
-    // Ensure newsItem.fullContent is a string before calling split
-    const safeFullContent = newsItem.fullContent || ''; // FIX: Corrected || operator
-    const firstParagraph = safeFullContent.split('\n')[0]; // FIX: Access first element of split array
-    const truncatedContent = firstParagraph.substring(0, 80) + (firstParagraph.length > 80 ? '...' : ''); // FIX: Corrected ? operator
+    const safeFullContent = newsItem.fullContent || '';
+    const firstParagraph = safeFullContent.split('\n')[0];
+    const truncatedContent = firstParagraph.substring(0, 80) + (firstParagraph.length > 80 ? '...' : '');
 
     let actionsHTML = '';
     // Check if the news item's authorId matches the client's MY_POSTS_AUTHOR_ID
@@ -366,7 +362,7 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author"> // FIX: Corrected || operator
+                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author">
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -398,7 +394,7 @@ function createNewsElement(newsItem, type) {
                 <p>${truncatedContent}</p>
                 <div class="card-footer">
                     <div class="author">
-                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author"> // FIX: Corrected || operator
+                        <img src="${newsItem.authorImage || 'https://placehold.co/28x28?text=A'}" alt="Author">
                         <span>${newsItem.author}</span>
                     </div>
                     ${actionsHTML}
@@ -467,12 +463,12 @@ newsForm.addEventListener('submit', async function(e) {
 
     const title = document.getElementById('newsTitle').value.trim();
     const category = document.getElementById('newsCategory').value;
-    const newsImageFile = document.getElementById('newsImage').files[0]; // FIX: Access the first file
-    const content = document.getElementById('newsContent').value.trim(); // Trim content
+    const newsImageFile = document.getElementById('newsImage').files[0];
+    const content = document.getElementById('newsContent').value.trim();
     const editingId = editNewsIdInput.value;
 
     console.log('DEBUG: 0.1. Form values collected. Title:', title, 'Category:', category);
-    console.log('DEBUG: 0.2. Image file:', newsImageFile ? newsImageFile.name : 'No file selected'); // FIX: Corrected ? operator
+    console.log('DEBUG: 0.2. Image file:', newsImageFile ? newsImageFile.name : 'No file selected');
     console.log('DEBUG: 0.3. Editing ID:', editingId);
     console.log('DEBUG: 0.4. Full Content (trimmed):', content);
 
@@ -500,7 +496,7 @@ newsForm.addEventListener('submit', async function(e) {
 
             if (!signatureResponse.ok) {
                 const errorData = await signatureResponse.json();
-                throw new Error(errorData.message || 'Failed to get Cloudinary signature.'); // FIX: Corrected || operator
+                throw new Error(errorData.message || 'Failed to get Cloudinary signature.');
             }
             const { signature, timestamp, api_key, cloud_name, folder } = await signatureResponse.json();
             console.log('DEBUG: Cloudinary Signature received:', { signature, timestamp, api_key, cloud_name, folder });
@@ -521,7 +517,7 @@ newsForm.addEventListener('submit', async function(e) {
 
             if (!cloudinaryResponse.ok) {
                 const errorData = await cloudinaryResponse.json();
-                throw new Error(errorData.error.message || 'Failed to upload image to Cloudinary.'); // FIX: Corrected || operator
+                throw new Error(errorData.error.message || 'Failed to upload image to Cloudinary.');
             }
             const cloudinaryResult = await cloudinaryResponse.json();
             finalImageUrl = cloudinaryResult.secure_url; // Get the secure URL from Cloudinary
@@ -556,8 +552,8 @@ newsForm.addEventListener('submit', async function(e) {
             authorId: authorId
         };
 
-        const targetUrl = editingId ? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`; // FIX: Corrected ? operator
-        const method = editingId ? 'PUT' : 'POST'; // FIX: Corrected ? operator
+        const targetUrl = editingId ? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`;
+        const method = editingId ? 'PUT' : 'POST';
 
         const response = await fetch(targetUrl, {
             method: method,
@@ -572,7 +568,7 @@ newsForm.addEventListener('submit', async function(e) {
             try {
                 const errorData = JSON.parse(errorText);
                 console.error('DEBUG: Server responded with error JSON:', errorData);
-                throw new Error(errorData.message || 'Server error during news submission.'); // FIX: Corrected || operator
+                throw new Error(errorData.message || 'Server error during news submission.');
             } catch (jsonParseError) {
                 console.error('DEBUG: Server responded with non-JSON error:', errorText);
                 throw new Error(`Server error: ${errorText} (Status: ${response.status})`);
@@ -581,10 +577,10 @@ newsForm.addEventListener('submit', async function(e) {
 
         const result = await response.json();
         console.log('DEBUG: News submission successful:', result);
-        displaySuccess(editingId ? 'News updated successfully!' : 'News published successfully!'); // FIX: Corrected ? operator
+        displaySuccess(editingId ? 'News updated successfully!' : 'News published successfully!');
         addNotification(
-            editingId ? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`, // FIX: Corrected ? operator
-            editingId ? 'fas fa-pen' : 'fas fa-newspaper', // FIX: Corrected ? operator
+            editingId ? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`,
+            editingId ? 'fas fa-pen' : 'fas fa-newspaper',
             result.id // Use the ID returned from the server
         );
 
@@ -610,7 +606,7 @@ newsForm.addEventListener('submit', async function(e) {
 
 // Image preview and clear functionality for news image
 document.getElementById('newsImage').addEventListener('change', function() {
-    const file = this.files[0]; // FIX: Access the first file
+    const file = this.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -645,7 +641,7 @@ async function fetchNewsDetailAndComments(newsId) {
 
         // Helper function to resolve image URL for modal - direct use for Cloudinary
         const getModalImageUrl = (url) => {
-            return url || 'https://via.placeholder.com/600x400?text=No+Image'; // FIX: Corrected || operator
+            return url || 'https://via.placeholder.com/600x400?text=No+Image';
         };
 
         // Populate modal
@@ -653,7 +649,7 @@ async function fetchNewsDetailAndComments(newsId) {
         modalNewsImage.alt = newsItem.title;
         modalCategoryTag.textContent = newsItem.category;
         modalNewsTitle.textContent = newsItem.title;
-        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A'; // FIX: Corrected || operator
+        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A';
         modalAuthorName.textContent = newsItem.author;
         modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate); // Use formatDisplayDate
         modalNewsContent.textContent = newsItem.fullContent; // This directly uses fullContent
@@ -694,7 +690,7 @@ function displayComments(newsItem) {
                 `;
             }
             commentElement.innerHTML = `
-                <img src="${comment.avatar || 'https://placehold.co/45x45?text=U'}" alt="${comment.author}" class="comment-avatar"> // FIX: Corrected || operator
+                <img src="${comment.avatar || 'https://placehold.co/45x45?text=U'}" alt="${comment.author}" class="comment-avatar">
                 <div class="comment-content">
                     <div class="comment-meta">
                         <div class="comment-author-info">
@@ -759,13 +755,13 @@ commentForm.addEventListener('submit', async function(e) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Server error during comment submission.'); // FIX: Corrected || operator
+            throw new Error(errorData.message || 'Server error during comment submission.');
         }
 
-        displaySuccess(editCommentId ? 'Comment updated!' : 'Comment posted!'); // FIX: Corrected ? operator
+        displaySuccess(editCommentId ? 'Comment updated!' : 'Comment posted!');
         addNotification(
-            editCommentId ? `Your comment on news ID ${newsId} was updated.` : `New comment on news ID ${newsId} by ${commenterName}.`, // FIX: Corrected ? operator
-            editCommentId ? 'fas fa-pen' : 'fas fa-comment', // FIX: Corrected ? operator
+            editCommentId ? `Your comment on news ID ${newsId} was updated.` : `New comment on news ID ${newsId} by ${commenterName}.`,
+            editCommentId ? 'fas fa-pen' : 'fas fa-comment',
             newsId
         );
 
@@ -806,7 +802,7 @@ document.addEventListener('click', async function(e) {
 
                     if (!response.ok) {
                         const errorData = await response.json();
-                        throw new Error(errorData.message || 'Server error during deletion.'); // FIX: Corrected || operator
+                        throw new Error(errorData.message || 'Server error during deletion.');
                     }
 
                     displaySuccess('News item deleted!');
@@ -870,12 +866,8 @@ document.addEventListener('click', async function(e) {
         const commentIdToDelete = commentElement.dataset.commentId;
         const newsId = commentNewsIdInput.value; // News ID from the open modal
 
-        // For robustness, always check ownership on the backend or ensure client-side comment data is fresh
-        // For simplicity, we'll assume the comment has the correct authorId set from backend
-        // An even more robust solution would be to fetch the comment details by commentId to verify owner.
         showLoading('Deleting comment...');
         try {
-            // Find the comment in the newsItem.comments array to get its authorId
             const currentNewsInModal = allNews.find(n => n.id === newsId);
             const commentToDelete = currentNewsInModal?.comments.find(c => c.id === commentIdToDelete);
 
@@ -886,7 +878,7 @@ document.addEventListener('click', async function(e) {
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.message || 'Server error during comment deletion.'); // FIX: Corrected || operator
+                    throw new Error(errorData.message || 'Server error during comment deletion.');
                 }
 
                 displaySuccess('Comment deleted!');
@@ -909,7 +901,6 @@ document.addEventListener('click', async function(e) {
 
         showLoading('Loading comment for edit...');
         try {
-            // Find the comment in the newsItem.comments array to get its authorId
             const currentNewsInModal = allNews.find(n => n.id === newsId);
             const commentToEdit = currentNewsInModal?.comments.find(c => c.id === commentIdToEdit);
 
@@ -938,10 +929,10 @@ document.addEventListener('click', async function(e) {
         }
     }
     // --- Handle click on news card to show full content in modal ---
-    else if (target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature')) { // FIX: Corrected || operator
-        const newsCard = target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature'); // FIX: Corrected || operator
+    else if (target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature')) {
+        const newsCard = target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature');
         // Prevent opening modal if edit/delete icon was clicked inside the card
-        if (target.classList.contains('fa-edit') || target.classList.contains('fa-trash')) { // FIX: Corrected || operator
+        if (target.classList.contains('fa-edit') || target.classList.contains('fa-trash')) {
             return;
         }
         const newsId = newsCard.dataset.id;
@@ -993,7 +984,7 @@ scrollToTopBtn.addEventListener('click', () => {
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         const href = this.getAttribute('href');
-        if (this.classList.contains('nav-link-category') || this.classList.contains('footer-link-category')) { // FIX: Corrected || operator
+        if (this.classList.contains('nav-link-category') || this.classList.contains('footer-link-category')) {
             return;
         }
         if (href !== '#' && href !== '#!' && href !== 'javascript:void(0)') {
@@ -1052,7 +1043,7 @@ profileModal.addEventListener('click', (e) => {
 });
 
 profileAvatarUpload.addEventListener('change', function() {
-    const file = this.files[0]; // FIX: Access the first file
+    const file = this.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -1061,7 +1052,7 @@ profileAvatarUpload.addEventListener('change', function() {
         reader.readAsDataURL(file);
     } else {
         // If file input is cleared, revert to current avatar or a default placeholder
-        profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User'; // FIX: Corrected || operator
+        profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User';
     }
 });
 
@@ -1095,7 +1086,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (e) {
         console.error("Error loading notifications from localStorage:", e);
-        notifications = []; // FIX: Initialized as empty array
+        notifications = [];
     }
     updateNotificationDisplay();
     await fetchNews('all'); // Initial fetch of all news from backend
