@@ -493,7 +493,10 @@ newsForm.addEventListener('submit', async function(e) {
             // --- FIX START ---
             const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, { // Changed to POST and correct endpoint
                 method: 'POST',
-                const signatureData = await signatureResponse.json();
+            });
+            const signatureData = await
+            signatureResponse.json();
+            
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ folder: 'flashnews_uploads' }) // Optional: send folder name
             });
