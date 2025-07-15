@@ -497,7 +497,7 @@ newsForm.addEventListener('submit', async function(e) {
             const signatureData = await
             signatureResponse.json();
             
-                headers { 'Content-Type': 'application/json' },
+                headers 'Content-Type': 'application/json' },
                 body JSON.stringify({ folder: 'flashnews_uploads' }) // Optional: send folder name
             });
             // --- FIX END ---
