@@ -1,6 +1,7 @@
 // --- CONFIGURATION AND CONSTANTS ---
 // IMPORTANT: This BASE_API_URL must match the URL where your Node.js backend is running.
-const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // Make sure this is your *actual* deployed backend URL
+// Make sure this is your *actual* deployed backend URL (e.g., your Render URL)
+const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // <--- सुनिश्चित करें कि यह आपका सही Render URL है
 
 const MY_POSTS_AUTHOR_ID = 'user-prince'; // Fixed ID for "my posts" (would come from user authentication in real app)
 const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profile (client-specific)
@@ -9,13 +10,13 @@ const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profi
 // the frontend will fetch from the backend. This data is not actively used by script.js
 // once the backend is running and providing data.)
 const DEFAULT_NEWS_DATA = [
-    { id: 'mainfeature', category: 'Technology', title: 'Revolutionary AI Chip Unveiled, Promising New Era of Computing', fullContent: 'A groundbreaking artificial intelligence chip has been unveiled, poised to revolutionize computing with its unprecedented processing capabilities and energy efficiency. Industry experts anticipate a new era of innovation across various sectors, from healthcare to autonomous systems.\n\nThe chip\'s architecture allows for complex computations at speeds previously thought impossible, opening doors for advanced AI applications and machine learning models.', imageUrl: 'https://images.unsplash.com/photo-1593642532400-2682810df593?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', author: 'Jane Doe', authorImage: 'https://randomuser.me/api/portraits/women/32.jpg', publishDate: 'July 6, 2025 at 10:30 AM', isFeatured: true, isSideFeature: false, authorId: 'admin', comments: [] },
-    { id: 'sidefeature1', category: 'Business', title: 'Global Markets React to New Economic Policies', fullContent: 'Global markets are showing significant volatility as new economic policies are introduced. Analysts are closely watching how these changes will impact various sectors and international trade agreements.\n\nEconomic forecasts suggest potential shifts in investment strategies.', imageUrl: 'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Emily White', authorImage: 'https://randomuser.me/api/portraits/women/67.jpg', publishDate: 'July 5, 2025 at 1:00 PM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
-    { id: 'sidefeature2', category: 'Sports', title: 'National Team Qualifies for Finals', fullContent: 'In an exhilarating display of skill and determination, the national team has successfully secured its spot in the championship finals after a series of intense matches against top-ranked opponents.\n\nFans are eagerly anticipating the final showdown.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'David Lee', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 5, 2025 at 11:30 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
-    { id: 'sidefeature3', category: 'Automotive', title: 'Electric Vehicle Sales Surpass Traditional Models', fullContent: 'For the first time in history, sales of electric vehicles have officially surpassed traditional gasoline-powered models, signaling a significant shift in consumer preferences and the automotive industry\'s future.\n\nThis trend is expected to continue as infrastructure improves.', imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Olivia Clark', authorImage: 'https://randomuser.me/api/portraits/women/55.jpg', publishDate: 'July 5, 2025 at 9:15 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
-    { id: 'news1', category: 'Environment', title: 'New Climate Agreement Signed by 40 Nations', fullContent: 'Global leaders from 40 nations have signed a landmark climate agreement, committing to ambitious targets aimed at significantly reducing carbon emissions by the year 2030, marking a crucial step towards combating climate change.\n\nThe agreement emphasizes renewable energy investments and sustainable practices.', imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Sarah Johnson', authorImage: 'https://randomuser.me/api/portraits/women/44.jpg', publishDate: 'July 4, 2025 at 3:00 PM', isFeatured: false, authorId: 'admin', comments: [] },
-    { id: 'news2', category: 'Sports', title: 'Underdog Team Advances to Championship Finals', fullContent: 'In a stunning upset, the underdog team defeats the reigning champions in a nail-biting finish, securing their spot in the championship finals and thrilling fans worldwide.\n\nTheir journey has captured the hearts of many.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Michael Torres', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 4, 2025 at 6:45 PM', isFeatured: false, authorId: 'admin', comments: [] },
-    { id: 'news3', category: 'Finance', title: 'Central Bank Announces Interest Rate Changes', fullContent: 'In response to recent economic indicators and inflation concerns, the central bank has announced a series of interest rate adjustments, a move that is expected to have a significant impact on borrowing costs and investment across the country.\n\nAnalysts predict a period of market adjustment.', imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'David Kim', authorImage: 'https://randomuser.me/api/portraits/men/65.jpg', publishDate: 'July 4, 2025 at 1:00 PM', isFeatured: false, authorId: 'admin', comments: [] }
+    { id: 'mainfeature', category: 'Technology', title: 'Revolutionary AI Chip Unveiled, Promising New Era of Computing', fullContent: 'A groundbreaking artificial intelligence chip has been unveiled, poised to revolutionize computing with its unprecedented processing capabilities and energy efficiency. Industry experts anticipate a new era of innovation across various sectors, from healthcare to autonomous systems.\n\nThe chip\'s architecture allows for complex computations at speeds previously thought impossible, opening doors for advanced AI applications and machine learning models.', imageUrl: 'https://images.unsplash.com/photo-1593642532400-2682810df593?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', author: 'Jane Doe', authorImage: 'https://placehold.co/28x28?text=A', publishDate: 'July 6, 2025 at 10:30 AM', isFeatured: true, isSideFeature: false, authorId: 'admin', comments: [] },
+    { id: 'sidefeature1', category: 'Business', title: 'Global Markets React to New Economic Policies', fullContent: 'Global markets are showing significant volatility as new economic policies are introduced. Analysts are closely watching how these changes will impact various sectors and international trade agreements.\n\nEconomic forecasts suggest potential shifts in investment strategies.', imageUrl: 'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Emily White', authorImage: 'https://placehold.co/28x28?text=A', publishDate: 'July 5, 2025 at 1:00 PM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
+    { id: 'sidefeature2', category: 'Sports', title: 'National Team Qualifies for Finals', fullContent: 'In an exhilarating display of skill and determination, the national team has successfully secured its spot in the championship finals after a series of intense matches against top-ranked opponents.\n\nFans are eagerly anticipating the final showdown.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'David Lee', authorImage: 'https://placehold.co/28x28?text=A', publishDate: 'July 5, 2025 at 11:30 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
+    { id: 'sidefeature3', category: 'Automotive', title: 'Electric Vehicle Sales Surpass Traditional Models', fullContent: 'For the first time in history, sales of electric vehicles have officially surpassed traditional gasoline-powered models, signaling a significant shift in consumer preferences and the automotive industry\'s future.\n\nThis trend is expected to continue as infrastructure improves.', imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Olivia Clark', authorImage: 'https://placehold.co/28x28?text=A', publishDate: 'July 5, 2025 at 9:15 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
+    { id: 'news1', category: 'Environment', title: 'New Climate Agreement Signed by 40 Nations', fullContent: 'Global leaders from 40 nations have signed a landmark climate agreement, committing to ambitious targets aimed at significantly reducing carbon emissions by the year 2030, marking a crucial step towards combating climate change.\n\nThe agreement emphasizes renewable energy investments and sustainable practices.', imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Sarah Johnson', authorImage: 'https://placehold.co/28x28?text=A', publishDate: 'July 4, 2025 at 3:00 PM', isFeatured: false, authorId: 'admin', comments: [] },
+    { id: 'news2', category: 'Sports', title: 'Underdog Team Advances to Championship Finals', fullContent: 'In a stunning upset, the underdog team defeats the reigning champions in a nail-biting finish, securing their spot in the championship finals and thrilling fans worldwide.\n\nTheir journey has captured the hearts of many.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Michael Torres', authorImage: 'https://placehold.co/28x28?text=A', publishDate: 'July 4, 2025 at 6:45 PM', isFeatured: false, authorId: 'admin', comments: [] },
+    { id: 'news3', category: 'Finance', title: 'Central Bank Announces Interest Rate Changes', fullContent: 'In response to recent economic indicators and inflation concerns, the central bank has announced a series of interest rate adjustments, a move that is expected to have a significant impact on borrowing costs and investment across the country.\n\nAnalysts predict a period of market adjustment.', imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'David Kim', authorImage: 'https://placehold.co/28x28?text=A', publishDate: 'July 4, 2025 at 1:00 PM', isFeatured: false, authorId: 'admin', comments: [] }
 ];
 
 // --- GLOBAL STATE (will be fetched from backend) ---
@@ -23,7 +24,7 @@ let allNews = []; // Master array of all news items
 let notifications = []; // Notifications are still client-side for simplicity, but could be backend too.
 let userProfile = { // User profile
     name: 'Guest User',
-    avatar: 'https://placehold.co/100x100?text=User'
+    avatar: 'https://placehold.co/100x100?text=User' // Updated placeholder
 };
 
 // --- DOM Elements ---
@@ -322,7 +323,7 @@ function shouldDisplayNews(news, filterCategory, searchTerm) {
 
 // Helper function to resolve image URL for display
 const getImageUrl = (url) => {
-    return url || 'https://via.placeholder.com/600x400?text=No+Image';
+    return url || 'https://placehold.co/600x400?text=No+Image'; // Updated placeholder
 };
 
 function createNewsElement(newsItem, type) {
@@ -486,7 +487,7 @@ newsForm.addEventListener('submit', async function(e) {
     try {
         if (newsImageFile) {
             // Step 1: Get Cloudinary signature from your backend
-            const signatureResponse = await fetch(`${BASE_API_URL}/get-signature`, {
+            const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, { // <-- यह URL सही किया गया है
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ folder: 'flashnews_uploads' }) // Optional: send folder name
@@ -525,8 +526,8 @@ newsForm.addEventListener('submit', async function(e) {
             const existingNews = allNews.find(item => item.id === editingId);
             if (existingNews) {
                 // If no new file selected, check if user cleared image or wants to keep existing
-                if (currentImagePreview.src.includes('No+Image')) {
-                    finalImageUrl = 'https://via.placeholder.com/600x400?text=No+Image'; // User cleared image
+                if (currentImagePreview.src.includes('placehold.co') && currentImagePreview.src.includes('No+Image')) { // Updated check
+                    finalImageUrl = 'https://placehold.co/600x400?text=No+Image'; // User cleared image
                     console.log('DEBUG: Image cleared for existing post.');
                 } else if (existingNews.imageUrl) {
                     finalImageUrl = existingNews.imageUrl; // Keep existing image URL
@@ -534,7 +535,7 @@ newsForm.addEventListener('submit', async function(e) {
                 }
             }
         } else {
-            finalImageUrl = 'https://via.placeholder.com/600x400?text=No+Image'; // New post with no image
+            finalImageUrl = 'https://placehold.co/600x400?text=No+Image'; // New post with no image - Updated placeholder
             console.log('DEBUG: Using placeholder for new post with no image.');
         }
 
@@ -568,8 +569,8 @@ newsForm.addEventListener('submit', async function(e) {
                 console.error('DEBUG: Server responded with error JSON:', errorData);
                 throw new Error(errorData.message || 'Server error during news submission.');
             } catch (jsonParseError) {
-                console.error('DEBUG: Server responded with non-JSON error:', errorText);
-                throw new Error(`Server error: ${errorText} (Status: ${response.status})`);
+                console.error('DEBUG: Server responded with non-JSON error or empty response:', errorText); // Improved error message
+                throw new Error(`Server error: ${errorText.substring(0, 100)}... (Status: ${response.status})`); // Truncate long HTML errors
             }
         }
 
@@ -622,7 +623,7 @@ document.getElementById('newsImage').addEventListener('change', function() {
 clearImageSelection.addEventListener('click', () => {
     document.getElementById('newsImage').value = ''; // Clear the file input
     imagePreviewContainer.style.display = 'none';
-    currentImagePreview.src = 'https://via.placeholder.com/600x400?text=No+Image'; // Set a default placeholder if cleared
+    currentImagePreview.src = 'https://placehold.co/600x400?text=No+Image'; // Set a default placeholder if cleared - Updated placeholder
 });
 
 
@@ -639,7 +640,7 @@ async function fetchNewsDetailAndComments(newsId) {
 
         // Helper function to resolve image URL for modal - direct use for Cloudinary
         const getModalImageUrl = (url) => {
-            return url || 'https://via.placeholder.com/600x400?text=No+Image';
+            return url || 'https://placehold.co/600x400?text=No+Image'; // Updated placeholder
         };
 
         // Populate modal
@@ -647,7 +648,7 @@ async function fetchNewsDetailAndComments(newsId) {
         modalNewsImage.alt = newsItem.title;
         modalCategoryTag.textContent = newsItem.category;
         modalNewsTitle.textContent = newsItem.title;
-        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A';
+        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A'; // Updated placeholder
         modalAuthorName.textContent = newsItem.author;
         modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate); // Use formatDisplayDate
         modalNewsContent.textContent = newsItem.fullContent; // This directly uses fullContent
@@ -1050,7 +1051,7 @@ profileAvatarUpload.addEventListener('change', function() {
         reader.readAsDataURL(file);
     } else {
         // If file input is cleared, revert to current avatar or a default placeholder
-        profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User';
+        profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User'; // Updated placeholder
     }
 });
 
