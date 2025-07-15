@@ -2,7 +2,7 @@ require('dotenv').config(); // Load environment variables - इसे यहा�
 
 const express = require('express');
 const cors = require('cors');
-const multer = require('multer');
+const multer = require('multer'); // Multer को import करें
 const path = require('path');
 
 const { v4: uuidv4 } = require('uuid'); // uuidv4 को यहाँ import किया गया है
@@ -84,19 +84,22 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Add limit option to express.json() and express.urlencoded()
-// यह JSON और URL-encoded payloads के लिए है (गैर-फाइल डेटा)
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+// Set body parser limits for JSON and URL-encoded data.
+// This is for non-file data, or for the total request size before Multer processes it.
+// Increased to 100MB as a generous upper limit, just in case.
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 // Multer setup:
-// ************** यहाँ Multer की limits को बढ़ाया गया है **************
+// We use memoryStorage as the file is immediately sent to Cloudinary.
+// Crucially, the `limits` option for `fileSize` is set here to allow large files.
+// This limit is applied by Multer to the incoming file data.
 const upload = multer({
-    storage: multer.memoryStorage(), // आप अभी भी memoryStorage का उपयोग कर रहे हैं
-    limits: { fileSize: 50 * 1024 * 1024 } // 50 MB की सीमा (bytes में)। आप इसे 100 * 1024 * 1024 करके 100MB भी कर सकते हैं।
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 100 * 1024 * 1024 // Allow up to 100 MB for file uploads
+    }
 });
-// ************************************************************************
-
 
 // --- API Endpoints for News ---
 
@@ -161,9 +164,10 @@ app.get('/api/news/:newsid', async (req, res) => {
     }
 });
 
-// POST a new news item (Multer is used here to parse other form fields, but image upload will be direct to Cloudinary)
-app.post('/api/news', upload.none(), async (req, res) => { // Changed to upload.none() as image is direct uploaded
-    const { title, category, fullContent, imageUrl, author, authorImage, authorId } = req.body; // imageUrl will now come from frontend
+// POST a new news item (Multer's `upload.none()` is used for parsing text fields from multipart forms)
+// The image itself is uploaded directly to Cloudinary from the client.
+app.post('/api/news', upload.none(), async (req, res) => {
+    const { title, category, fullContent, imageUrl, author, authorImage, authorId } = req.body;
 
     console.log('Received POST /api/news request.');
     console.log('req.body:', req.body);
@@ -176,11 +180,11 @@ app.post('/api/news', upload.none(), async (req, res) => { // Changed to upload.
     const finalImageUrl = imageUrl || 'https://placehold.co/600x400?text=No+Image';
 
     const newNews = {
-        id: uuidv4(), // uuidv4 का उपयोग करके unique ID बनाना
+        id: uuidv4(),
         category,
         title,
         fullContent: fullContent.trim(),
-        imageUrl: finalImageUrl, // Use the imageUrl received from frontend
+        imageUrl: finalImageUrl,
         author,
         authorImage: authorImage || 'https://placehold.co/28x28?text=A',
         publishDate: new Date().toISOString(),
@@ -208,10 +212,10 @@ app.post('/api/news', upload.none(), async (req, res) => { // Changed to upload.
     }
 });
 
-// PUT/PATCH (Update) an existing news item (Multer is used here to parse other form fields)
-app.put('/api/news/:newsid', upload.none(), async (req, res) => { // Changed to upload.none()
+// PUT/PATCH (Update) an existing news item (Multer's `upload.none()` for text fields)
+app.put('/api/news/:newsid', upload.none(), async (req, res) => {
     const newsId = req.params.newsid;
-    const { title, category, fullContent, imageUrl, author, authorImage, authorId } = req.body; // imageUrl will now come from frontend
+    const { title, category, fullContent, imageUrl, author, authorImage, authorId } = req.body;
 
     console.log(`Received PUT /api/news/${newsId} request.`);
     console.log('req.body for update:', req.body);
@@ -231,7 +235,7 @@ app.put('/api/news/:newsid', upload.none(), async (req, res) => { // Changed to 
             return res.status(400).json({ message: 'Full content cannot be empty.' });
         }
 
-        const finalImageUrl = imageUrl || existingNews.imageUrl; // Use new imageUrl or keep existing
+        const finalImageUrl = imageUrl || existingNews.imageUrl;
 
         const updateQuery = `
             UPDATE news
@@ -258,7 +262,6 @@ app.put('/api/news/:newsid', upload.none(), async (req, res) => { // Changed to 
     }
 });
 
-
 // DELETE a news item
 app.delete('/api/news/:newsid', async (req, res) => {
     const newsId = req.params.newsid;
@@ -274,19 +277,25 @@ app.delete('/api/news/:newsid', async (req, res) => {
         if (newsItemToDelete.imageUrl && newsItemToDelete.imageUrl.includes('res.cloudinary.com')) {
             // Extract public_id from Cloudinary URL
             const urlParts = newsItemToDelete.imageUrl.split('/');
-            // Cloudinary URL format example: https://res.cloudinary.com/<cloud_name>/image/upload/<version>/<folder>/<public_id>.<format>
-            // We need to extract '<folder>/<public_id>'
             const uploadIndex = urlParts.indexOf('upload');
+
             if (uploadIndex > -1 && urlParts.length > uploadIndex + 1) {
-                const publicIdPath = urlParts.slice(uploadIndex + 1).join('/'); // Get everything after 'upload/'
-                const publicIdWithFormat = publicIdPath.split('/').pop(); // Get last part (public_id.format)
+                // Get the path after 'upload/' (e.g., 'v12345/folder/public_id.format')
+                const pathAfterUpload = urlParts.slice(uploadIndex + 1).join('/');
+
+                // If it contains a version number (like v12345), remove it for public_id extraction
+                const publicIdWithVersionAndFormat = pathAfterUpload.split('/').slice(1).join('/'); // Remove version part
+                const publicIdWithFormat = publicIdWithVersionAndFormat.includes('/') ? publicIdWithVersionAndFormat : publicIdWithVersionAndFormat.split('/').pop();
+
                 const publicId = publicIdWithFormat.split('.')[0]; // Get public_id without format
-                // Reconstruct the full public ID path, assuming the 'folder' is the second to last segment
-                // If there's a folder, it's typically the part before the final publicIdWithFormat
+
                 let folderAndPublicId = publicId;
-                if (publicIdPath.includes('/')) {
-                    const folder = publicIdPath.substring(0, publicIdPath.lastIndexOf('/'));
-                    folderAndPublicId = `${folder}/${publicId}`;
+                if (pathAfterUpload.includes('/')) {
+                    // Extract the folder if present (e.g., 'flashnews_uploads/public_id')
+                    const folderMatch = pathAfterUpload.match(/(.+?)\/[^/]+?\.[^/]+$/); // Regex to get folder before filename.ext
+                    if (folderMatch && folderMatch[1]) {
+                        folderAndPublicId = `${folderMatch[1]}/${publicId}`;
+                    }
                 }
 
                 console.log("Attempting to delete Cloudinary image with public ID:", folderAndPublicId);
@@ -299,7 +308,6 @@ app.delete('/api/news/:newsid', async (req, res) => {
                 } catch (clError) {
                     console.error("Error deleting image from Cloudinary:", clError);
                     // Don't block the news item deletion if Cloudinary deletion fails
-                    // Log and continue, as the primary goal is to remove the news record
                 }
             } else {
                 console.warn("Could not parse Cloudinary URL for deletion:", newsItemToDelete.imageUrl);
@@ -377,7 +385,7 @@ app.post('/api/news/:newsId/comments', async (req, res) => {
     }
 
     const newComment = {
-        id: uuidv4(), // uuidv4 का उपयोग करके unique ID बनाना
+        id: uuidv4(),
         news_id: newsId,
         author: author,
         authorId: authorId || 'guest',
@@ -464,16 +472,18 @@ app.delete('/api/news/:newsId/comments/:commentId', async (req, res) => {
 // --- Error Handling Middleware (should be last app.use) ---
 app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {
-        console.error("Multer error:", err);
-        // Specifically handle Multer's file size limit error
+        console.error("Multer error caught in middleware:", err);
         if (err.code === 'LIMIT_FILE_SIZE') {
-            return res.status(413).json({ message: 'File too large. Maximum size is 50MB.' });
+            return res.status(413).json({ message: `File too large. Maximum size is ${upload.limits.fileSize / (1024 * 1024)}MB.` });
         }
-        return res.status(400).json({ message: err.message || 'File upload error.' });
+        // General Multer errors
+        return res.status(400).json({ message: `File upload error: ${err.message}` });
+    } else if (err.type === 'entity.too.large') { // This error type comes from body-parser (express.json/urlencoded)
+        console.error("Express body-parser error caught in middleware (PayloadTooLargeError):", err);
+        return res.status(413).json({ message: `Request entity too large: ${err.message}. Please try with a smaller payload.` });
     } else if (err) {
-        console.error('Generic server error:', err);
-        // Ensure the error message is safe to send back
-        return res.status(500).json({ message: err.message || 'An unexpected error occurred.' });
+        console.error('Generic server error caught in middleware:', err.stack || err);
+        return res.status(500).json({ message: err.message || 'An unexpected server error occurred.' });
     }
     next();
 });
