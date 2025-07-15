@@ -5,7 +5,6 @@ const cors = require('cors');
 const multer = require('multer'); // Multer is still needed for parsing multipart/form-data, but actual image upload will be direct to Cloudinary
 const path = require('path');
 const crypto = require("crypto");
-const cloudinary = require  ("cloudinary").v2;
 
 const fs = require('fs'); // Not directly used in the final version with Cloudinary direct upload, but keeping as it was present.
 const { v4: uuidv4 } = require('uuid');
