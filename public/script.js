@@ -468,6 +468,9 @@ newsForm.addEventListener('submit', async function(e) {
 
     console.log('DEBUG: 0.1. Form values collected. Title:', title, 'Category:', category);
     console.log('DEBUG: 0.2. Image file:', newsImageFile ? newsImageFile.name : 'No file selected');
+    if (newsImageFile) {
+        console.log('DEBUG: 0.2.1. Image file size:', (newsImageFile.size / 1024 / 1024).toFixed(2), 'MB');
+    }
     console.log('DEBUG: 0.3. Editing ID:', editingId);
     console.log('DEBUG: 0.4. Full Content (trimmed):', content);
 
@@ -487,7 +490,7 @@ newsForm.addEventListener('submit', async function(e) {
     try {
         if (newsImageFile) {
             // Step 1: Get Cloudinary signature from your backend
-            const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, { // <-- यह URL सही किया गया है
+            const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ folder: 'flashnews_uploads' }) // Optional: send folder name
@@ -495,7 +498,7 @@ newsForm.addEventListener('submit', async function(e) {
 
             if (!signatureResponse.ok) {
                 const errorData = await signatureResponse.json();
-                throw new Error(errorData.message || 'Failed to get Cloudinary signature.');
+                throw new Error(errorData.message || 'Failed to get Cloudinary signature from backend.');
             }
             const { signature, timestamp, api_key, cloud_name, folder } = await signatureResponse.json();
             console.log('DEBUG: Cloudinary Signature received:', { signature, timestamp, api_key, cloud_name, folder });
@@ -526,7 +529,7 @@ newsForm.addEventListener('submit', async function(e) {
             const existingNews = allNews.find(item => item.id === editingId);
             if (existingNews) {
                 // If no new file selected, check if user cleared image or wants to keep existing
-                if (currentImagePreview.src.includes('placehold.co') && currentImagePreview.src.includes('No+Image')) { // Updated check
+                if (currentImagePreview.src.includes('placehold.co') && currentImagePreview.src.includes('No+Image')) {
                     finalImageUrl = 'https://placehold.co/600x400?text=No+Image'; // User cleared image
                     console.log('DEBUG: Image cleared for existing post.');
                 } else if (existingNews.imageUrl) {
@@ -569,8 +572,8 @@ newsForm.addEventListener('submit', async function(e) {
                 console.error('DEBUG: Server responded with error JSON:', errorData);
                 throw new Error(errorData.message || 'Server error during news submission.');
             } catch (jsonParseError) {
-                console.error('DEBUG: Server responded with non-JSON error or empty response:', errorText); // Improved error message
-                throw new Error(`Server error: ${errorText.substring(0, 100)}... (Status: ${response.status})`); // Truncate long HTML errors
+                console.error('DEBUG: Server responded with non-JSON error or empty response:', errorText);
+                throw new Error(`Server error: ${errorText.substring(0, 200)}... (Status: ${response.status})`); // Truncate long HTML errors
             }
         }
 
@@ -580,7 +583,7 @@ newsForm.addEventListener('submit', async function(e) {
         addNotification(
             editingId ? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`,
             editingId ? 'fas fa-pen' : 'fas fa-newspaper',
-            result.id // Use the ID returned from the server
+            result.id
         );
 
         // Reset form
@@ -623,7 +626,7 @@ document.getElementById('newsImage').addEventListener('change', function() {
 clearImageSelection.addEventListener('click', () => {
     document.getElementById('newsImage').value = ''; // Clear the file input
     imagePreviewContainer.style.display = 'none';
-    currentImagePreview.src = 'https://placehold.co/600x400?text=No+Image'; // Set a default placeholder if cleared - Updated placeholder
+    currentImagePreview.src = 'https://placehold.co/600x400?text=No+Image'; // Set a default placeholder if cleared
 });
 
 
@@ -640,7 +643,7 @@ async function fetchNewsDetailAndComments(newsId) {
 
         // Helper function to resolve image URL for modal - direct use for Cloudinary
         const getModalImageUrl = (url) => {
-            return url || 'https://placehold.co/600x400?text=No+Image'; // Updated placeholder
+            return url || 'https://placehold.co/600x400?text=No+Image';
         };
 
         // Populate modal
@@ -648,10 +651,10 @@ async function fetchNewsDetailAndComments(newsId) {
         modalNewsImage.alt = newsItem.title;
         modalCategoryTag.textContent = newsItem.category;
         modalNewsTitle.textContent = newsItem.title;
-        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A'; // Updated placeholder
+        modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A';
         modalAuthorName.textContent = newsItem.author;
-        modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate); // Use formatDisplayDate
-        modalNewsContent.textContent = newsItem.fullContent; // This directly uses fullContent
+        modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate);
+        modalNewsContent.textContent = newsItem.fullContent;
         modalAuthorBio.textContent = `Read more articles by ${newsItem.author}.`;
 
         commentNewsIdInput.value = newsId;
@@ -729,7 +732,7 @@ commentForm.addEventListener('submit', async function(e) {
 
     const commentData = {
         author: commenterName,
-        authorId: MY_POSTS_AUTHOR_ID, // Use the fixed author ID for comments as well
+        authorId: MY_POSTS_AUTHOR_ID,
         avatar: commenterAvatar,
         text: commentText
     };
@@ -769,7 +772,7 @@ commentForm.addEventListener('submit', async function(e) {
 
         commentForm.reset();
         editCommentIdInput.value = '';
-        commentTextInput.value = ''; // Ensure text input is cleared
+        commentTextInput.value = '';
         postCommentBtn.innerHTML = '<i class="fas fa-comment-dots"></i> Post Comment';
 
     } catch (error) {
@@ -789,7 +792,7 @@ document.addEventListener('click', async function(e) {
         const newsCardElement = target.closest('.news-card,.main-feature,.side-feature');
         if (!newsCardElement) return;
         const newsIdToDelete = newsCardElement.dataset.id;
-        const newsItemAuthorId = newsCardElement.dataset.authorId; // Get authorId from data attribute
+        const newsItemAuthorId = newsCardElement.dataset.authorId;
 
         if (newsItemAuthorId === MY_POSTS_AUTHOR_ID) {
             if (confirm('Are you sure you want to delete this news item?')) {
@@ -821,7 +824,7 @@ document.addEventListener('click', async function(e) {
         const newsCardElement = target.closest('.news-card,.main-feature,.side-feature');
         if (!newsCardElement) return;
         const newsIdToEdit = newsCardElement.dataset.id;
-        const newsItemAuthorId = newsCardElement.dataset.authorId; // Get authorId from data attribute
+        const newsItemAuthorId = newsCardElement.dataset.authorId;
 
         if (newsItemAuthorId === MY_POSTS_AUTHOR_ID) {
             showLoading('Loading news for edit...');
@@ -942,14 +945,14 @@ document.addEventListener('click', async function(e) {
 // Close modal event listener
 closeModalButton.addEventListener('click', () => {
     newsDetailModal.classList.remove('visible');
-    document.body.style.overflow = '';
+    document.body.style.overflow = 'auto'; // Changed from '' to 'auto' for clarity
 });
 
 // Close modal if clicked outside content (on backdrop)
 newsDetailModal.addEventListener('click', (e) => {
     if (e.target === newsDetailModal) {
         newsDetailModal.classList.remove('visible');
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'auto'; // Changed from '' to 'auto' for clarity
     }
 });
 
@@ -1031,13 +1034,13 @@ profileIcon.addEventListener('click', () => {
 
 closeProfileModalBtn.addEventListener('click', () => {
     profileModal.classList.remove('visible');
-    document.body.style.overflow = '';
+    document.body.style.overflow = 'auto'; // Changed from '' to 'auto' for clarity
 });
 
 profileModal.addEventListener('click', (e) => {
     if (e.target === profileModal) {
         profileModal.classList.remove('visible');
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'auto'; // Changed from '' to 'auto' for clarity
     }
 });
 
@@ -1051,7 +1054,7 @@ profileAvatarUpload.addEventListener('change', function() {
         reader.readAsDataURL(file);
     } else {
         // If file input is cleared, revert to current avatar or a default placeholder
-        profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User'; // Updated placeholder
+        profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User';
     }
 });
 
@@ -1067,7 +1070,7 @@ profileForm.addEventListener('submit', function(e) {
         addNotification('Your profile has been updated!', 'fas fa-user');
         alert('Profile saved successfully!');
         profileModal.classList.remove('visible');
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'auto'; // Changed from '' to 'auto' for clarity
     } else {
         alert('Please enter your name.');
     }
