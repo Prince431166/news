@@ -4,10 +4,13 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer'); // Multer को import करें
 const path = require('path');
-
+const { Pool } = require('pg'); // PostgreSQL Client के बजाय Pool का उपयोग करें
 const { v4: uuidv4 } = require('uuid'); // uuidv4 को यहाँ import किया गया है
 
 // --- Cloudinary Setup ---
+// Cloudinary को यहाँ डिक्लेयर करें - यह सुनिश्चित करें कि यह केवल एक बार ही हो
+const cloudinary = require('cloudinary').v2;
+
 // Configure Cloudinary - Render लॉग्स में पुष्टि करने के लिए इन्हें लॉग करें
 console.log('Cloudinary Config Check:');
 console.log('CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME ? 'Loaded' : 'NOT LOADED');
@@ -17,60 +20,65 @@ console.log('API_SECRET:', process.env.CLOUDINARY_API_SECRET ? 'Loaded' : 'NOT L
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true // हमेशा secure URLs का उपयोग करें
 });
 
 // --- PostgreSQL Setup ---
-const { Client } = require('pg');
-const client = new Client({
+const pool = new Pool({ // Client के बजाय Pool का उपयोग करें
     connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false // Required for Render's managed databases in production
     }
 });
 
-// Connect to PostgreSQL when the server starts
-client.connect()
-    .then(() => {
-        console.log('Connected to PostgreSQL database');
-        createTables(); // Ensure tables are created on connect
-    })
-    .catch(err => console.error('Error connecting to PostgreSQL:', err.stack));
-
-// Function to create tables if they don't exist
-async function createTables() {
-    try {
-        await client.query(`
+// Connect to PostgreSQL and create tables if they don't exist
+pool.connect() // client.connect() के बजाय pool.connect() का उपयोग करें
+    .then(client => { // client ऑब्जेक्ट को यहां पास किया जाएगा
+        console.log('Connected to PostgreSQL database!');
+        return client.query(`
             CREATE TABLE IF NOT EXISTS news (
-                id VARCHAR(255) PRIMARY KEY,
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- UUID को प्राइमरी की के रूप में उपयोग करें
                 category TEXT NOT NULL,
                 title TEXT NOT NULL,
                 fullContent TEXT NOT NULL,
                 imageUrl TEXT, -- This will now store Cloudinary URLs
                 author TEXT NOT NULL,
                 authorImage TEXT,
-                publishDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                publishDate TIMESTAMPTZ DEFAULT NOW(), -- TIMESTAMP WITH TIME ZONE के बजाय TIMESTAMPTZ
                 isFeatured BOOLEAN DEFAULT FALSE,
                 isSideFeature BOOLEAN DEFAULT FALSE,
                 authorId TEXT NOT NULL
             );
-        `);
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS comments (
-                id VARCHAR(255) PRIMARY KEY,
-                news_id VARCHAR(255) REFERENCES news(id) ON DELETE CASCADE,
-                author TEXT NOT NULL,
-                authorId TEXT NOT NULL,
-                avatar TEXT,
-                text TEXT NOT NULL,
-                timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            );
-        `);
-        console.log('News and Comments tables ensured.');
-    } catch (err) {
-        console.error('Error creating tables:', err);
-    }
-}
+        `)
+        .then(() => {
+            return client.query(`
+                CREATE TABLE IF NOT EXISTS comments (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- UUID को प्राइमरी की के रूप में उपयोग करें
+                    news_id UUID REFERENCES news(id) ON DELETE CASCADE,
+                    author TEXT NOT NULL,
+                    authorId TEXT NOT NULL,
+                    avatar TEXT,
+                    text TEXT NOT NULL,
+                    timestamp TIMESTAMPTZ DEFAULT NOW() -- TIMESTAMP WITH TIME ZONE के बजाय TIMESTAMPTZ
+                );
+            `);
+        })
+        .then(() => {
+            console.log('News and Comments tables ensured.');
+            client.release(); // client को रिलीज़ करें
+        })
+        .catch(err => {
+            console.error('Error creating tables:', err);
+            client.release(); // त्रुटि होने पर भी client को रिलीज़ करें
+            process.exit(1); // यदि DB टेबल नहीं बन पाती हैं तो ऐप को बंद करें
+        });
+    })
+    .catch(err => {
+        console.error('Error connecting to PostgreSQL:', err.stack);
+        process.exit(1); // यदि DB से कनेक्ट नहीं हो पाता है तो ऐप को बंद करें
+    });
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -83,15 +91,10 @@ app.use(cors({
 }));
 
 // Set body parser limits for JSON and URL-encoded data.
-// This is for non-file data, or for the total request size before Multer processes it.
-// Increased to 100MB as a generous upper limit, just in case.
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 // Multer setup:
-// We use memoryStorage as the file is immediately sent to Cloudinary.
-// Crucially, the `limits` option for `fileSize` is set here to allow large files.
-// This limit is applied by Multer to the incoming file data.
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
@@ -111,7 +114,7 @@ app.get('/api/news', async (req, res) => {
         const { category, search, authorId } = req.query;
 
         if (category && category !== 'all' && category !== 'my-posts') {
-            query += ` AND category = $${paramIndex++}`;
+            query += ` AND category ILIKE $${paramIndex++}`; // ILIKE का उपयोग करें ताकि केस-इनसेंसिटिव हो
             queryParams.push(category);
         }
         if (search) {
@@ -126,16 +129,16 @@ app.get('/api/news', async (req, res) => {
 
         query += ' ORDER BY publishDate DESC';
 
-        const result = await client.query(query, queryParams);
+        const result = await pool.query(query, queryParams); // client.query() के बजाय pool.query() का उपयोग करें
         const news = result.rows;
 
         // Fetch comments for each news item
-        for (const newsItem of news) {
-            const commentsResult = await client.query('SELECT * FROM comments WHERE news_id = $1 ORDER BY timestamp DESC', [newsItem.id]);
-            newsItem.comments = commentsResult.rows;
-        }
+        const newsWithComments = await Promise.all(news.map(async (newsItem) => {
+            const commentsResult = await pool.query('SELECT * FROM comments WHERE news_id = $1 ORDER BY timestamp DESC', [newsItem.id]); // client.query() के बजाय pool.query() का उपयोग करें
+            return { ...newsItem, comments: commentsResult.rows };
+        }));
 
-        res.json(news);
+        res.json(newsWithComments);
     } catch (err) {
         console.error('Error fetching news:', err.stack);
         res.status(500).json({ message: 'Error fetching news' });
@@ -146,11 +149,11 @@ app.get('/api/news', async (req, res) => {
 app.get('/api/news/:newsid', async (req, res) => {
     try {
         const newsId = req.params.newsid;
-        const result = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
+        const result = await pool.query('SELECT * FROM news WHERE id = $1', [newsId]); // client.query() के बजाय pool.query() का उपयोग करें
         const newsItem = result.rows[0];
 
         if (newsItem) {
-            const commentsResult = await client.query('SELECT * FROM comments WHERE news_id = $1 ORDER BY timestamp DESC', [newsItem.id]);
+            const commentsResult = await pool.query('SELECT * FROM comments WHERE news_id = $1 ORDER BY timestamp DESC', [newsItem.id]); // client.query() के बजाय pool.query() का उपयोग करें
             newsItem.comments = commentsResult.rows;
             res.json(newsItem);
         } else {
@@ -178,14 +181,14 @@ app.post('/api/news', upload.none(), async (req, res) => {
     const finalImageUrl = imageUrl || 'https://placehold.co/600x400?text=No+Image';
 
     const newNews = {
-        id: uuidv4(),
+        // id: uuidv4(), // PostgreSQL में gen_random_uuid() का उपयोग किया जा रहा है, इसलिए इसे हटाने की आवश्यकता है
         category,
         title,
         fullContent: fullContent.trim(),
         imageUrl: finalImageUrl,
         author,
         authorImage: authorImage || 'https://placehold.co/28x28?text=A',
-        publishDate: new Date().toISOString(),
+        // publishDate: new Date().toISOString(), // PostgreSQL में CURRENT_TIMESTAMP का उपयोग किया जा रहा है
         isFeatured: false,
         isSideFeature: false,
         authorId,
@@ -193,16 +196,16 @@ app.post('/api/news', upload.none(), async (req, res) => {
 
     try {
         const insertQuery = `
-            INSERT INTO news (id, category, title, fullContent, imageUrl, author, authorImage, publishDate, isFeatured, isSideFeature, authorId)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            INSERT INTO news (category, title, fullContent, imageUrl, author, authorImage, isFeatured, isSideFeature, authorId)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING *;
         `;
         const values = [
-            newNews.id, newNews.category, newNews.title, newNews.fullContent, newNews.imageUrl,
-            newNews.author, newNews.authorImage, newNews.publishDate, newNews.isFeatured,
+            newNews.category, newNews.title, newNews.fullContent, newNews.imageUrl,
+            newNews.author, newNews.authorImage, newNews.isFeatured,
             newNews.isSideFeature, newNews.authorId
         ];
-        const result = await client.query(insertQuery, values);
+        const result = await pool.query(insertQuery, values); // client.query() के बजाय pool.query() का उपयोग करें
         res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error('Error adding new news item:', err.stack);
@@ -213,27 +216,31 @@ app.post('/api/news', upload.none(), async (req, res) => {
 // PUT/PATCH (Update) an existing news item (Multer's `upload.none()` for text fields)
 app.put('/api/news/:newsid', upload.none(), async (req, res) => {
     const newsId = req.params.newsid;
-    const { title, category, fullContent, imageUrl, author, authorImage, authorId } = req.body;
+    const { title, category, fullContent, imageUrl, author, authorImage, authorId, isFeatured, isSideFeature } = req.body; // isFeatured, isSideFeature भी यहाँ लें
 
     console.log(`Received PUT /api/news/${newsId} request.`);
     console.log('req.body for update:', req.body);
 
     try {
-        const currentNewsResult = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
+        const currentNewsResult = await pool.query('SELECT * FROM news WHERE id = $1', [newsId]); // client.query() के बजाय pool.query() का उपयोग करें
         const existingNews = currentNewsResult.rows[0];
 
         if (!existingNews) {
             return res.status(404).json({ message: 'News item not found' });
         }
 
-        let updatedFullContent = existingNews.fullContent;
-        if (fullContent !== undefined && fullContent.trim() !== '') {
-            updatedFullContent = fullContent.trim();
-        } else if (fullContent !== undefined && fullContent.trim() === '') {
+        // COALESCE का उपयोग करने पर, अगर क्लाइंट 'undefined' या 'null' भेजता है, तो डेटाबेस का मान रखा जाएगा
+        // लेकिन यदि क्लाइंट खाली स्ट्रिंग ('') भेजता है, तो उसे अपडेट किया जाएगा।
+        // fullContent के लिए, यदि यह खाली भेजा जाता है तो हमें 400 त्रुटि देनी होगी।
+        let updatedFullContent = fullContent;
+        if (fullContent !== undefined && fullContent.trim() === '') {
             return res.status(400).json({ message: 'Full content cannot be empty.' });
+        } else if (fullContent !== undefined) {
+             updatedFullContent = fullContent.trim();
         }
 
-        const finalImageUrl = imageUrl || existingNews.imageUrl;
+
+        const finalImageUrl = imageUrl || existingNews.imageUrl; // अगर कोई नई इमेज नहीं है तो मौजूदा इमेज रखें
 
         const updateQuery = `
             UPDATE news
@@ -244,14 +251,17 @@ app.put('/api/news/:newsid', upload.none(), async (req, res) => {
                 imageUrl = $4,
                 author = COALESCE($5, author),
                 authorImage = COALESCE($6, authorImage),
-                authorId = COALESCE($7, authorId)
-            WHERE id = $8
+                authorId = COALESCE($7, authorId),
+                isFeatured = COALESCE($8, isFeatured),
+                isSideFeature = COALESCE($9, isSideFeature)
+            WHERE id = $10
             RETURNING *;
         `;
         const values = [
-            title, category, updatedFullContent, finalImageUrl, author, authorImage, authorId, newsId
+            title, category, updatedFullContent, finalImageUrl, author, authorImage, authorId,
+            isFeatured, isSideFeature, newsId
         ];
-        const result = await client.query(updateQuery, values);
+        const result = await pool.query(updateQuery, values); // client.query() के बजाय pool.query() का उपयोग करें
         res.json(result.rows[0]);
 
     } catch (err) {
@@ -264,7 +274,7 @@ app.put('/api/news/:newsid', upload.none(), async (req, res) => {
 app.delete('/api/news/:newsid', async (req, res) => {
     const newsId = req.params.newsid;
     try {
-        const newsItemResult = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
+        const newsItemResult = await pool.query('SELECT * FROM news WHERE id = $1', [newsId]); // client.query() के बजाय pool.query() का उपयोग करें
         const newsItemToDelete = newsItemResult.rows[0];
 
         if (!newsItemToDelete) {
@@ -282,30 +292,28 @@ app.delete('/api/news/:newsid', async (req, res) => {
                 const pathAfterUpload = urlParts.slice(uploadIndex + 1).join('/');
 
                 // If it contains a version number (like v12345), remove it for public_id extraction
-                const publicIdWithVersionAndFormat = pathAfterUpload.split('/').slice(1).join('/'); // Remove version part
-                const publicIdWithFormat = publicIdWithVersionAndFormat.includes('/') ? publicIdWithVersionAndFormat : publicIdWithVersionAndFormat.split('/').pop();
-
-                const publicId = publicIdWithFormat.split('.')[0]; // Get public_id without format
-
-                let folderAndPublicId = publicId;
-                if (pathAfterUpload.includes('/')) {
-                    // Extract the folder if present (e.g., 'flashnews_uploads/public_id')
-                    const folderMatch = pathAfterUpload.match(/(.+?)\/[^/]+?\.[^/]+$/); // Regex to get folder before filename.ext
-                    if (folderMatch && folderMatch[1]) {
-                        folderAndPublicId = `${folderMatch[1]}/${publicId}`;
-                    }
+                // This regex is more robust for cases like 'v12345/folder/subfolder/public_id.ext'
+                const publicIdMatch = pathAfterUpload.match(/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/);
+                let publicId;
+                if (publicIdMatch && publicIdMatch[1]) {
+                    publicId = publicIdMatch[1];
+                } else {
+                    console.warn("Could not extract public ID from Cloudinary URL:", newsItemToDelete.imageUrl);
+                    publicId = null; // Set to null to skip Cloudinary delete if cannot extract
                 }
 
-                console.log("Attempting to delete Cloudinary image with public ID:", folderAndPublicId);
-                try {
-                    const cloudinaryDeleteResult = await cloudinary.uploader.destroy(folderAndPublicId);
-                    console.log('Cloudinary delete result:', cloudinaryDeleteResult);
-                    if (cloudinaryDeleteResult.result !== 'ok') {
-                        console.warn(`Cloudinary delete for ${folderAndPublicId} was not 'ok':`, cloudinaryDeleteResult.result);
+                if (publicId) {
+                    console.log("Attempting to delete Cloudinary image with public ID:", publicId);
+                    try {
+                        const cloudinaryDeleteResult = await cloudinary.uploader.destroy(publicId);
+                        console.log('Cloudinary delete result:', cloudinaryDeleteResult);
+                        if (cloudinaryDeleteResult.result !== 'ok') {
+                            console.warn(`Cloudinary delete for ${publicId} was not 'ok':`, cloudinaryDeleteResult.result);
+                        }
+                    } catch (clError) {
+                        console.error("Error deleting image from Cloudinary:", clError);
+                        // Don't block the news item deletion if Cloudinary deletion fails
                     }
-                } catch (clError) {
-                    console.error("Error deleting image from Cloudinary:", clError);
-                    // Don't block the news item deletion if Cloudinary deletion fails
                 }
             } else {
                 console.warn("Could not parse Cloudinary URL for deletion:", newsItemToDelete.imageUrl);
@@ -313,7 +321,7 @@ app.delete('/api/news/:newsid', async (req, res) => {
         }
 
         // Comments will be deleted automatically due to ON DELETE CASCADE in schema
-        const deleteNewsResult = await client.query('DELETE FROM news WHERE id = $1 RETURNING *', [newsId]);
+        const deleteNewsResult = await pool.query('DELETE FROM news WHERE id = $1 RETURNING *', [newsId]); // client.query() के बजाय pool.query() का उपयोग करें
 
         if (deleteNewsResult.rowCount > 0) {
             res.status(200).json({ message: 'News item deleted successfully' });
@@ -362,7 +370,7 @@ app.post('/api/cloudinary-signature', (req, res) => {
 app.get('/api/news/:newsId/comments', async (req, res) => {
     try {
         const newsId = req.params.newsId;
-        const result = await client.query('SELECT * FROM comments WHERE news_id = $1 ORDER BY timestamp DESC', [newsId]);
+        const result = await pool.query('SELECT * FROM comments WHERE news_id = $1 ORDER BY timestamp DESC', [newsId]); // client.query() के बजाय pool.query() का उपयोग करें
         res.json(result.rows);
     } catch (err) {
         console.error('Error fetching comments:', err.stack);
@@ -383,32 +391,32 @@ app.post('/api/news/:newsId/comments', async (req, res) => {
     }
 
     const newComment = {
-        id: uuidv4(),
+        // id: uuidv4(), // PostgreSQL में gen_random_uuid() का उपयोग किया जा रहा है
         news_id: newsId,
         author: author,
         authorId: authorId || 'guest',
         avatar: avatar || 'https://placehold.co/45x45?text=U',
         text: text.trim(),
-        timestamp: new Date().toISOString()
+        // timestamp: new Date().toISOString() // PostgreSQL में CURRENT_TIMESTAMP का उपयोग किया जा रहा है
     };
 
     try {
         // First, check if the news item exists
-        const newsCheck = await client.query('SELECT id FROM news WHERE id = $1', [newsId]);
+        const newsCheck = await pool.query('SELECT id FROM news WHERE id = $1', [newsId]); // client.query() के बजाय pool.query() का उपयोग करें
         if (newsCheck.rowCount === 0) {
             return res.status(404).json({ message: 'News item not found.' });
         }
 
         const insertQuery = `
-            INSERT INTO comments (id, news_id, author, authorId, avatar, text, timestamp)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO comments (news_id, author, authorId, avatar, text)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
         `;
         const values = [
-            newComment.id, newComment.news_id, newComment.author, newComment.authorId,
-            newComment.avatar, newComment.text, newComment.timestamp
+            newComment.news_id, newComment.author, newComment.authorId,
+            newComment.avatar, newComment.text
         ];
-        const result = await client.query(insertQuery, values);
+        const result = await pool.query(insertQuery, values); // client.query() के बजाय pool.query() का उपयोग करें
         res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error('Error adding new comment:', err.stack);
@@ -432,7 +440,7 @@ app.put('/api/news/:newsId/comments/:commentId', async (req, res) => {
             WHERE id = $2 AND news_id = $3
             RETURNING *;
         `;
-        const result = await client.query(updateQuery, [text.trim(), commentId, newsId]);
+        const result = await pool.query(updateQuery, [text.trim(), commentId, newsId]); // client.query() के बजाय pool.query() का उपयोग करें
 
         if (result.rowCount > 0) {
             res.json(result.rows[0]);
@@ -454,7 +462,7 @@ app.delete('/api/news/:newsId/comments/:commentId', async (req, res) => {
             WHERE id = $1 AND news_id = $2
             RETURNING *;
         `;
-        const result = await client.query(deleteQuery, [commentId, newsId]);
+        const result = await pool.query(deleteQuery, [commentId, newsId]); // client.query() के बजाय pool.query() का उपयोग करें
 
         if (result.rowCount > 0) {
             res.status(200).json({ message: 'Comment deleted successfully' });
