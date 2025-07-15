@@ -5,15 +5,12 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 
-// fs की अब सीधी ज़रूरत नहीं, क्योंकि हम लोकल स्टोरेज नहीं कर रहे
-// const fs = require('fs');
 const { v4: uuidv4 } = require('uuid'); // uuidv4 को यहाँ import किया गया है
 
 // --- Cloudinary Setup ---
 const cloudinary = require('cloudinary').v2;
 
-// Configure Cloudinary
-// Render लॉग्स में पुष्टि करने के लिए इन्हें लॉग करें, ताकि पता चले ENV vars लोड हुए या नहीं
+// Configure Cloudinary - Render लॉग्स में पुष्टि करने के लिए इन्हें लॉग करें
 console.log('Cloudinary Config Check:');
 console.log('CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME ? 'Loaded' : 'NOT LOADED');
 console.log('API_KEY:', process.env.CLOUDINARY_API_KEY ? 'Loaded' : 'NOT LOADED');
@@ -87,13 +84,19 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(express.json({ limit:'100mb', })); // For parsing application/json
-app.use(express.urlencoded({ limit:'100mb', extended: true })); // For parsing application/x-www-form-urlencoded
+// Add limit option to express.json() and express.urlencoded()
+// यह JSON और URL-encoded payloads के लिए है (गैर-फाइल डेटा)
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Multer setup: Since images are uploaded directly to Cloudinary from the client,
-// we use `multer.none()` in the routes to only parse other text fields from multipart forms.
-// Multer को initialize करना होगा, लेकिन यह फाइलें सीधे हैंडल नहीं करेगा।
-const upload = multer({ storage: multer.memoryStorage() }); // memoryStorage is a placeholder
+// Multer setup:
+// ************** यहाँ Multer की limits को बढ़ाया गया है **************
+const upload = multer({
+    storage: multer.memoryStorage(), // आप अभी भी memoryStorage का उपयोग कर रहे हैं
+    limits: { fileSize: 50 * 1024 * 1024 } // 50 MB की सीमा (bytes में)। आप इसे 100 * 1024 * 1024 करके 100MB भी कर सकते हैं।
+});
+// ************************************************************************
+
 
 // --- API Endpoints for News ---
 
@@ -170,7 +173,7 @@ app.post('/api/news', upload.none(), async (req, res) => { // Changed to upload.
         return res.status(400).json({ message: 'Missing required news fields or full content is empty.' });
     }
 
-    const finalImageUrl = imageUrl || 'https://placehold.co/600x400?text=No+Image'; // Updated placeholder
+    const finalImageUrl = imageUrl || 'https://placehold.co/600x400?text=No+Image';
 
     const newNews = {
         id: uuidv4(), // uuidv4 का उपयोग करके unique ID बनाना
@@ -179,7 +182,7 @@ app.post('/api/news', upload.none(), async (req, res) => { // Changed to upload.
         fullContent: fullContent.trim(),
         imageUrl: finalImageUrl, // Use the imageUrl received from frontend
         author,
-        authorImage: authorImage || 'https://placehold.co/28x28?text=A', // Updated placeholder
+        authorImage: authorImage || 'https://placehold.co/28x28?text=A',
         publishDate: new Date().toISOString(),
         isFeatured: false,
         isSideFeature: false,
@@ -318,7 +321,6 @@ app.delete('/api/news/:newsid', async (req, res) => {
 });
 
 // --- API Endpoint for Cloudinary Signature Generation ---
-// यह एंडपॉइंट सही है और इसे बदला नहीं गया है।
 app.post('/api/cloudinary-signature', (req, res) => {
     try {
         const { folder } = req.body;
@@ -379,7 +381,7 @@ app.post('/api/news/:newsId/comments', async (req, res) => {
         news_id: newsId,
         author: author,
         authorId: authorId || 'guest',
-        avatar: avatar || 'https://placehold.co/45x45?text=U', // Updated placeholder
+        avatar: avatar || 'https://placehold.co/45x45?text=U',
         text: text.trim(),
         timestamp: new Date().toISOString()
     };
@@ -463,9 +465,14 @@ app.delete('/api/news/:newsId/comments/:commentId', async (req, res) => {
 app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {
         console.error("Multer error:", err);
+        // Specifically handle Multer's file size limit error
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(413).json({ message: 'File too large. Maximum size is 50MB.' });
+        }
         return res.status(400).json({ message: err.message || 'File upload error.' });
     } else if (err) {
         console.error('Generic server error:', err);
+        // Ensure the error message is safe to send back
         return res.status(500).json({ message: err.message || 'An unexpected error occurred.' });
     }
     next();
