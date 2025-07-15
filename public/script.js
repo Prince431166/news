@@ -486,7 +486,7 @@ newsForm.addEventListener('submit', async function(e) {
     try {
         if (newsImageFile) {
             // Step 1: Get Cloudinary signature from your backend
-            const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, {
+            const signatureResponse = await fetch(`${BASE_API_URL}/get-signature`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ folder: 'flashnews_uploads' }) // Optional: send folder name
