@@ -507,17 +507,21 @@ newsForm.addEventListener('submit', async function(e) {
 
             // Step 2: Directly upload image to Cloudinary using the signature
             const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
-            const cloudinaryFormData = new FormData();
-            cloudinaryFormData.append('file', newsImageFile);
-            cloudinaryFormData.append('api_key', api_key);
-            cloudinaryFormData.append('timestamp', timestamp);
-            cloudinaryFormData.append('signature', signature);
-            cloudinaryFormData.append('folder', folder); // Add folder to direct upload
 
-            const cloudinaryResponse = await fetch(cloudinaryUploadUrl, {
-                method: 'POST',
-                body: cloudinaryFormData
-            });
+              const cloudinaryFormData = new FormData();
+             cloudinaryFormData.append('file', newsImageFile);
+             cloudinaryFormData.append('api_key', api_key);
+             cloudinaryFormData.append('timestamp', timestamp);
+             cloudinaryFormData.append('signature', signature);
+             cloudinaryFormData.append('folder', folder);
+
+             const cloudinaryResponse = await fetch(cloudinaryUploadUrl, {
+            method: 'POST',
+            body: cloudinaryFormData
+           });
+
+          const result = await cloudinaryResponse.json();
+          console.log("✅ Uploaded image:", result.secure_url);
 
             if (!cloudinaryResponse.ok) {
                 const errorData = await cloudinaryResponse.json();
