@@ -506,7 +506,7 @@ newsForm.addEventListener('submit', async function(e) {
                 const errorData = await signatureResponse.json();
                 throw new Error(errorData.message || 'Failed to get Cloudinary signature from backend.');
             }
-            const { signature, timestamp, api_key, cloud_name, folder } = signatureData;
+            const { signature, timestamp, apiKey: api_Key, cloudName: cloud_Name, folder } = signatureData; 
             console.log('DEBUG: Cloudinary Signature received:', { signature, timestamp, api_key, cloud_name, folder });
 
             // Step 2: Directly upload image to Cloudinary using the signature
