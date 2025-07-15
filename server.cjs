@@ -82,46 +82,6 @@ async function createTables() {
 }
 
 const app = express();
-
-// ====== Injected by ChatGPT: Start ======
-
-const cors = require('cors');
-const crypto = require('crypto');
-const cloudinary = require('cloudinary').v2;
-
-// Middleware: JSON parsing and CORS
-app.use(express.json({ limit: '10mb' }));
-app.use(cors({
-  origin: ['http://localhost:3000', 'https://your-netlify-site.netlify.app'],
-}));
-
-// Cloudinary config
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Signature route for secure uploads
-app.post('/get-signature', (req, res) => {
-  const timestamp = Math.round(Date.now() / 1000);
-  const folder = 'flashnews_uploads';
-  const paramsToSign = `folder=${folder}&timestamp=${timestamp}`;
-  const signature = crypto
-    .createHash('sha1')
-    .update(paramsToSign + process.env.CLOUDINARY_API_SECRET)
-    .digest('hex');
-
-  res.json({
-    timestamp,
-    signature,
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-    apiKey: process.env.CLOUDINARY_API_KEY,
-    folder
-  });
-});
-
-// ====== Injected by ChatGPT: End ======
 const PORT = process.env.PORT || 3000; // FIX: Corrected logical OR operator '||'
 
 // --- Middleware ---
