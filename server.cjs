@@ -8,8 +8,6 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid'); // uuidv4 को यहाँ import किया गया है
 
 // --- Cloudinary Setup ---
-const cloudinary = require('cloudinary').v2;
-
 // Configure Cloudinary - Render लॉग्स में पुष्टि करने के लिए इन्हें लॉग करें
 console.log('Cloudinary Config Check:');
 console.log('CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME ? 'Loaded' : 'NOT LOADED');
