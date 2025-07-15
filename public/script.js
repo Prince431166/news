@@ -510,9 +510,9 @@ newsForm.addEventListener('submit', async function(e) {
             console.log('DEBUG: Cloudinary Signature received:', { signature, timestamp, api_key, cloud_name, folder });
 
             // Step 2: Directly upload image to Cloudinary using the signature
-            const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
+            const url = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
 
-              const cloudinaryFormData = new FormData();
+             const cloudinaryFormData = new FormData();
              cloudinaryFormData.append('file', newsImageFile);
              cloudinaryFormData.append('api_key', api_key);
              cloudinaryFormData.append('timestamp', timestamp);
