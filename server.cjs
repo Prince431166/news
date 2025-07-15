@@ -1,4 +1,3 @@
-// server.js (Node.js/Express Backend Code)
 require('dotenv').config(); // Load environment variables - इसे यहाँ सबसे ऊपर रखें
 
 const express = require('express');
@@ -11,7 +10,9 @@ const { v4: uuidv4 } = require('uuid');
 
 // --- Cloudinary Setup ---
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary'); // Multer-storage-cloudinary is not directly used for client-side direct upload but helps in Multer's configuration context.
+// Multer-storage-cloudinary is not directly used for client-side direct upload but helps in Multer's configuration context.
+// We are no longer using multer-storage-cloudinary for image upload to cloudinary
+// const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 // Configure Cloudinary - Render लॉग्स में पुष्टि करने के लिए इन्हें लॉग करें
 console.log('Cloudinary Config Check:');
@@ -90,19 +91,14 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Multer storage configuration for Cloudinary (This is for server-side upload, not direct browser upload)
-// Keeping this setup as Multer might still parse other form fields if they are multipart/form-data.
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'flashnews_uploads', // Folder name in Cloudinary
-        format: async (req, file) => 'png',
-        public_id: (req, file) => `news_image_${uuidv4()}`,
-    },
-});
+// Multer setup: Since images are uploaded directly to Cloudinary from the client,
+// we use `multer.none()` in the routes to only parse other text fields from multipart forms.
+// The `storage` and `fileFilter` below are for conceptual understanding if you were
+// doing server-side upload, but are not actively used for the /api/news POST/PUT routes with direct upload.
+const storage = multer.memoryStorage(); // Using memoryStorage as a placeholder, not for actual Cloudinary upload.
 
 const upload = multer({
-    storage: storage,
+    storage: storage, // This storage is not used for direct Cloudinary upload but Multer needs it
     limits: { fileSize: 100 * 1024 * 1024 }, // Limit file size to 100MB
     fileFilter: (req, file, cb) => {
         const allowedTypes = /jpeg|jpg|png|gif/;
@@ -484,4 +480,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
-
