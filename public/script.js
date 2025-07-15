@@ -1,5 +1,3 @@
-// script.js (Frontend Code - assuming it's in a file named script.js or similar)
-
 // --- CONFIGURATION AND CONSTANTS ---
 // IMPORTANT: This BASE_API_URL must match the URL where your Node.js backend is running.
 const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // Make sure this is your *actual* deployed backend URL
