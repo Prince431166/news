@@ -87,8 +87,8 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(express.json()); // For parsing application/json
-app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
+app.use(express.json({ limit:'100mb', })); // For parsing application/json
+app.use(express.urlencoded({ limit:'100mb', extended: true })); // For parsing application/x-www-form-urlencoded
 
 // Multer setup: Since images are uploaded directly to Cloudinary from the client,
 // we use `multer.none()` in the routes to only parse other text fields from multipart forms.
