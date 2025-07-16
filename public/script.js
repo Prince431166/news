@@ -1,34 +1,23 @@
 // --- CONFIGURATION AND CONSTANTS ---
-// IMPORTANT: This BASE_API_URL must match the URL where your Node.js backend is running.
-<<<<<<< HEAD
-const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // Make sure this is your *actual* deployed backend URL
-=======
-const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api';
->>>>>>> 74cb0dd (updated files)
+const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // <--- सुनिश्चित करें कि यह आपका सही Render URL है
 
-const MY_POSTS_AUTHOR_ID = 'user-prince'; // Fixed ID for "my posts" (would come from user authentication in real app)
+// Removed MY_POSTS_AUTHOR_ID as it will now come from authenticated user
 const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profile (client-specific)
+const JWT_TOKEN_KEY = 'globalNewsJwtToken'; // LocalStorage for JWT token
 
-// Initial default news data (This is now primarily for initial setup of the backend,
-// the frontend will fetch from the backend. This data is not actively used by script.js
-// once the backend is running and providing data.)
-const DEFAULT_NEWS_DATA = [
-    { id: 'feature1', category: 'Technology', title: 'Breakthrough in Quantum Computing Announced', fullContent: 'Scientists have achieved a major milestone in quantum computing that could revolutionize how we process information and solve complex problems, opening up new frontiers in cryptography, drug discovery, and artificial intelligence.\n\nThis breakthrough could accelerate the development of next-generation technologies.', imageUrl: 'https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', author: 'Robert Chen', authorImage: 'https://randomuser.me/api/portraits/men/32.jpg', publishDate: 'July 5, 2025 at 10:00 AM', isFeatured: true, authorId: 'admin', comments: [] },
-    { id: 'sidefeature1', category: 'Business', title: 'Global Markets React to New Economic Policies', fullContent: 'Global markets are showing significant volatility as new economic policies are introduced. Analysts are closely watching how these changes will impact various sectors and international trade agreements.\n\nEconomic forecasts suggest potential shifts in investment strategies.', imageUrl: 'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Emily White', authorImage: 'https://randomuser.me/api/portraits/women/67.jpg', publishDate: 'July 5, 2025 at 1:00 PM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
-    { id: 'sidefeature2', category: 'Sports', title: 'National Team Qualifies for Finals', fullContent: 'In an exhilarating display of skill and determination, the national team has successfully secured its spot in the championship finals after a series of intense matches against top-ranked opponents.\n\nFans are eagerly anticipating the final showdown.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'David Lee', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 5, 2025 at 11:30 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
-    { id: 'sidefeature3', category: 'Automotive', title: 'Electric Vehicle Sales Surpass Traditional Models', fullContent: 'For the first time in history, sales of electric vehicles have officially surpassed traditional gasoline-powered models, signaling a significant shift in consumer preferences and the automotive industry\'s future.\n\nThis trend is expected to continue as infrastructure improves.', imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', author: 'Olivia Clark', authorImage: 'https://randomuser.me/api/portraits/women/55.jpg', publishDate: 'July 5, 2025 at 9:15 AM', isFeatured: true, isSideFeature: true, authorId: 'admin', comments: [] },
-    { id: 'news1', category: 'Environment', title: 'New Climate Agreement Signed by 40 Nations', fullContent: 'Global leaders from 40 nations have signed a landmark climate agreement, committing to ambitious targets aimed at significantly reducing carbon emissions by the year 2030, marking a crucial step towards combating climate change.\n\nThe agreement emphasizes renewable energy investments and sustainable practices.', imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Sarah Johnson', authorImage: 'https://randomuser.me/api/portraits/women/44.jpg', publishDate: 'July 4, 2025 at 3:00 PM', isFeatured: false, authorId: 'admin', comments: [] },
-    { id: 'news2', category: 'Sports', title: 'Underdog Team Advances to Championship Finals', fullContent: 'In a stunning upset, the underdog team defeats the reigning champions in a nail-biting finish, securing their spot in the championship finals and thrilling fans worldwide.\n\nTheir journey has captured the hearts of many.', imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'Michael Torres', authorImage: 'https://randomuser.me/api/portraits/men/22.jpg', publishDate: 'July 4, 2025 at 6:45 PM', isFeatured: false, authorId: 'admin', comments: [] },
-    { id: 'news3', category: 'Finance', title: 'Central Bank Announces Interest Rate Changes', fullContent: 'In response to recent economic indicators and inflation concerns, the central bank has announced a series of interest rate adjustments, a move that is expected to have a significant impact on borrowing costs and investment across the country.\n\nAnalysts predict a period of market adjustment.', imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', author: 'David Kim', authorImage: 'https://randomuser.me/api/portraits/men/65.jpg', publishDate: 'July 4, 2025 at 1:00 PM', isFeatured: false, authorId: 'admin', comments: [] }
-];
+// Initial default news data (No longer used directly by frontend for news)
+const DEFAULT_NEWS_DATA = []; // Clear this as it's not used by script.js anymore
 
 // --- GLOBAL STATE (will be fetched from backend) ---
-let allNews = []; // Master array of all news items
-let notifications = []; // Notifications are still client-side for simplicity, but could be backend too.
-let userProfile = { // User profile
+let allNews = [];
+let notifications = [];
+let userProfile = {
+    id: null, // User ID from backend
+    username: 'guest',
     name: 'Guest User',
     avatar: 'https://placehold.co/100x100?text=User'
 };
+let authToken = null; // Store JWT token
 
 // --- DOM Elements ---
 const menuToggle = document.getElementById('menuToggle');
@@ -81,6 +70,29 @@ const navCategoryLinks = document.querySelectorAll('.nav-link-category');
 const footerCategoryLinks = document.querySelectorAll('.footer-link-category');
 const scrollToTopBtn = document.querySelector('.scroll-to-top');
 
+// --- NEW AUTHENTICATION DOM Elements ---
+const authButtons = document.getElementById('authButtons');
+const loginButton = document.getElementById('loginButton');
+const registerButton = document.getElementById('registerButton');
+const logoutButton = document.getElementById('logoutButton');
+const adminPanelLink = document.getElementById('adminPanelLink');
+
+const authModal = document.getElementById('authModal');
+const closeAuthModalBtn = authModal.querySelector('.close-button');
+const authForm = document.getElementById('authForm');
+const authUsernameInput = document.getElementById('authUsername');
+const authPasswordInput = document.getElementById('authPassword');
+const authNameContainer = document.getElementById('authNameContainer');
+const authNameInput = document.getElementById('authName');
+const authAvatarContainer = document.getElementById('authAvatarContainer');
+const authAvatarUpload = document.getElementById('authAvatarUpload');
+const authAvatarPreview = document.getElementById('authAvatarPreview');
+const authSubmitBtn = document.getElementById('authSubmitBtn');
+const authToggleLink = document.getElementById('authToggleLink');
+const authModeTitle = document.getElementById('authModeTitle');
+
+let authMode = 'login'; // 'login' or 'register'
+
 // --- UTILITY FUNCTIONS ---
 function showLoading(message = 'Loading...', iconClass = 'fas fa-spinner', animate = true) {
     loadingMessage.textContent = message;
@@ -105,11 +117,8 @@ function displaySuccess(message = 'Operation successful!') {
 
 // Function to format date for display
 function formatDisplayDate(dateString) {
-    // Attempt to parse as ISO string or regular date string
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-        // Fallback for non-standard date strings (like the ones in DEFAULT_NEWS_DATA)
-        // You might need a more robust parsing for diverse date formats.
         return dateString;
     }
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
@@ -134,6 +143,24 @@ function timeAgo(dateString) {
     return Math.floor(seconds) + " seconds ago";
 }
 
+// --- JWT and User Profile Management ---
+function saveAuthToken(token) {
+    localStorage.setItem(JWT_TOKEN_KEY, token);
+    authToken = token;
+}
+
+function getAuthToken() {
+    if (!authToken) {
+        authToken = localStorage.getItem(JWT_TOKEN_KEY);
+    }
+    return authToken;
+}
+
+function clearAuthToken() {
+    localStorage.removeItem(JWT_TOKEN_KEY);
+    authToken = null;
+}
+
 function saveUserProfile() {
     localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(userProfile));
 }
@@ -142,14 +169,279 @@ function loadUserProfile() {
     const storedProfile = localStorage.getItem(USER_PROFILE_KEY);
     if (storedProfile) {
         userProfile = JSON.parse(storedProfile);
+    } else {
+        // Reset to default guest profile if no user profile is found
+        userProfile = {
+            id: null,
+            username: 'guest',
+            name: 'Guest User',
+            avatar: 'https://placehold.co/100x100?text=User'
+        };
     }
 }
+
+async function fetchAndSetUserProfile() {
+    const token = getAuthToken();
+    if (!token) {
+        userProfile = {
+            id: null,
+            username: 'guest',
+            name: 'Guest User',
+            avatar: 'https://placehold.co/100x100?text=User'
+        };
+        updateAuthUI();
+        saveUserProfile();
+        return;
+    }
+
+    try {
+        const response = await fetch(`${BASE_API_URL}/profile`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            userProfile = {
+                id: data.id,
+                username: data.username,
+                name: data.name,
+                avatar: data.avatar
+            };
+            saveUserProfile();
+        } else if (response.status === 401 || response.status === 403) {
+            // Token expired or invalid
+            clearAuthToken();
+            userProfile = {
+                id: null,
+                username: 'guest',
+                name: 'Guest User',
+                avatar: 'https://placehold.co/100x100?text=User'
+            };
+            saveUserProfile();
+            displayError('Your session has expired. Please log in again.');
+        } else {
+            throw new Error(`Failed to fetch profile: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        displayError('Failed to load user profile. Please check your connection or try again later.');
+        // Even if fetch fails, revert to guest user state
+        userProfile = {
+            id: null,
+            username: 'guest',
+            name: 'Guest User',
+            avatar: 'https://placehold.co/100x100?text=User'
+        };
+        saveUserProfile();
+    } finally {
+        updateAuthUI();
+    }
+}
+
+function updateAuthUI() {
+    if (userProfile.id) { // User is logged in
+        authButtons.classList.add('hidden');
+        logoutButton.classList.remove('hidden');
+        profileIcon.classList.remove('hidden');
+        adminPanelLink.classList.remove('hidden');
+    } else { // User is a guest
+        authButtons.classList.remove('hidden');
+        logoutButton.classList.add('hidden');
+        profileIcon.classList.add('hidden');
+        adminPanelLink.classList.add('hidden');
+    }
+}
+
+// --- AUTH MODAL LOGIC ---
+loginButton.addEventListener('click', () => {
+    authMode = 'login';
+    authModeTitle.textContent = 'Login';
+    authSubmitBtn.textContent = 'Login';
+    authToggleLink.innerHTML = 'Don\'t have an account? <a href="#">Register</a>';
+    authNameContainer.classList.add('hidden');
+    authAvatarContainer.classList.add('hidden');
+    authForm.reset();
+    authModal.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+});
+
+registerButton.addEventListener('click', () => {
+    authMode = 'register';
+    authModeTitle.textContent = 'Register';
+    authSubmitBtn.textContent = 'Register';
+    authToggleLink.innerHTML = 'Already have an account? <a href="#">Login</a>';
+    authNameContainer.classList.remove('hidden');
+    authAvatarContainer.classList.remove('hidden');
+    authForm.reset();
+    authAvatarPreview.src = 'https://placehold.co/100x100?text=User'; // Default for register
+    authModal.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+});
+
+authToggleLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (authMode === 'login') {
+        registerButton.click(); // Simulate click on register button
+    } else {
+        loginButton.click(); // Simulate click on login button
+    }
+});
+
+closeAuthModalBtn.addEventListener('click', () => {
+    authModal.classList.remove('visible');
+    document.body.style.overflow = 'auto';
+});
+
+authModal.addEventListener('click', (e) => {
+    if (e.target === authModal) {
+        authModal.classList.remove('visible');
+        document.body.style.overflow = 'auto';
+    }
+});
+
+authAvatarUpload.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            authAvatarPreview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        authAvatarPreview.src = 'https://placehold.co/100x100?text=User';
+    }
+});
+
+authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoading('Processing...');
+
+    const username = authUsernameInput.value.trim();
+    const password = authPasswordInput.value.trim();
+    const name = authNameInput.value.trim();
+
+    if (!username || !password) {
+        displayError('Username and password cannot be empty.');
+        hideLoading();
+        return;
+    }
+
+    let avatarUrl = authAvatarPreview.src; // Default to current preview image
+
+    try {
+        if (authAvatarUpload.files[0]) {
+            // Upload avatar to Cloudinary if a new file is selected
+            const avatarFile = authAvatarUpload.files[0];
+            const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder: 'flashnews_avatars' })
+            });
+
+            if (!signatureResponse.ok) {
+                const errorData = await signatureResponse.json();
+                throw new Error(errorData.message || 'Failed to get Cloudinary signature for avatar.');
+            }
+            const signatureData = await signatureResponse.json();
+            const { signature, timestamp, api_key, cloud_name, folder } = signatureData;
+
+            const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
+            const cloudinaryFormData = new FormData();
+            cloudinaryFormData.append('file', avatarFile);
+            cloudinaryFormData.append('api_key', api_key);
+            cloudinaryFormData.append('timestamp', timestamp);
+            cloudinaryFormData.append('signature', signature);
+            cloudinaryFormData.append('folder', folder);
+
+            const cloudinaryResponse = await fetch(cloudinaryUploadUrl, {
+                method: 'POST',
+                body: cloudinaryFormData
+            });
+
+            if (!cloudinaryResponse.ok) {
+                const errorData = await cloudinaryResponse.json();
+                throw new Error(errorData.error.message || 'Failed to upload avatar to Cloudinary.');
+            }
+            const cloudinaryResult = await cloudinaryResponse.json();
+            avatarUrl = cloudinaryResult.secure_url;
+        }
+
+        let endpoint = '';
+        let body = {};
+
+        if (authMode === 'login') {
+            endpoint = '/login';
+            body = { username, password };
+        } else { // register
+            endpoint = '/register';
+            body = { username, password, name: name || username, avatar: avatarUrl };
+        }
+
+        const response = await fetch(`${BASE_API_URL}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Failed to ${authMode}.`);
+        }
+
+        const result = await response.json();
+        if (authMode === 'login') {
+            saveAuthToken(result.token);
+            userProfile = {
+                id: result.user.id,
+                username: result.user.username,
+                name: result.user.name,
+                avatar: result.user.avatar
+            };
+            saveUserProfile();
+            displaySuccess('Logged in successfully!');
+            addNotification(`Welcome, ${userProfile.name}!`, 'fas fa-user-circle');
+            authModal.classList.remove('visible');
+            document.body.style.overflow = 'auto';
+            await fetchNews(currentActiveCategory, searchInput.value); // Re-fetch news
+        } else { // register
+            displaySuccess('Registration successful! Please log in.');
+            authMode = 'login'; // Switch to login mode after successful registration
+            authUsernameInput.value = username; // Pre-fill username
+            authPasswordInput.value = ''; // Clear password
+            loginButton.click(); // Open login modal
+        }
+    } catch (error) {
+        console.error(`Auth error during ${authMode}:`, error);
+        displayError(error.message);
+    } finally {
+        hideLoading();
+    }
+});
+
+logoutButton.addEventListener('click', () => {
+    if (confirm('Are you sure you want to log out?')) {
+        clearAuthToken();
+        userProfile = {
+            id: null,
+            username: 'guest',
+            name: 'Guest User',
+            avatar: 'https://placehold.co/100x100?text=User'
+        };
+        saveUserProfile();
+        updateAuthUI();
+        displaySuccess('Logged out successfully!');
+        addNotification('You have been logged out.', 'fas fa-sign-out-alt');
+        // Re-fetch news to reflect public view (e.g., cannot edit own posts anymore)
+        fetchNews(currentActiveCategory, searchInput.value);
+    }
+});
 
 // --- THEME TOGGLE ---
 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 const currentTheme = localStorage.getItem('theme');
 
-// Set initial theme
 if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
     document.documentElement.setAttribute('data-theme', 'dark');
     themeIcon.classList.remove('fa-sun');
@@ -158,9 +450,9 @@ if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
     document.documentElement.setAttribute('data-theme', 'light');
     themeIcon.classList.remove('fa-moon');
     themeIcon.classList.add('fa-sun');
+    localStorage.setItem('theme', 'light');
 }
 
-// Toggle theme
 themeToggle.addEventListener('click', function() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     if (currentTheme === 'light') {
@@ -218,11 +510,9 @@ function addNotification(message, icon = 'fas fa-info-circle', newsId = null) {
         newsId
     };
     notifications.unshift(newNotification);
-    if (notifications.length > 10) { // Keep only latest 10
+    if (notifications.length > 10) {
         notifications = notifications.slice(0, 10);
     }
-    // Ideally, notifications would also be stored/fetched from a backend
-    // For now, client-side only:
     localStorage.setItem('globalNewsNotifications', JSON.stringify(notifications));
     updateNotificationDisplay();
 }
@@ -244,7 +534,6 @@ document.addEventListener('click', (event) => {
 
 // --- NEWS FETCHING AND RENDERING (Backend Interaction) ---
 
-// Fetches all news from the backend API
 async function fetchNews(category = 'all', searchTerm = '') {
     showLoading('Fetching news...');
     try {
@@ -256,8 +545,8 @@ async function fetchNews(category = 'all', searchTerm = '') {
         if (searchTerm) {
             params.append('search', searchTerm);
         }
-        if (category === 'my-posts') {
-            params.append('authorId', MY_POSTS_AUTHOR_ID);
+        if (category === 'my-posts' && userProfile.id) { // Fetch "my posts" only if logged in
+            params.append('authorId', userProfile.id);
         }
         if (params.toString()) {
             url += `?${params.toString()}`;
@@ -265,34 +554,27 @@ async function fetchNews(category = 'all', searchTerm = '') {
 
         const response = await fetch(url);
         if (!response.ok) {
-            // If backend is down or returns an error, explicitly state the problem.
-            throw new Error(`Failed to fetch news from ${url}. Server responded with status: ${response.status}. Please ensure your backend server is running.`);
+            throw new Error(`Failed to fetch news from ${url}. Server responded with status: ${response.status}.`);
         }
         const data = await response.json();
-        allNews = data; // Update global news array with fetched data
-        renderNewsCards(category, searchTerm); // Render based on fetched data
+        allNews = data;
+        renderNewsCards(category, searchTerm);
         hideLoading();
     } catch (error) {
         console.error('Error fetching news:', error);
         displayError(`Failed to load news: ${error.message}`);
-        // Do NOT fall back to DEFAULT_NEWS_DATA here, as it encourages ignoring backend issues.
-        // A real app would show a persistent error or a retry mechanism.
     }
 }
 
-// Function to render news cards based on the allNews array
 function renderNewsCards(filterCategory = 'all', searchTerm = '') {
     featuredSection.innerHTML = '';
     latestNewsSection.innerHTML = '';
 
-    // Sort all news by publishDate (newest first)
-    // Ensure publishDate is handled as a Date object for proper sorting
     const sortedNewsData = [...allNews].sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
 
     const featuredNewsItems = sortedNewsData.filter(news => news.isFeatured);
     const latestNewsItems = sortedNewsData.filter(news => !news.isFeatured);
 
-    // Render Featured News
     const mainFeature = featuredNewsItems.find(news => !news.isSideFeature);
     if (mainFeature && shouldDisplayNews(mainFeature, filterCategory, searchTerm)) {
         featuredSection.appendChild(createNewsElement(mainFeature, 'main-feature'));
@@ -310,7 +592,6 @@ function renderNewsCards(filterCategory = 'all', searchTerm = '') {
         featuredSection.appendChild(sideFeaturesContainer);
     }
 
-    // Render Latest News
     const newsGrid = document.createElement('div');
     newsGrid.className = 'news-grid';
     latestNewsItems.forEach(news => {
@@ -322,15 +603,13 @@ function renderNewsCards(filterCategory = 'all', searchTerm = '') {
 }
 
 function shouldDisplayNews(news, filterCategory, searchTerm) {
-    const matchesCategory = filterCategory === 'all' || news.category === filterCategory || (filterCategory === 'my-posts' && news.authorId === MY_POSTS_AUTHOR_ID);
+    const matchesCategory = filterCategory === 'all' || news.category === filterCategory || (filterCategory === 'my-posts' && news.authorId === userProfile.id);
     const matchesSearch = searchTerm === '' || news.title.toLowerCase().includes(searchTerm.toLowerCase()) || news.fullContent.toLowerCase().includes(searchTerm.toLowerCase()) || news.category.toLowerCase().includes(searchTerm.toLowerCase()) || news.author.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
 }
 
-// Helper function to resolve image URL for display
-// Simplified for Cloudinary integration: URLs from backend will be absolute.
 const getImageUrl = (url) => {
-    return url || 'https://via.placeholder.com/600x400?text=No+Image'; // Use the URL directly, or a placeholder
+    return url || 'https://placehold.co/600x400?text=No+Image';
 };
 
 function createNewsElement(newsItem, type) {
@@ -339,16 +618,15 @@ function createNewsElement(newsItem, type) {
     element.className = type;
     element.setAttribute('data-id', newsItem.id);
     element.setAttribute('data-category', newsItem.category);
-    element.setAttribute('data-author-id', newsItem.authorId); // Crucial for edit/delete check
+    element.setAttribute('data-author-id', newsItem.authorId);
 
-    // Ensure newsItem.fullContent is a string before calling split
     const safeFullContent = newsItem.fullContent || '';
     const firstParagraph = safeFullContent.split('\n')[0];
     const truncatedContent = firstParagraph.substring(0, 80) + (firstParagraph.length > 80 ? '...' : '');
 
     let actionsHTML = '';
-    // Check if the news item's authorId matches the client's MY_POSTS_AUTHOR_ID
-    if (newsItem.authorId === MY_POSTS_AUTHOR_ID) {
+    // Check if the news item's authorId matches the logged-in user's ID
+    if (newsItem.authorId === userProfile.id) {
         actionsHTML = `
             <div class="card-actions">
                 <i class="fas fa-edit" data-action="edit"></i>
@@ -357,15 +635,6 @@ function createNewsElement(newsItem, type) {
         `;
     }
 
-<<<<<<< HEAD
-=======
-    // Helper function to resolve image URL
-    const getImageUrl = (url) => {
-        // Use BASE_API_URL for locally uploaded images
-        return url.startsWith('/uploads/') ? `${BASE_API_URL}${url}` : url;
-    };
-
->>>>>>> 74cb0dd (updated files)
     let contentHTML = '';
     if (type === 'main-feature') {
         contentHTML = `
@@ -423,7 +692,7 @@ function createNewsElement(newsItem, type) {
 }
 
 // --- CATEGORY FILTERING ---
-let currentActiveCategory = 'all'; // Keep track of the currently active category
+let currentActiveCategory = 'all';
 
 function filterNewsByCategory(category) {
     navCategoryLinks.forEach(navLink => navLink.classList.remove('active'));
@@ -433,9 +702,9 @@ function filterNewsByCategory(category) {
     } else {
         document.querySelector('.nav-link-category[data-category="all"]').classList.add('active');
     }
-    currentActiveCategory = category; // Update the global variable
-    fetchNews(category); // Fetch news based on category
-    searchInput.value = ''; // Clear search input when filtering by category
+    currentActiveCategory = category;
+    fetchNews(category);
+    searchInput.value = '';
     document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -458,8 +727,8 @@ function performSearch() {
     const query = searchInput.value.toLowerCase().trim();
     navCategoryLinks.forEach(navLink => navLink.classList.remove('active'));
     document.querySelector('.nav-link-category[data-category="all"]').classList.add('active');
-    currentActiveCategory = 'all'; // Reset active category to all for search
-    fetchNews('all', query); // Search across all categories
+    currentActiveCategory = 'all';
+    fetchNews('all', query);
 }
 
 searchButton.addEventListener('click', performSearch);
@@ -474,163 +743,134 @@ searchInput.addEventListener('keyup', function(e) {
 // --- ADMIN NEWS PUBLISHING / EDITING (Backend Interaction) ---
 newsForm.addEventListener('submit', async function(e) {
     e.preventDefault();
-    console.log('DEBUG: 0. News form submit event triggered.');
+    if (!userProfile.id) {
+        displayError('You must be logged in to publish or edit news.');
+        return;
+    }
     showLoading('Processing news...');
 
     const title = document.getElementById('newsTitle').value.trim();
     const category = document.getElementById('newsCategory').value;
     const newsImageFile = document.getElementById('newsImage').files[0];
-    const content = document.getElementById('newsContent').value.trim(); // Trim content
+    const content = document.getElementById('newsContent').value.trim();
     const editingId = editNewsIdInput.value;
 
-    console.log('DEBUG: 0.1. Form values collected. Title:', title, 'Category:', category);
-    console.log('DEBUG: 0.2. Image file:', newsImageFile ? newsImageFile.name : 'No file selected');
-    console.log('DEBUG: 0.3. Editing ID:', editingId);
-    console.log('DEBUG: 0.4. Full Content (trimmed):', content);
-
-    // Basic validation for content
     if (!content) {
         displayError('News content cannot be empty.');
         hideLoading();
         return;
     }
 
-    const authorName = userProfile.name;
-    const authorImage = userProfile.avatar;
-    const authorId = MY_POSTS_AUTHOR_ID; // The fixed author ID for client-created posts
-
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('category', category);
-    formData.append('fullContent', content);
-    formData.append('author', authorName);
-    formData.append('authorImage', authorImage);
-    formData.append('authorId', authorId);
-
-    if (newsImageFile) {
-        formData.append('image', newsImageFile); // Append file if new image is selected
-        console.log('DEBUG: 0.4. Appended new image to FormData for Cloudinary upload.');
-    } else if (editingId) {
-<<<<<<< HEAD
-        const existingNews = allNews.find(item => item.id === editingId);
-        if (existingNews) {
-            // Check if the user explicitly cleared the image or if it's the default placeholder
-            if (currentImagePreview.src.includes('No+Image') && !newsImageFile) {
-                // Sending placeholder URL indicates clearing/defaulting the image on backend
-                formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
-                console.log('DEBUG: 0.5. Signaled image removal for existing post (or use default placeholder).');
-            } else if (existingNews.imageUrl && existingNews.imageUrl.startsWith('http') && !newsImageFile) {
-                // If no new file and the existing image is an external URL (e.g., from Cloudinary), keep it
-                // We send it back so the backend knows to retain this specific URL
-                formData.append('imageUrl', existingNews.imageUrl);
-                console.log('DEBUG: 0.6. Appended existing Cloudinary/external image URL for update.');
-            }
-            // If existing image was a Cloudinary URL and no new file, we don't need to send imageUrl.
-            // The backend will use the existing one from the database if imageUrl is not sent in the form data.
-=======
-        // If editing and no new file, handle existing image URL.
-        const existingNews = allNews.find(item => item.id === editingId);
-        if (existingNews && existingNews.imageUrl) {
-            // If the existing image is a local upload, the backend will handle its replacement/retention.
-            // If it's an external URL, ensure it's sent back to the backend.
-            // The backend's PUT endpoint already handles this logic efficiently.
-            // No need to explicitly append 'imageUrl' if it's already a local '/uploads/' path
-            // as multer handles the file upload.
-            // If it's an external URL, it should still be included if it's not changing.
-            if (!existingNews.imageUrl.startsWith('/uploads/')) {
-                 formData.append('imageUrl', existingNews.imageUrl);
-            } else if (currentImagePreview.src === 'https://via.placeholder.com/600x400?text=No+Image' && !newsImageFile) {
-                // If the user explicitly cleared the image (currentImagePreview reset to placeholder)
-                // and no new file was uploaded, tell backend to remove image.
-                formData.append('imageUrl', ''); // Send empty string to signal removal
-            }
-        } else {
-            // If no existing image and no new file, ensure a placeholder is sent for update.
-            formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
->>>>>>> 74cb0dd (updated files)
-        }
-    } else {
-        // New post with no image selected, ensure a placeholder is sent
-        formData.append('imageUrl', 'https://via.placeholder.com/600x400?text=No+Image');
-        console.log('DEBUG: 0.8. Appended placeholder for new post with no image.');
-    }
+    let finalImageUrl = '';
 
     try {
-        console.log('DEBUG: 1. Entering try block for fetch.');
-        console.log('DEBUG: 2. Preparing fetch request...');
-        console.log('DEBUG: 3. Is Editing (based on editingId):', !!editingId);
-        const targetUrl = editingId ? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`;
-        console.log('DEBUG: 4. Target URL for fetch:', targetUrl);
-        console.log('DEBUG: 4.1. Fetch method:', editingId ? 'PUT' : 'POST');
-
-        let response;
-        if (editingId) {
-<<<<<<< HEAD
-            response = await fetch(targetUrl, {
-=======
-            // UPDATE News Item
-            response = await fetch(`${BASE_API_URL}/news/${editingId}`, {
->>>>>>> 74cb0dd (updated files)
-                method: 'PUT',
-                body: formData // FormData automatically sets Content-Type to multipart/form-data
-            });
-        } else {
-<<<<<<< HEAD
-            response = await fetch(targetUrl, {
-=======
-            // CREATE New News Item
-            response = await fetch(`${BASE_API_URL}/news`, {
->>>>>>> 74cb0dd (updated files)
+        if (newsImageFile) {
+            const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder: 'flashnews_uploads' })
             });
+
+            if (!signatureResponse.ok) {
+                const errorData = await signatureResponse.json();
+                throw new Error(errorData.message || 'Failed to get Cloudinary signature.');
+            }
+            const signatureData = await signatureResponse.json();
+            const { signature, timestamp, api_key, cloud_name, folder } = signatureData;
+
+            const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
+            const cloudinaryFormData = new FormData();
+            cloudinaryFormData.append('file', newsImageFile);
+            cloudinaryFormData.append('api_key', api_key);
+            cloudinaryFormData.append('timestamp', timestamp);
+            cloudinaryFormData.append('signature', signature);
+            cloudinaryFormData.append('folder', folder);
+
+            const cloudinaryResponse = await fetch(cloudinaryUploadUrl, {
+                method: 'POST',
+                body: cloudinaryFormData
+            });
+
+            if (!cloudinaryResponse.ok) {
+                const errorData = await cloudinaryResponse.json();
+                throw new Error(errorData.error.message || 'Failed to upload image to Cloudinary.');
+            }
+            const cloudinaryResult = await cloudinaryResponse.json();
+            finalImageUrl = cloudinaryResult.secure_url;
+
+        } else if (editingId) {
+            const existingNews = allNews.find(item => item.id === editingId);
+            if (existingNews) {
+                if (currentImagePreview.src.includes('placehold.co') && currentImagePreview.src.includes('No+Image')) {
+                    finalImageUrl = 'https://placehold.co/600x400?text=No+Image';
+                } else if (existingNews.imageUrl) {
+                    finalImageUrl = existingNews.imageUrl;
+                }
+            }
+        } else {
+            finalImageUrl = 'https://placehold.co/600x400?text=No+Image';
         }
 
-        console.log('DEBUG: 5. Fetch request completed. Response status:', response.status);
-        console.log('DEBUG: 6. Response OK status:', response.ok);
+        const newsDataToBackend = {
+            title: title,
+            category: category,
+            fullContent: content,
+            imageUrl: finalImageUrl,
+            // author, authorImage, authorId are now set by backend from JWT
+        };
+
+        const targetUrl = editingId ? `${BASE_API_URL}/news/${editingId}` : `${BASE_API_URL}/news`;
+        const method = editingId ? 'PUT' : 'POST';
+
+        const response = await fetch(targetUrl, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}` // Include JWT
+            },
+            body: JSON.stringify(newsDataToBackend)
+        });
 
         if (!response.ok) {
-            const errorText = await response.text(); // Get raw text to help debug if JSON parsing fails
+            const errorText = await response.text();
+            let errorMessage = 'Server error during news submission.';
             try {
                 const errorData = JSON.parse(errorText);
-                console.error('DEBUG: 7. Server responded with error JSON:', errorData);
-                throw new Error(errorData.message || 'Server error during news submission.');
+                errorMessage = errorData.message || errorMessage;
             } catch (jsonParseError) {
-                console.error('DEBUG: 7.1. Server responded with non-JSON error:', errorText);
-                throw new Error(`Server error: ${errorText} (Status: ${response.status})`);
+                errorMessage = `Server error: ${errorText.substring(0, 200)}... (Status: ${response.status})`;
             }
+            throw new Error(errorMessage);
         }
 
         const result = await response.json();
-        console.log('DEBUG: 8. News submission successful:', result);
         displaySuccess(editingId ? 'News updated successfully!' : 'News published successfully!');
         addNotification(
-            editingId ? `"${title}" was updated by ${authorName}.` : `New article "${title}" published by ${authorName}!`,
+            editingId ? `"${title}" was updated by ${userProfile.name}.` : `New article "${title}" published by ${userProfile.name}!`,
             editingId ? 'fas fa-pen' : 'fas fa-newspaper',
-            result.id // Use the ID returned from the server
+            result.id
         );
 
-        // Reset form
         newsForm.reset();
         editNewsIdInput.value = '';
         publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publish News';
         imagePreviewContainer.style.display = 'none';
-        currentImagePreview.src = ''; // Clear image preview
+        currentImagePreview.src = '';
+        document.getElementById('newsImage').value = '';
 
-        await fetchNews(currentActiveCategory, searchInput.value); // Re-fetch and re-render current view
+        await fetchNews(currentActiveCategory, searchInput.value);
         document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
 
     } catch (error) {
-        console.error('DEBUG: 9. Caught error during news submission:', error);
+        console.error('Caught error during news submission:', error);
         displayError(`Failed to submit news: ${error.message}`);
     } finally {
-        console.log('DEBUG: 10. Finally block executed. Hiding loading.');
         hideLoading();
     }
 });
 
 // Image preview and clear functionality for news image
-newsImage.addEventListener('change', function() {
+document.getElementById('newsImage').addEventListener('change', function() {
     const file = this.files[0];
     if (file) {
         const reader = new FileReader();
@@ -640,16 +880,15 @@ newsImage.addEventListener('change', function() {
         };
         reader.readAsDataURL(file);
     } else {
-        // If file input is cleared, hide preview
         imagePreviewContainer.style.display = 'none';
         currentImagePreview.src = '';
     }
 });
 
 clearImageSelection.addEventListener('click', () => {
-    newsImage.value = ''; // Clear the file input
+    document.getElementById('newsImage').value = '';
     imagePreviewContainer.style.display = 'none';
-    currentImagePreview.src = 'https://via.placeholder.com/600x400?text=No+Image'; // Set a default placeholder if cleared
+    currentImagePreview.src = 'https://placehold.co/600x400?text=No+Image';
 });
 
 
@@ -664,41 +903,25 @@ async function fetchNewsDetailAndComments(newsId) {
         }
         const newsItem = await newsResponse.json();
 
-<<<<<<< HEAD
-        // Helper function to resolve image URL for modal - direct use for Cloudinary
         const getModalImageUrl = (url) => {
-            return url || 'https://via.placeholder.com/600x400?text=No+Image';
-=======
-        // Fetch comments for this news item
-        const commentsResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-        if (!commentsResponse.ok) {
-            throw new Error(`Failed to fetch comments. Status: ${commentsResponse.status}`);
-        }
-        const comments = await commentsResponse.json();
-        newsItem.comments = comments; // Attach comments to the news item
-
-        // Helper function to resolve image URL for modal
-        const getModalImageUrl = (url) => {
-            return url.startsWith('/uploads/') ? `${BASE_API_URL}${url}` : url;
->>>>>>> 74cb0dd (updated files)
+            return url || 'https://placehold.co/600x400?text=No+Image';
         };
 
-        // Populate modal
         modalNewsImage.src = getModalImageUrl(newsItem.imageUrl);
         modalNewsImage.alt = newsItem.title;
         modalCategoryTag.textContent = newsItem.category;
         modalNewsTitle.textContent = newsItem.title;
         modalAuthorImage.src = newsItem.authorImage || 'https://placehold.co/40x40?text=A';
         modalAuthorName.textContent = newsItem.author;
-        modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate); // Use formatDisplayDate
-        modalNewsContent.textContent = newsItem.fullContent; // This directly uses fullContent
+        modalPublishDate.textContent = formatDisplayDate(newsItem.publishDate);
+        modalNewsContent.textContent = newsItem.fullContent;
         modalAuthorBio.textContent = `Read more articles by ${newsItem.author}.`;
 
         commentNewsIdInput.value = newsId;
         editCommentIdInput.value = '';
         commentTextInput.value = '';
         postCommentBtn.innerHTML = '<i class="fas fa-comment-dots"></i> Post Comment';
-        displayComments(newsItem); // Display fetched comments
+        displayComments(newsItem);
         newsDetailModal.classList.add('visible');
         document.body.style.overflow = 'hidden';
         hideLoading();
@@ -712,15 +935,14 @@ function displayComments(newsItem) {
     commentsList.innerHTML = '';
     if (newsItem.comments && newsItem.comments.length > 0) {
         noCommentsMessage.style.display = 'none';
-        // Comments are already sorted by backend, but ensure for consistency if data source changes
         newsItem.comments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         newsItem.comments.forEach(comment => {
             const commentElement = document.createElement('div');
             commentElement.className = 'comment-item';
             commentElement.setAttribute('data-comment-id', comment.id);
             let actionsHTML = '';
-            // Check if comment belongs to the current user (based on authorId stored in the comment on backend)
-            if (comment.authorId === MY_POSTS_AUTHOR_ID) {
+            // Check if comment belongs to the current logged-in user
+            if (userProfile.id && comment.authorId === userProfile.id) {
                 actionsHTML = `
                     <div class="comment-actions">
                         <i class="fas fa-edit" data-action="edit-comment"></i>
@@ -749,18 +971,15 @@ function displayComments(newsItem) {
 
 commentForm.addEventListener('submit', async function(e) {
     e.preventDefault();
+    if (!userProfile.id) {
+        displayError('You must be logged in to post comments.');
+        return;
+    }
     showLoading('Posting comment...');
     const newsId = commentNewsIdInput.value;
     const editCommentId = editCommentIdInput.value;
-    const commenterName = userProfile.name;
-    const commenterAvatar = userProfile.avatar;
     const commentText = commentTextInput.value.trim();
 
-    if (commenterName === 'Guest User') {
-        displayError('Please set your name in the profile before commenting.');
-        hideLoading();
-        return;
-    }
     if (!commentText) {
         displayError('Please enter your comment.');
         hideLoading();
@@ -768,26 +987,28 @@ commentForm.addEventListener('submit', async function(e) {
     }
 
     const commentData = {
-        author: commenterName,
-        authorId: MY_POSTS_AUTHOR_ID, // Use the fixed author ID for comments as well
-        avatar: commenterAvatar,
         text: commentText
+        // author, authorId, avatar are now set by backend from JWT
     };
 
     try {
         let response;
         if (editCommentId) {
-            // UPDATE Comment
             response = await fetch(`${BASE_API_URL}/news/${newsId}/comments/${editCommentId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getAuthToken()}` // Include JWT
+                },
                 body: JSON.stringify(commentData)
             });
         } else {
-            // CREATE Comment
             response = await fetch(`${BASE_API_URL}/news/${newsId}/comments`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getAuthToken()}` // Include JWT
+                },
                 body: JSON.stringify(commentData)
             });
         }
@@ -799,17 +1020,16 @@ commentForm.addEventListener('submit', async function(e) {
 
         displaySuccess(editCommentId ? 'Comment updated!' : 'Comment posted!');
         addNotification(
-            editCommentId ? `Your comment on news ID ${newsId} was updated.` : `New comment on news ID ${newsId} by ${commenterName}.`,
+            editCommentId ? `Your comment on news ID ${newsId} was updated.` : `New comment on news ID ${newsId} by ${userProfile.name}.`,
             editCommentId ? 'fas fa-pen' : 'fas fa-comment',
             newsId
         );
 
-        // Re-fetch comments for this specific news item to update the modal
         await fetchNewsDetailAndComments(newsId);
 
         commentForm.reset();
         editCommentIdInput.value = '';
-        commentTextInput.value = ''; // Ensure text input is cleared
+        commentTextInput.value = '';
         postCommentBtn.innerHTML = '<i class="fas fa-comment-dots"></i> Post Comment';
 
     } catch (error) {
@@ -826,81 +1046,81 @@ document.addEventListener('click', async function(e) {
 
     // --- News Card Actions (Edit/Delete) ---
     if (target.classList.contains('fa-trash') && target.dataset.action === 'delete') {
-        const newsCardElement = target.closest('.news-card, .main-feature, .side-feature');
+        const newsCardElement = target.closest('.news-card,.main-feature,.side-feature');
         if (!newsCardElement) return;
         const newsIdToDelete = newsCardElement.dataset.id;
-        const newsItemAuthorId = newsCardElement.dataset.authorId; // Get authorId from data attribute
+        const newsItemAuthorId = newsCardElement.dataset.authorId;
 
-        if (newsItemAuthorId === MY_POSTS_AUTHOR_ID) {
-            if (confirm('Are you sure you want to delete this news item?')) {
-                showLoading('Deleting news...');
-                try {
-                    const response = await fetch(`${BASE_API_URL}/news/${newsIdToDelete}`, {
-                        method: 'DELETE'
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || 'Server error during deletion.');
-                    }
-
-                    displaySuccess('News item deleted!');
-                    addNotification(`News item ${newsIdToDelete} was deleted.`, 'fas fa-trash-alt');
-                    await fetchNews(currentActiveCategory, searchInput.value); // Re-fetch and re-render current view
-                } catch (error) {
-                    console.error('Error deleting news:', error);
-                    displayError(`Failed to delete news: ${error.message}`);
-                } finally {
-                    hideLoading();
-                }
-            }
-        } else {
+        if (!userProfile.id || newsItemAuthorId !== userProfile.id) {
             alert('You can only delete your own posts.');
+            return;
+        }
+
+        if (confirm('Are you sure you want to delete this news item?')) {
+            showLoading('Deleting news...');
+            try {
+                const response = await fetch(`${BASE_API_URL}/news/${newsIdToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}` // Include JWT
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Server error during deletion.');
+                }
+
+                displaySuccess('News item deleted!');
+                addNotification(`News item ${newsIdToDelete} was deleted.`, 'fas fa-trash-alt');
+                await fetchNews(currentActiveCategory, searchInput.value);
+            } catch (error) {
+                console.error('Error deleting news:', error);
+                displayError(`Failed to delete news: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
         }
     } else if (target.classList.contains('fa-edit') && target.dataset.action === 'edit') {
-        const newsCardElement = target.closest('.news-card, .main-feature, .side-feature');
+        const newsCardElement = target.closest('.news-card,.main-feature,.side-feature');
         if (!newsCardElement) return;
         const newsIdToEdit = newsCardElement.dataset.id;
-        const newsItemAuthorId = newsCardElement.dataset.authorId; // Get authorId from data attribute
+        const newsItemAuthorId = newsCardElement.dataset.authorId;
 
-        if (newsItemAuthorId === MY_POSTS_AUTHOR_ID) {
-            showLoading('Loading news for edit...');
-            try {
-                const response = await fetch(`${BASE_API_URL}/news/${newsIdToEdit}`);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch news for edit. Status: ${response.status}`);
-                }
-                const newsItem = await response.json();
-
-                document.getElementById('newsTitle').value = newsItem.title;
-                document.getElementById('newsCategory').value = newsItem.category;
-                document.getElementById('newsContent').value = newsItem.fullContent;
-                document.getElementById('editNewsId').value = newsItem.id;
-
-                // Set image preview if exists (now directly from Cloudinary URL)
-                if (newsItem.imageUrl) {
-<<<<<<< HEAD
-                    currentImagePreview.src = newsItem.imageUrl;
-=======
-                    // Handle local uploads vs external URLs
-                    currentImagePreview.src = newsItem.imageUrl.startsWith('/uploads/') ? `${BASE_API_URL}${newsItem.imageUrl}` : newsItem.imageUrl;
->>>>>>> 74cb0dd (updated files)
-                    imagePreviewContainer.style.display = 'flex';
-                } else {
-                    imagePreviewContainer.style.display = 'none';
-                    currentImagePreview.src = '';
-                }
-                newsImage.value = ''; // Clear file input so new file can be selected
-
-                publishBtn.innerHTML = '<i class="fas fa-upload"></i> Update News';
-                document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
-                hideLoading();
-            } catch (error) {
-                console.error('Error fetching news for edit:', error);
-                displayError(`Failed to load news for edit: ${error.message}`);
-            }
-        } else {
+        if (!userProfile.id || newsItemAuthorId !== userProfile.id) {
             alert('You can only edit your own posts.');
+            return;
+        }
+
+        showLoading('Loading news for edit...');
+        try {
+            // No need for Authorization header for GET /api/news/:id as it's public
+            const response = await fetch(`${BASE_API_URL}/news/${newsIdToEdit}`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch news for edit. Status: ${response.status}`);
+            }
+            const newsItem = await response.json();
+
+            document.getElementById('newsTitle').value = newsItem.title;
+            document.getElementById('newsCategory').value = newsItem.category;
+            document.getElementById('newsContent').value = newsItem.fullContent;
+            document.getElementById('editNewsId').value = newsItem.id;
+
+            if (newsItem.imageUrl) {
+                currentImagePreview.src = newsItem.imageUrl;
+                imagePreviewContainer.style.display = 'flex';
+            } else {
+                imagePreviewContainer.style.display = 'none';
+                currentImagePreview.src = '';
+            }
+            document.getElementById('newsImage').value = '';
+
+            publishBtn.innerHTML = '<i class="fas fa-upload"></i> Update News';
+            document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
+            hideLoading();
+        } catch (error) {
+            console.error('Error fetching news for edit:', error);
+            displayError(`Failed to load news for edit: ${error.message}`);
         }
     }
     // --- Comment Actions (Edit/Delete) ---
@@ -908,50 +1128,42 @@ document.addEventListener('click', async function(e) {
         const commentElement = target.closest('.comment-item');
         if (!commentElement) return;
         const commentIdToDelete = commentElement.dataset.commentId;
-        const newsId = commentNewsIdInput.value; // News ID from the open modal
+        const newsId = commentNewsIdInput.value;
 
-        // For robustness, always check ownership on the backend or ensure client-side comment data is fresh
-        // For simplicity, we'll assume the comment has the correct authorId set from backend
-        // An even more robust solution would be to fetch the comment details by commentId to verify owner.
+        if (!userProfile.id) {
+            alert('You must be logged in to delete comments.');
+            return;
+        }
+
         showLoading('Deleting comment...');
         try {
-<<<<<<< HEAD
-            // Find the comment in the newsItem.comments array to get its authorId
-            const currentNewsInModal = allNews.find(n => n.id === newsId);
-            const commentToDelete = currentNewsInModal?.comments.find(c => c.id === commentIdToDelete);
+            // Fetch the news item to check the comment's authorId
+            const newsResponse = await fetch(`${BASE_API_URL}/news/${newsId}`);
+            if (!newsResponse.ok) throw new Error('Failed to fetch news to verify comment ownership.');
+            const newsData = await newsResponse.json();
+            const commentToDelete = newsData.comments.find(c => c.id === commentIdToDelete);
 
-            if (commentToDelete && commentToDelete.authorId === MY_POSTS_AUTHOR_ID) {
-                const response = await fetch(`${BASE_API_URL}/news/${newsId}/comments/${commentIdToDelete}`, {
-                    method: 'DELETE'
-                });
-=======
-            const commentResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-            if (!commentResponse.ok) {
-                throw new Error('Failed to fetch comments to verify ownership.');
-            }
-            const comments = await commentResponse.json();
-            const commentToDelete = comments.find(c => c.id === commentIdToDelete);
-
-            if (commentToDelete && commentToDelete.authorId === MY_POSTS_AUTHOR_ID) {
-                hideLoading(); // Hide initial verification loading before confirmation
-                if (confirm('Are you sure you want to delete this comment?')) {
-                    showLoading('Deleting comment...');
-                    const response = await fetch(`${BASE_API_URL}/news/${newsId}/comments/${commentIdToDelete}`, {
-                        method: 'DELETE'
-                    });
->>>>>>> 74cb0dd (updated files)
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Server error during comment deletion.');
-                }
-
-                displaySuccess('Comment deleted!');
-                addNotification(`A comment on news ID ${newsId} was deleted.`, 'fas fa-trash-alt', newsId);
-                await fetchNewsDetailAndComments(newsId); // Re-fetch and display comments
-            } else {
+            if (!commentToDelete || commentToDelete.authorId !== userProfile.id) {
                 alert('You can only delete your own comments.');
+                hideLoading();
+                return;
             }
+
+            const response = await fetch(`${BASE_API_URL}/news/${newsId}/comments/${commentIdToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${getAuthToken()}` // Include JWT
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Server error during comment deletion.');
+            }
+
+            displaySuccess('Comment deleted!');
+            addNotification(`A comment on news ID ${newsId} was deleted.`, 'fas fa-trash-alt', newsId);
+            await fetchNewsDetailAndComments(newsId);
         } catch (error) {
             console.error('Error deleting comment:', error);
             displayError(`Failed to delete comment: ${error.message}`);
@@ -964,31 +1176,29 @@ document.addEventListener('click', async function(e) {
         const commentIdToEdit = commentElement.dataset.commentId;
         const newsId = commentNewsIdInput.value;
 
+        if (!userProfile.id) {
+            alert('You must be logged in to edit comments.');
+            return;
+        }
+
         showLoading('Loading comment for edit...');
         try {
-<<<<<<< HEAD
-            // Find the comment in the newsItem.comments array to get its authorId
-            const currentNewsInModal = allNews.find(n => n.id === newsId);
-            const commentToEdit = currentNewsInModal?.comments.find(c => c.id === commentIdToEdit);
-=======
-            const commentResponse = await fetch(`${BASE_API_URL}/news/${newsId}/comments`);
-            if (!commentResponse.ok) {
-                throw new Error('Failed to fetch comments to verify ownership.');
-            }
-            const comments = await commentResponse.json();
-            const commentToEdit = comments.find(c => c.id === commentIdToEdit);
->>>>>>> 74cb0dd (updated files)
+            const newsResponse = await fetch(`${BASE_API_URL}/news/${newsId}`);
+            if (!newsResponse.ok) throw new Error('Failed to fetch news to verify comment ownership.');
+            const newsData = await newsResponse.json();
+            const commentToEdit = newsData.comments.find(c => c.id === commentIdToEdit);
 
-            if (commentToEdit && commentToEdit.authorId === MY_POSTS_AUTHOR_ID) {
-                commentTextInput.value = commentToEdit.text;
-                editCommentIdInput.value = commentToEdit.id;
-                postCommentBtn.innerHTML = '<i class="fas fa-save"></i> Update Comment';
-                commentTextInput.focus();
-                hideLoading();
-            } else {
-                hideLoading();
+            if (!commentToEdit || commentToEdit.authorId !== userProfile.id) {
                 alert('You can only edit your own comments.');
+                hideLoading();
+                return;
             }
+
+            commentTextInput.value = commentToEdit.text;
+            editCommentIdInput.value = commentToEdit.id;
+            postCommentBtn.innerHTML = '<i class="fas fa-save"></i> Update Comment';
+            commentTextInput.focus();
+            hideLoading();
         } catch (error) {
             console.error('Error editing comment:', error);
             displayError(`Failed to load comment for edit: ${error.message}`);
@@ -1006,26 +1216,24 @@ document.addEventListener('click', async function(e) {
     // --- Handle click on news card to show full content in modal ---
     else if (target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature')) {
         const newsCard = target.closest('.news-card') || target.closest('.main-feature') || target.closest('.side-feature');
-        // Prevent opening modal if edit/delete icon was clicked inside the card
         if (target.classList.contains('fa-edit') || target.classList.contains('fa-trash')) {
             return;
         }
         const newsId = newsCard.dataset.id;
-        fetchNewsDetailAndComments(newsId); // Fetch and display detail and comments
+        fetchNewsDetailAndComments(newsId);
     }
 });
 
 // Close modal event listener
 closeModalButton.addEventListener('click', () => {
     newsDetailModal.classList.remove('visible');
-    document.body.style.overflow = '';
+    document.body.style.overflow = 'auto';
 });
 
-// Close modal if clicked outside content (on backdrop)
 newsDetailModal.addEventListener('click', (e) => {
     if (e.target === newsDetailModal) {
         newsDetailModal.classList.remove('visible');
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'auto';
     }
 });
 
@@ -1098,7 +1306,9 @@ function smoothScrollTo(targetPosition) {
 }
 
 // --- User Profile Logic (Client-side localStorage) ---
-profileIcon.addEventListener('click', () => {
+profileIcon.addEventListener('click', async () => {
+    // Re-fetch profile to ensure it's up-to-date with backend (e.g., if avatar changed by another session)
+    await fetchAndSetUserProfile();
     profileNameInput.value = userProfile.name;
     profileAvatarPreview.src = userProfile.avatar;
     profileModal.classList.add('visible');
@@ -1107,13 +1317,13 @@ profileIcon.addEventListener('click', () => {
 
 closeProfileModalBtn.addEventListener('click', () => {
     profileModal.classList.remove('visible');
-    document.body.style.overflow = '';
+    document.body.style.overflow = 'auto';
 });
 
 profileModal.addEventListener('click', (e) => {
     if (e.target === profileModal) {
         profileModal.classList.remove('visible');
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'auto';
     }
 });
 
@@ -1126,34 +1336,102 @@ profileAvatarUpload.addEventListener('change', function() {
         };
         reader.readAsDataURL(file);
     } else {
-        // If file input is cleared, revert to current avatar or a default placeholder
         profileAvatarPreview.src = userProfile.avatar || 'https://placehold.co/100x100?text=User';
     }
 });
 
-profileForm.addEventListener('submit', function(e) {
+profileForm.addEventListener('submit', async function(e) {
     e.preventDefault();
+    if (!userProfile.id) {
+        displayError('You must be logged in to update your profile.');
+        return;
+    }
+    showLoading('Updating profile...');
     const newName = profileNameInput.value.trim();
-    const newAvatar = profileAvatarPreview.src;
+    let newAvatarUrl = profileAvatarPreview.src; // Default to current preview
 
-    if (newName) {
-        userProfile.name = newName;
-        userProfile.avatar = newAvatar;
+    if (!newName) {
+        displayError('Please enter your name.');
+        hideLoading();
+        return;
+    }
+
+    try {
+        if (profileAvatarUpload.files[0]) {
+            // Upload new avatar to Cloudinary if a file is selected
+            const avatarFile = profileAvatarUpload.files[0];
+            const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder: 'flashnews_avatars' })
+            });
+
+            if (!signatureResponse.ok) {
+                const errorData = await signatureResponse.json();
+                throw new Error(errorData.message || 'Failed to get Cloudinary signature for avatar.');
+            }
+            const signatureData = await signatureResponse.json();
+            const { signature, timestamp, api_key, cloud_name, folder } = signatureData;
+
+            const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
+            const cloudinaryFormData = new FormData();
+            cloudinaryFormData.append('file', avatarFile);
+            cloudinaryFormData.append('api_key', api_key);
+            cloudinaryFormData.append('timestamp', timestamp);
+            cloudinaryFormData.append('signature', signature);
+            cloudinaryFormData.append('folder', folder);
+
+            const cloudinaryResponse = await fetch(cloudinaryUploadUrl, {
+                method: 'POST',
+                body: cloudinaryFormData
+            });
+
+            if (!cloudinaryResponse.ok) {
+                const errorData = await cloudinaryResponse.json();
+                throw new Error(errorData.error.message || 'Failed to upload new avatar to Cloudinary.');
+            }
+            const cloudinaryResult = await cloudinaryResponse.json();
+            newAvatarUrl = cloudinaryResult.secure_url;
+        }
+
+        const response = await fetch(`${BASE_API_URL}/profile`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}` // Include JWT
+            },
+            body: JSON.stringify({ name: newName, avatar: newAvatarUrl })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update profile.');
+        }
+
+        const result = await response.json();
+        userProfile.name = result.user.name;
+        userProfile.avatar = result.user.avatar;
         saveUserProfile();
+        displaySuccess('Profile saved successfully!');
         addNotification('Your profile has been updated!', 'fas fa-user');
-        alert('Profile saved successfully!');
         profileModal.classList.remove('visible');
-        document.body.style.overflow = '';
-    } else {
-        alert('Please enter your name.');
+        document.body.style.overflow = 'auto';
+
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        displayError(`Failed to update profile: ${error.message}`);
+    } finally {
+        hideLoading();
     }
 });
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
     document.body.style.opacity = 1;
-    loadUserProfile();
-    // Load notifications from localStorage (still client-side for this example)
+    loadUserProfile(); // Load user profile from local storage
+    getAuthToken(); // Load auth token if present
+    await fetchAndSetUserProfile(); // Verify token and fetch latest user profile from backend
+
     try {
         const storedNotifications = localStorage.getItem('globalNewsNotifications');
         if (storedNotifications) {
@@ -1165,8 +1443,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     updateNotificationDisplay();
     await fetchNews('all'); // Initial fetch of all news from backend
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> 74cb0dd (updated files)
