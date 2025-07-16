@@ -86,15 +86,13 @@ const PORT = process.env.PORT || 3000; // FIX: Corrected logical OR operator '||
 
 // --- Middleware ---
 app.use(cors({
-    app.use(bodyparser.json({ limit: '100mb' }));
-    app.use(bodyparser.urlencoded({ extended: true, limit: '100mb' }));
     origin: 'https://flashnews1.netlify.app', // **आपका Netlify डोमेन**
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // FIX: Added missing array values for methods
     allowedHeaders: ['Content-Type', 'Authorization'], // FIX: Added missing array values for allowedHeaders
 }));
+    app.use(bodyparser.json({ limit: '100mb' }));
+    app.use(bodyparser.urlencoded({ extended: true, limit: '100mb' }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Multer storage configuration for Cloudinary (This is for server-side upload, not direct browser upload)
 // For direct browser upload, Multer is not directly used for the image file itself,
