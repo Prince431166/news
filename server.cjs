@@ -312,23 +312,32 @@ app.delete('/api/news/:newsid', async (req, res) => {
     }
 });
 
-app.post('/api/cloudinary-signature', (req, res) => {
-    try {
-        const { folder } = req.body;
-        const timestamp = Math.round((new Date).getTime() / 1000);
+app.post("/cloudinar", async (req, res) => {
+  try {
+    const folder = req.body.folder || 'default_folder';
+    const timestamp = Math.floor(Date.now() / 1000);
 
-        const paramsToSign = {
-            timestamp: timestamp,
-            source: 'uw',
-            folder: folder || 'flashnews_uploads'
-        };
+    const paramsToSign = { folder, timestamp };
+    const signature = cloudinary.utils.api_sign_request(
+      paramsToSign,
+      process.env.CLOUDINARY_API_SECRET
+    );
 
-        const signature = cloudinary.utils.api_sign_request(
-            paramsToSign,
-            process.env.CLOUDINARY_API_SECRET
-        );
-
-        res.json({
+    return res.json({
+      timestamp,
+      signature,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      folder
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Signature generation failed"
+    });
+  }
+});
+         res.json({
             signature: signature,
             timestamp: timestamp,
             api_key: process.env.CLOUDINARY_API_KEY,
