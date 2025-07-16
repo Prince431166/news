@@ -74,7 +74,6 @@ const scrollToTopBtn = document.querySelector('.scroll-to-top');
 const authButtons = document.getElementById('authButtons');
 const loginButton = document.getElementById('loginButton');
 const registerButton = document.getElementById('registerButton');
-const logoutButton = document.getElementById('logoutButton');
 const adminPanelLink = document.getElementById('adminPanelLink');
 
 const authModal = document.getElementById('authModal');
