@@ -1,28 +1,16 @@
-require('dotenv').config(); // Load environment variables - इसे यहाँ सबसे ऊपर रखें
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const multer = require('multer'); // Multer is still needed for parsing multipart/form-data, but actual image upload will be direct to Cloudinary
+const multer = require('multer');
 const path = require('path');
-
-const fs = require('fs'); // Not directly used in the final version with Cloudinary direct upload, but keeping as it was present.
 const { v4: uuidv4 } = require('uuid');
+const { Client } = require('pg');
+const cloudinary = require('cloudinary').v2;
+const bcrypt = require('bcryptjs'); // For password hashing
+const jwt = require('jsonwebtoken'); // For JWTs
 
 // --- Cloudinary Setup ---
-const cloudinary = require('cloudinary').v2;
-// CloudinaryStorage is not directly used for client-side direct upload, but keeping it as it was in your original code.
-// If you are doing direct uploads from the browser, this part is largely irrelevant for the actual image file handling,
-// but Multer might still parse other form fields if they are sent as multipart/form-data.
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
-// Configure Cloudinary
-// Cloudinary कॉन्फ़िगरेशन से पहले, आप इन्हें लॉग कर सकते हैं
-// ताकि Render लॉग्स में पुष्टि कर सकें कि चर लोड हो गए हैं।
-console.log('Cloudinary Config Check:');
-console.log('CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME ? 'Loaded' : 'NOT LOADED');
-console.log('API_KEY:', process.env.CLOUDINARY_API_KEY ? 'Loaded' : 'NOT LOADED');
-console.log('API_SECRET:', process.env.CLOUDINARY_API_SECRET ? 'Loaded' : 'NOT LOADED');
-
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -30,38 +18,44 @@ cloudinary.config({
 });
 
 // --- PostgreSQL Setup ---
-const { Client } = require('pg');
 const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: {
-        rejectUnauthorized: false // Required for Render's managed databases sometimes
+        rejectUnauthorized: false
     }
 });
 
-// Connect to PostgreSQL when the server starts
 client.connect()
     .then(() => {
         console.log('Connected to PostgreSQL database');
-        createTables(); // Ensure tables are created on connect
+        createTables();
     })
     .catch(err => console.error('Error connecting to PostgreSQL:', err.stack));
 
-// Function to create tables if they don't exist
 async function createTables() {
     try {
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id VARCHAR(255) PRIMARY KEY,
+                username VARCHAR(255) UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                name TEXT,
+                avatar TEXT
+            );
+        `);
         await client.query(`
             CREATE TABLE IF NOT EXISTS news (
                 id VARCHAR(255) PRIMARY KEY,
                 category TEXT NOT NULL,
                 title TEXT NOT NULL,
                 fullContent TEXT NOT NULL,
-                imageUrl TEXT, -- This will now store Cloudinary URLs
+                imageUrl TEXT,
                 author TEXT NOT NULL,
                 authorImage TEXT,
                 publishDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 isFeatured BOOLEAN DEFAULT FALSE,
                 isSideFeature BOOLEAN DEFAULT FALSE,
-                authorId TEXT NOT NULL
+                authorId TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE -- Link to users table
             );
         `);
         await client.query(`
@@ -69,47 +63,31 @@ async function createTables() {
                 id VARCHAR(255) PRIMARY KEY,
                 news_id VARCHAR(255) REFERENCES news(id) ON DELETE CASCADE,
                 author TEXT NOT NULL,
-                authorId TEXT NOT NULL,
+                authorId TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Link to users table
                 avatar TEXT,
                 text TEXT NOT NULL,
                 timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
         `);
-        console.log('News and Comments tables ensured.');
+        console.log('Users, News and Comments tables ensured.');
     } catch (err) {
         console.error('Error creating tables:', err);
     }
 }
 
 const app = express();
-const PORT = process.env.PORT || 3000; // FIX: Corrected logical OR operator '||'
+const PORT = process.env.PORT || 3000;
 
-// --- Middleware ---
 app.use(cors({
-    origin: 'https://flashnews1.netlify.app', // **आपका Netlify डोमेन**
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // FIX: Added missing array values for methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // FIX: Added missing array values for allowedHeaders
+    origin: 'https://flashnews1.netlify.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-    app.use(express.json({ limit: '20mb' }));
-    app.use(express.urlencoded({ extended: true, limit: '20mb' }));
-
-
-// Multer storage configuration for Cloudinary (This is for server-side upload, not direct browser upload)
-// For direct browser upload, Multer is not directly used for the image file itself,
-// but it might be used for other form fields if they are multipart/form-data.
-// Keeping this setup, but the upload logic on the frontend sends the image directly to Cloudinary.
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'flashnews_uploads', // Folder name in Cloudinary
-        format: async (req, file) => 'png', // supports promises as well, ensure valid format
-        public_id: (req, file) => `news_image_${uuidv4()}`, // Unique public ID for Cloudinary
-    },
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const upload = multer({
-    storage: storage,
-    limits: { fileSize: 100 * 1024 * 1024 }, // Limit file size to 100MB
+    limits: { fileSize: 100 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const allowedTypes = /jpeg|jpg|png|gif/;
         const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -123,13 +101,151 @@ const upload = multer({
     }
 });
 
+// --- JWT Middleware ---
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+    if (!token) {
+        return res.status(401).json({ message: 'Authentication token required.' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            console.error('JWT verification failed:', err.message);
+            return res.status(403).json({ message: 'Invalid or expired token.' });
+        }
+        req.user = user; // Contains { id: userId, username: username }
+        next();
+    });
+};
+
+// --- API Endpoints for Authentication ---
+
+app.post('/api/register', async (req, res) => {
+    const { username, password, name, avatar } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required.' });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const userId = uuidv4();
+        const defaultName = name || username;
+        const defaultAvatar = avatar || 'https://placehold.co/100x100?text=User';
+
+        const insertQuery = `
+            INSERT INTO users (id, username, password_hash, name, avatar)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id, username, name, avatar;
+        `;
+        const result = await client.query(insertQuery, [userId, username, hashedPassword, defaultName, defaultAvatar]);
+        res.status(201).json({ message: 'User registered successfully!', user: result.rows[0] });
+    } catch (err) {
+        if (err.code === '23505') { // Unique violation for username
+            return res.status(409).json({ message: 'Username already exists.' });
+        }
+        console.error('Error registering user:', err.stack);
+        res.status(500).json({ message: 'Error registering user.' });
+    }
+});
+
+app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required.' });
+    }
+
+    try {
+        const userResult = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+        const user = userResult.rows[0];
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid username or password.' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid username or password.' });
+        }
+
+        // Generate JWT
+        const token = jwt.sign(
+            { id: user.id, username: user.username, name: user.name, avatar: user.avatar },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' } // Token expires in 1 hour
+        );
+
+        res.json({
+            message: 'Login successful!',
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                avatar: user.avatar
+            }
+        });
+    } catch (err) {
+        console.error('Error logging in user:', err.stack);
+        res.status(500).json({ message: 'Error logging in.' });
+    }
+});
+
+// GET current user profile (protected)
+app.get('/api/profile', authenticateToken, async (req, res) => {
+    try {
+        // req.user contains id, username, name, avatar from JWT payload
+        const userResult = await client.query('SELECT id, username, name, avatar FROM users WHERE id = $1', [req.user.id]);
+        const userProfile = userResult.rows[0];
+
+        if (!userProfile) {
+            return res.status(404).json({ message: 'User profile not found.' });
+        }
+        res.json(userProfile);
+    } catch (err) {
+        console.error('Error fetching user profile:', err.stack);
+        res.status(500).json({ message: 'Error fetching user profile.' });
+    }
+});
+
+// Update user profile (protected)
+app.put('/api/profile', authenticateToken, async (req, res) => {
+    const { name, avatar } = req.body;
+    const userId = req.user.id; // Get user ID from authenticated token
+
+    if (!name) {
+        return res.status(400).json({ message: 'Name cannot be empty.' });
+    }
+
+    try {
+        const updateQuery = `
+            UPDATE users
+            SET name = COALESCE($1, name), avatar = COALESCE($2, avatar)
+            WHERE id = $3
+            RETURNING id, username, name, avatar;
+        `;
+        const result = await client.query(updateQuery, [name, avatar, userId]);
+
+        if (result.rowCount > 0) {
+            res.json({ message: 'Profile updated successfully!', user: result.rows[0] });
+        } else {
+            res.status(404).json({ message: 'User not found.' });
+        }
+    } catch (err) {
+        console.error('Error updating user profile:', err.stack);
+        res.status(500).json({ message: 'Error updating profile.' });
+    }
+});
+
+
 // --- API Endpoints for News ---
 
-// GET all news with optional filtering and search
+// GET all news with optional filtering and search (public endpoint)
 app.get('/api/news', async (req, res) => {
     try {
         let query = 'SELECT * FROM news WHERE 1=1';
-        const queryParams = []; // FIX: Initialized as empty array
+        const queryParams = [];
         let paramIndex = 1;
 
         const { category, search, authorId } = req.query;
@@ -143,7 +259,7 @@ app.get('/api/news', async (req, res) => {
             queryParams.push(`%${search}%`);
             paramIndex++;
         }
-        if (authorId) {
+        if (authorId) { // This will now typically come from frontend based on user's own ID
             query += ` AND authorId = $${paramIndex++}`;
             queryParams.push(authorId);
         }
@@ -166,12 +282,12 @@ app.get('/api/news', async (req, res) => {
     }
 });
 
-// GET single news item by ID
+// GET single news item by ID (public endpoint)
 app.get('/api/news/:newsid', async (req, res) => {
     try {
         const newsId = req.params.newsid;
         const result = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
-        const newsItem = result.rows[0]; // FIX: Access first element of rows
+        const newsItem = result.rows[0];
 
         if (newsItem) {
             const commentsResult = await client.query('SELECT * FROM comments WHERE news_id = $1 ORDER BY timestamp DESC', [newsItem.id]);
@@ -186,34 +302,31 @@ app.get('/api/news/:newsid', async (req, res) => {
     }
 });
 
-// POST a new news item (Multer is still used here to parse other form fields, but image upload will be direct to Cloudinary)
-app.post('/api/news', upload.none(), async (req, res) => { // Changed to upload.none() as image is direct uploaded
-    const { title, category, fullContent, imageUrl, author, authorImage, authorId } = req.body; // imageUrl will now come from frontend
+// POST a new news item (protected)
+app.post('/api/news', authenticateToken, upload.none(), async (req, res) => {
+    const { title, category, fullContent, imageUrl } = req.body;
+    const authorId = req.user.id; // Get authorId from authenticated user
+    const authorName = req.user.name || req.user.username; // Get author name from authenticated user
+    const authorImage = req.user.avatar || 'https://placehold.co/28x28?text=A';
 
-    console.log('Received POST /api/news request.');
-    console.log('req.body:', req.body);
-    // req.file will not be present here as image is uploaded directly from frontend
-
-    if (!title || !category || !fullContent || fullContent.trim() === '' || !author || !authorId) { // FIX: Corrected logical OR operators '||'
-        console.error('Missing or invalid required news fields:', { title, category, fullContent, author, authorId });
+    if (!title || !category || !fullContent || fullContent.trim() === '') {
         return res.status(400).json({ message: 'Missing required news fields or full content is empty.' });
     }
 
-    // imageUrl is now expected to come from the frontend after Cloudinary upload
-    const finalImageUrl = imageUrl || 'https://via.placeholder.com/600x400?text=No+Image'; // FIX: Corrected logical OR operator '||'
+    const finalImageUrl = imageUrl || 'https://placehold.co/600x400?text=No+Image';
 
     const newNews = {
         id: uuidv4(),
         category,
         title,
         fullContent: fullContent.trim(),
-        imageUrl: finalImageUrl, // Use the imageUrl received from frontend
-        author,
-        authorImage: authorImage || 'https://via.placeholder.com/28x28?text=A', // FIX: Corrected logical OR operator '||'
+        imageUrl: finalImageUrl,
+        author: authorName,
+        authorImage: authorImage,
         publishDate: new Date().toISOString(),
         isFeatured: false,
         isSideFeature: false,
-        authorId,
+        authorId: authorId,
     };
 
     try {
@@ -226,41 +339,42 @@ app.post('/api/news', upload.none(), async (req, res) => { // Changed to upload.
             newNews.id, newNews.category, newNews.title, newNews.fullContent, newNews.imageUrl,
             newNews.author, newNews.authorImage, newNews.publishDate, newNews.isFeatured,
             newNews.isSideFeature, newNews.authorId
-        ]; // FIX: Initialized values array with data
+        ];
         const result = await client.query(insertQuery, values);
-        res.status(201).json(result.rows[0]); // FIX: Return first element
+        res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error('Error adding new news item:', err.stack);
         res.status(500).json({ message: 'Error adding news item' });
     }
 });
 
-// PUT/PATCH (Update) an existing news item (Multer is still used here to parse other form fields)
-app.put('/api/news/:newsid', upload.none(), async (req, res) => { // Changed to upload.none()
+// PUT/PATCH (Update) an existing news item (protected)
+app.put('/api/news/:newsid', authenticateToken, upload.none(), async (req, res) => {
     const newsId = req.params.newsid;
-    const { title, category, fullContent, imageUrl, author, authorImage, authorId } = req.body; // imageUrl will now come from frontend
-
-    console.log(`Received PUT /api/news/${newsId} request.`);
-    console.log('req.body for update:', req.body);
-    // req.file will not be present here
+    const { title, category, fullContent, imageUrl } = req.body;
+    const userIdFromToken = req.user.id; // Get user ID from authenticated token
 
     try {
         const currentNewsResult = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
-        const existingNews = currentNewsResult.rows[0]; // FIX: Access first element of rows
+        const existingNews = currentNewsResult.rows[0];
 
         if (!existingNews) {
             return res.status(404).json({ message: 'News item not found' });
         }
 
+        // Only allow author to update their own news
+        if (existingNews.authorId !== userIdFromToken) {
+            return res.status(403).json({ message: 'You are not authorized to edit this news item.' });
+        }
+
         let updatedFullContent = existingNews.fullContent;
-        if (fullContent !== undefined && fullContent.trim() !== '') { // FIX: Corrected strict inequality operator '!=='
+        if (fullContent !== undefined && fullContent.trim() !== '') {
             updatedFullContent = fullContent.trim();
         } else if (fullContent !== undefined && fullContent.trim() === '') {
             return res.status(400).json({ message: 'Full content cannot be empty.' });
         }
 
-        // imageUrl is now expected to come from the frontend after Cloudinary upload
-        const finalImageUrl = imageUrl || existingNews.imageUrl; // Use new imageUrl or keep existing // FIX: Corrected logical OR operator '||'
+        const finalImageUrl = imageUrl || existingNews.imageUrl;
 
         const updateQuery = `
             UPDATE news
@@ -268,18 +382,15 @@ app.put('/api/news/:newsid', upload.none(), async (req, res) => { // Changed to 
                 title = COALESCE($1, title),
                 category = COALESCE($2, category),
                 fullContent = COALESCE($3, fullContent),
-                imageUrl = $4,
-                author = COALESCE($5, author),
-                authorImage = COALESCE($6, authorImage),
-                authorId = COALESCE($7, authorId)
-            WHERE id = $8
+                imageUrl = $4
+            WHERE id = $5
             RETURNING *;
         `;
         const values = [
-            title, category, updatedFullContent, finalImageUrl, author, authorImage, authorId, newsId
+            title, category, updatedFullContent, finalImageUrl, newsId
         ];
-        const result = await client.query(updateQuery, values); // FIX: Added missing await
-        res.json(result.rows[0]); // FIX: Return first element
+        const result = await client.query(updateQuery, values);
+        res.json(result.rows[0]);
 
     } catch (err) {
         console.error('Error updating news item:', err.stack);
@@ -288,42 +399,43 @@ app.put('/api/news/:newsid', upload.none(), async (req, res) => { // Changed to 
 });
 
 
-// DELETE a news item
-app.delete('/api/news/:newsid', async (req, res) => {
+// DELETE a news item (protected)
+app.delete('/api/news/:newsid', authenticateToken, async (req, res) => {
     const newsId = req.params.newsid;
+    const userIdFromToken = req.user.id; // Get user ID from authenticated token
+
     try {
         const newsItemResult = await client.query('SELECT * FROM news WHERE id = $1', [newsId]);
-        const newsItemToDelete = newsItemResult.rows[0]; // FIX: Access first element of rows
+        const newsItemToDelete = newsItemResult.rows[0];
 
         if (!newsItemToDelete) {
             return res.status(404).json({ message: 'News item not found' });
         }
 
+        // Only allow author to delete their own news
+        if (newsItemToDelete.authorId !== userIdFromToken) {
+            return res.status(403).json({ message: 'You are not authorized to delete this news item.' });
+        }
+
         // Delete associated image from Cloudinary if it's a Cloudinary URL
         if (newsItemToDelete.imageUrl && newsItemToDelete.imageUrl.includes('res.cloudinary.com')) {
-            // Extract public_id from Cloudinary URL
             const urlParts = newsItemToDelete.imageUrl.split('/');
-            const folder = urlParts[urlParts.length - 2]; // e.g., flashnews_uploads
-            const publicIdWithFormat = urlParts[urlParts.length - 1]; // e.g., news_image_abcd123.png
-            const publicId = publicIdWithFormat.split('.')[0]; // FIX: Get first part of split (e.g., news_image_abcd123)
+            const folder = urlParts[urlParts.length - 2];
+            const publicIdWithFormat = urlParts[urlParts.length - 1];
+            const publicId = publicIdWithFormat.split('.')[0];
+            const fullPublicId = `${folder}/${publicId}`;
 
-            const fullPublicId = `${folder}/${publicId}`; // e.g., flashnews_uploads/news_image_abcd123
-
-            console.log("Attempting to delete Cloudinary image with public ID:", fullPublicId);
             try {
                 const cloudinaryDeleteResult = await cloudinary.uploader.destroy(fullPublicId);
                 console.log('Cloudinary delete result:', cloudinaryDeleteResult);
-                if (cloudinaryDeleteResult.result !== 'ok') { // FIX: Corrected strict inequality operator '!=='
+                if (cloudinaryDeleteResult.result !== 'ok') {
                     console.warn(`Cloudinary delete for ${fullPublicId} was not 'ok':`, cloudinaryDeleteResult.result);
                 }
             } catch (clError) {
                 console.error("Error deleting image from Cloudinary:", clError);
-                // Don't block the news item deletion if Cloudinary deletion fails
-                // Log and continue, as the primary goal is to remove the news record
             }
         }
 
-        // Comments will be deleted automatically due to ON DELETE CASCADE in schema
         const deleteNewsResult = await client.query('DELETE FROM news WHERE id = $1 RETURNING *', [newsId]);
 
         if (deleteNewsResult.rowCount > 0) {
@@ -337,39 +449,8 @@ app.delete('/api/news/:newsid', async (req, res) => {
     }
 });
 
-// --- NEW API Endpoint for Cloudinary Signature Generation ---
-app.post('/api/cloudinary-signature', (req, res) => {
-    try {
-        const { folder } = req.body; // Frontend can send folder if needed
-        const timestamp = Math.floor(Date.now() / 1000); // Current Unix timestamp in seconds
-
-        const paramsToSign = {
-        timestamp,
-            folder: folder || 'flashnews_uploads' // Use provided folder or default // FIX: Corrected logical OR operator '||'
-        };
-
-        // Generate the signature using Cloudinary's SDK utility
-        const signature = cloudinary.utils.api_sign_request(
-            paramsToSign,
-            process.env.CLOUDINARY_API_SECRET // API Secret is used here, kept secure on backend
-        );
-
-        res.json({
-            signature: signature,
-            timestamp: timestamp,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            folder: paramsToSign.folder
-        });
-    } catch (error) {
-        console.error('Error generating Cloudinary signature:', error.stack);
-        res.status(500).json({ message: 'Error generating Cloudinary signature.' });
-    }
-});
-
-
 // --- API Endpoints for Comments ---
-// GET comments for a specific news item
+// GET comments for a specific news item (public)
 app.get('/api/news/:newsId/comments', async (req, res) => {
     try {
         const newsId = req.params.newsId;
@@ -381,30 +462,29 @@ app.get('/api/news/:newsId/comments', async (req, res) => {
     }
 });
 
-// POST a new comment to a news item
-app.post('/api/news/:newsId/comments', async (req, res) => {
+// POST a new comment to a news item (protected)
+app.post('/api/news/:newsId/comments', authenticateToken, async (req, res) => {
     const newsId = req.params.newsId;
-    const { author, authorId, avatar, text } = req.body;
+    const { text } = req.body;
+    const authorId = req.user.id;
+    const authorName = req.user.name || req.user.username;
+    const authorAvatar = req.user.avatar || 'https://placehold.co/45x45?text=U';
 
-    if (!text || text.trim() === '') { // FIX: Corrected logical OR operator '||'
+    if (!text || text.trim() === '') {
         return res.status(400).json({ message: 'Comment text cannot be empty.' });
-    }
-    if (!author) {
-        return res.status(400).json({ message: 'Author name is required for comments.' });
     }
 
     const newComment = {
         id: uuidv4(),
         news_id: newsId,
-        author: author,
-        authorId: authorId || 'guest', // FIX: Corrected logical OR operator '||'
-        avatar: avatar || 'https://via.placeholder.com/45x45?text=U', // FIX: Corrected logical OR operator '||'
+        author: authorName,
+        authorId: authorId,
+        avatar: authorAvatar,
         text: text.trim(),
         timestamp: new Date().toISOString()
     };
 
     try {
-        // First, check if the news item exists
         const newsCheck = await client.query('SELECT id FROM news WHERE id = $1', [newsId]);
         if (newsCheck.rowCount === 0) {
             return res.status(404).json({ message: 'News item not found.' });
@@ -420,23 +500,36 @@ app.post('/api/news/:newsId/comments', async (req, res) => {
             newComment.avatar, newComment.text, newComment.timestamp
         ];
         const result = await client.query(insertQuery, values);
-        res.status(201).json(result.rows[0]); // FIX: Return first element
+        res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error('Error adding new comment:', err.stack);
         res.status(500).json({ message: 'Error adding comment' });
     }
 });
 
-// PUT/PATCH (Update) a comment
-app.put('/api/news/:newsId/comments/:commentId', async (req, res) => {
+// PUT/PATCH (Update) a comment (protected)
+app.put('/api/news/:newsId/comments/:commentId', authenticateToken, async (req, res) => {
     const { newsId, commentId } = req.params;
     const { text } = req.body;
+    const userIdFromToken = req.user.id;
 
-    if (text === undefined || text.trim() === '') { // FIX: Corrected logical OR operator '||'
+    if (text === undefined || text.trim() === '') {
         return res.status(400).json({ message: 'Comment text cannot be empty for update.' });
     }
 
     try {
+        const commentResult = await client.query('SELECT authorId FROM comments WHERE id = $1 AND news_id = $2', [commentId, newsId]);
+        const commentToUpdate = commentResult.rows[0];
+
+        if (!commentToUpdate) {
+            return res.status(404).json({ message: 'Comment not found for this news item.' });
+        }
+
+        // Only allow author to update their own comment
+        if (commentToUpdate.authorId !== userIdFromToken) {
+            return res.status(403).json({ message: 'You are not authorized to edit this comment.' });
+        }
+
         const updateQuery = `
             UPDATE comments
             SET text = $1
@@ -446,9 +539,9 @@ app.put('/api/news/:newsId/comments/:commentId', async (req, res) => {
         const result = await client.query(updateQuery, [text.trim(), commentId, newsId]);
 
         if (result.rowCount > 0) {
-            res.json(result.rows[0]); // FIX: Return first element
+            res.json(result.rows[0]);
         } else {
-            res.status(404).json({ message: 'Comment not found for this news item.' });
+            res.status(500).json({ message: 'Failed to update comment.' });
         }
     } catch (err) {
         console.error('Error updating comment:', err.stack);
@@ -456,10 +549,24 @@ app.put('/api/news/:newsId/comments/:commentId', async (req, res) => {
     }
 });
 
-// DELETE a comment
-app.delete('/api/news/:newsId/comments/:commentId', async (req, res) => {
+// DELETE a comment (protected)
+app.delete('/api/news/:newsId/comments/:commentId', authenticateToken, async (req, res) => {
     const { newsId, commentId } = req.params;
+    const userIdFromToken = req.user.id;
+
     try {
+        const commentResult = await client.query('SELECT authorId FROM comments WHERE id = $1 AND news_id = $2', [commentId, newsId]);
+        const commentToDelete = commentResult.rows[0];
+
+        if (!commentToDelete) {
+            return res.status(404).json({ message: 'Comment not found for this news item.' });
+        }
+
+        // Only allow author to delete their own comment
+        if (commentToDelete.authorId !== userIdFromToken) {
+            return res.status(403).json({ message: 'You are not authorized to delete this comment.' });
+        }
+
         const deleteQuery = `
             DELETE FROM comments
             WHERE id = $1 AND news_id = $2
@@ -470,7 +577,7 @@ app.delete('/api/news/:newsId/comments/:commentId', async (req, res) => {
         if (result.rowCount > 0) {
             res.status(200).json({ message: 'Comment deleted successfully' });
         } else {
-            res.status(404).json({ message: 'Comment not found for this news item.' });
+            res.status(500).json({ message: 'Failed to delete comment due to internal error.' });
         }
     } catch (err) {
         console.error('Error deleting comment:', err.stack);
@@ -482,15 +589,14 @@ app.delete('/api/news/:newsId/comments/:commentId', async (req, res) => {
 app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {
         console.error("Multer error:", err);
-        return res.status(400).json({ message: err.message || 'File upload error.' }); // FIX: Corrected logical OR operator '||'
+        return res.status(400).json({ message: err.message || 'File upload error.' });
     } else if (err) {
         console.error('Generic server error:', err);
-        return res.status(500).json({ message: err.message || 'An unexpected error occurred.' }); // FIX: Corrected logical OR operator '||'
+        return res.status(500).json({ message: err.message || 'An unexpected error occurred.' });
     }
     next();
 });
 
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
