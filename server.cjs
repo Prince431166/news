@@ -90,8 +90,8 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // FIX: Added missing array values for methods
     allowedHeaders: ['Content-Type', 'Authorization'], // FIX: Added missing array values for allowedHeaders
 }));
-    app.use(bodyparser.json({ limit: '100mb' }));
-    app.use(bodyparser.urlencoded({ extended: true, limit: '100mb' }));
+    app.use(bodyparser.json({ limit: '20mb' }));
+    app.use(bodyparser.urlencoded({ extended: true, limit: '20mb' }));
 
 
 // Multer storage configuration for Cloudinary (This is for server-side upload, not direct browser upload)
