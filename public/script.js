@@ -78,7 +78,7 @@ const logoutButton = document.getElementById('logoutButton');
 const adminPanelLink = document.getElementById('adminPanelLink');
 
 const authModal = document.getElementById('authModal');
-const closeAuthModalBtn = authModal.querySelector('.close-button') : null;
+const closeAuthModalBtn = authModal ? authModal.querySelector('.close-button') : null;
 const authForm = document.getElementById('authForm');
 const authUsernameInput = document.getElementById('authUsername');
 const authPasswordInput = document.getElementById('authPassword');
