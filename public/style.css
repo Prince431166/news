@@ -17,7 +17,6 @@
     --error: #f44336;
     --warning: #ff9800;
     --transition: all 0.3s ease;
-
     /* Light theme variables */
     --bg-color: #f0f2f5;
     --text-color: #202124;
@@ -127,7 +126,8 @@ header {
     position: relative;
 }
 
-.nav-links a:hover, .nav-links a.active {
+.nav-links a:hover,
+.nav-links a.active {
     color: white;
 }
 
@@ -142,7 +142,8 @@ header {
     transition: var(--transition);
 }
 
-.nav-links a:hover::after, .nav-links a.active::after {
+.nav-links a:hover::after,
+.nav-links a.active::after {
     width: 100%;
 }
 
@@ -152,7 +153,8 @@ header {
     gap: 0.8rem;
 }
 
-.theme-toggle, .profile-icon {
+.theme-toggle,
+.profile-icon {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     width: 40px;
@@ -166,7 +168,8 @@ header {
     transition: var(--transition);
 }
 
-.theme-toggle:hover, .profile-icon:hover {
+.theme-toggle:hover,
+.profile-icon:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: rotate(20deg);
 }
@@ -667,7 +670,9 @@ header {
     font-size: 0.9rem;
 }
 
-.form-group input, .form-group textarea, .form-group select {
+.form-group input,
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid var(--border-color);
@@ -678,7 +683,9 @@ header {
     color: var(--text-color);
 }
 
-.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
@@ -748,8 +755,12 @@ header {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* News Detail Modal Styles */
@@ -916,7 +927,8 @@ header {
     margin-bottom: 0.8rem;
 }
 
-.comment-form input[type="text"], .comment-form textarea {
+.comment-form input[type="text"],
+.comment-form textarea {
     border: 1px solid var(--light-gray);
     background: var(--card-bg);
     color: var(--text-color);
@@ -1205,12 +1217,20 @@ footer {
 
 /* Animations */
 @keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Apply animation only when visible, not when hidden by filter */
-.news-card:not(.hidden), .featured-news > div:not(.hidden), .admin-panel {
+.news-card:not(.hidden),
+.featured-news > div:not(.hidden),
+.admin-panel {
     animation: fadeIn 0.6s ease forwards;
 }
 
@@ -1219,17 +1239,21 @@ footer {
     .featured-news {
         grid-template-columns: 2fr 1fr;
     }
+
     .side-features {
         display: flex;
         flex-direction: column;
         gap: 1.2rem;
     }
+
     .logo h1 {
         font-size: 1.8rem;
     }
+
     .main-feature-image {
         height: 350px;
     }
+
     .section-title h2 {
         font-size: 1.7rem;
     }
@@ -1239,12 +1263,15 @@ footer {
     .logo h1 {
         font-size: 1.9rem;
     }
+
     .nav-links {
         gap: 1.5rem;
     }
+
     .main-feature-image {
         height: 400px;
     }
+
     .main-feature-content h2 {
         font-size: 1.9rem;
     }
@@ -1254,6 +1281,7 @@ footer {
     .menu-toggle {
         display: block;
     }
+
     .nav-container {
         display: none;
         flex-direction: column;
@@ -1261,31 +1289,39 @@ footer {
         margin-top: 1rem;
         align-items: flex-start;
     }
+
     .nav-container.active {
         display: flex;
     }
+
     .nav-links {
         width: 100%;
         flex-direction: column;
         margin-left: 0;
         margin-bottom: 1rem;
     }
+
     .search-bar {
         max-width: 100%;
     }
+
     .header-container {
         padding: 0.8rem;
     }
+
     .header-right {
         width: 100%;
         margin-top: 1rem;
     }
+
     .modal-body h2 {
         font-size: 1.5rem;
     }
+
     .modal-image-container {
         height: 250px;
     }
+
     .container {
         margin-top: calc(1.5rem + 80px); /* Adjusted for mobile header height */
     }
@@ -1295,20 +1331,25 @@ footer {
     .news-grid {
         grid-template-columns: 1fr;
     }
+
     .logo h1 {
         font-size: 1.4rem;
     }
+
     .section-title {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
+
     .main-feature-image {
         height: 250px;
     }
+
     .side-feature {
         flex-direction: column;
     }
+
     .side-feature-image {
         width: 100%;
         height: 150px;
