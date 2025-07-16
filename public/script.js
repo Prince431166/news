@@ -1443,8 +1443,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     updateNotificationDisplay();
     await fetchNews('all'); // Initial fetch of all news from backend
-<<<<<<< HEAD
+
 });
-=======
-});
->>>>>>> e1ee7bbae59baf47178ab8350b0de91a6163e8f2
+
+
