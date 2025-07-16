@@ -489,51 +489,45 @@ newsForm.addEventListener('submit', async function(e) {
 
     try {
         if (newsImageFile) {
-            // Step 1: Get Cloudinary signature from your backend
-            // --- FIX START ---
-            const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, { // Changed to POST and correct endpoint
-                method: 'POST',
-            });
-            const signatureData = await
-            signatureResponse.json();
-            
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ folder: 'flashnews_uploads' }) // Optional: send folder name
-            });
-            // --- FIX END ---
+      // Step 1: Get Cloudinary signature from your backend
+const signatureResponse = await fetch(`${BASE_API_URL}/cloudinary-signature`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ folder: 'flashnews_uploads' })
+});
 
-            if (!signatureResponse.ok) {
-                const errorData = await signatureResponse.json();
-                throw new Error(errorData.message || 'Failed to get Cloudinary signature from backend.');
-            }
-            const { signature, timestamp, apiKey: api_Key, cloudName: cloud_Name, folder } = signatureData; 
-            console.log('DEBUG: Cloudinary Signature received:', { signature, timestamp, api_key, cloud_name, folder });
+if (!signatureResponse.ok) {
+  const errorData = await signatureResponse.json();
+  throw new Error(errorData.message || 'Failed to get Cloudinary signature from backend.');
+}
 
-            // Step 2: Directly upload image to Cloudinary using the signature
-            const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
+const signatureData = await signatureResponse.json();
+const { signature, timestamp, api_key, cloud_name, folder } = signatureData;
+console.log('DEBUG: Cloudinary Signature received:', { signature, timestamp, api_key, cloud_name, folder });
 
-             const cloudinaryFormData = new FormData();
-             cloudinaryFormData.append('file', newsImageFile);
-             cloudinaryFormData.append('api_key', api_key);
-             cloudinaryFormData.append('timestamp', timestamp);
-             cloudinaryFormData.append('signature', signature);
-             cloudinaryFormData.append('folder', folder);
+// Step 2: Directly upload image to Cloudinary using the signature
+const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
 
-             const cloudinaryResponse = await fetch(cloudinaryUploadUrl, {
-            method: 'POST',
-            body: cloudinaryFormData
-           });
+const cloudinaryFormData = new FormData();
+cloudinaryFormData.append('file', newsImageFile);
+cloudinaryFormData.append('api_key', api_key);
+cloudinaryFormData.append('timestamp', timestamp);
+cloudinaryFormData.append('signature', signature);
+cloudinaryFormData.append('folder', folder);
 
-          const result = await cloudinaryResponse.json();
-          console.log("✅ Uploaded image:", result.secure_url);
+const cloudinaryResponse = await fetch(cloudinaryUploadUrl, {
+  method: 'POST',
+  body: cloudinaryFormData
+});
 
-            if (!cloudinaryResponse.ok) {
-                const errorData = await cloudinaryResponse.json();
-                throw new Error(errorData.error.message || 'Failed to upload image to Cloudinary.');
-            }
-            const cloudinaryResult = await cloudinaryResponse.json();
-            finalImageUrl = cloudinaryResult.secure_url; // Get the secure URL from Cloudinary
-            console.log('DEBUG: Cloudinary Upload successful. URL:', finalImageUrl);
+if (!cloudinaryResponse.ok) {
+  const errorData = await cloudinaryResponse.json();
+  throw new Error(errorData.error.message || 'Failed to upload image to Cloudinary.');
+}
+
+const cloudinaryResult = await cloudinaryResponse.json();
+finalImageUrl = cloudinaryResult.secure_url;
+console.log('DEBUG: Cloudinary Upload successful. URL:', finalImageUrl);
 
         } else if (editingId) {
             const existingNews = allNews.find(item => item.id === editingId);
