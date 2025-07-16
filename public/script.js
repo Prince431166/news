@@ -255,7 +255,7 @@ function updateAuthUI() {
 
 // --- AUTH MODAL LOGIC ---
 const logoutButton =
-document.getElementByID("logoutButton");
+document.getElementById("logoutButton");
 loginButton.addEventListener('click', () => {
     authMode = 'login';
     authModeTitle.textContent = 'Login';
