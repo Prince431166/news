@@ -20,6 +20,7 @@ let userProfile = {
 let authToken = null; // Store JWT token
 
 // --- DOM Elements ---
+document.addEventListener("DomContentLoaded", function() {
 const menuToggle = document.getElementById('menuToggle');
 const navContainer = document.getElementById('navContainer');
 const themeToggle = document.getElementById('themeToggle');
@@ -90,7 +91,7 @@ const authSubmitBtn = document.getElementById('authSubmitBtn');
 const authToggleLink = document.getElementById('authToggleLink');
 const authModeTitle = document.getElementById('authModeTitle');
 
-let authMode = 'login'; // 'login' or 'register'
+let authMode = 'login'; });// 'login' or 'register'
 
 // --- UTILITY FUNCTIONS ---
 function showLoading(message = 'Loading...', iconClass = 'fas fa-spinner', animate = true) {
