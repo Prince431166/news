@@ -85,8 +85,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.get('/', (req, res) => {
-    res.sendfiles(path.json(__dirname, 'public', 'index.html'));
 
 const upload = multer({
     limits: { fileSize: 100 * 1024 * 1024 },
