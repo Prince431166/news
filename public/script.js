@@ -3,7 +3,7 @@ const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // <--- सु�
 
 // Removed MY_POSTS_AUTHOR_ID as it will now come from authenticated user
 const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profile (client-specific)
-
+const JWT_TOKEN_KEY = 'globalNewsJwtToken'; // LocalStorage for JWT token
 
 // Initial default news data (No longer used directly by frontend for news)
 const DEFAULT_NEWS_DATA = []; // Clear this as it's not used by script.js anymore
@@ -20,9 +20,9 @@ let userProfile = {
 let authToken = null; // Store JWT token
 
 // --- DOM Elements ---
-document.addEventListener("DomContentLoaded",function() {
+document.addEventListener("DomContentLoaded",function() { 
+const registerButton = document.getElementById('registerButton');     
 const loginButton = document.getElementById('loginButton');
-const registerButton = document.getElementById('registerButton');
 const menuToggle = document.getElementById('menuToggle');
 const navContainer = document.getElementById('navContainer');
 const themeToggle = document.getElementById('themeToggle');
@@ -270,8 +270,11 @@ loginButton.addEventListener('click', () => {
     document.body.style.overflow = 'hidden';
 });
 
+    
     document.addEventListener("DomContentLoaded",function() { 
     const registerButton = document.getElementById('registerButton'); 
+    const authToggleLink = document.getElementById('authToggleLink');
+    if (authToggleLink) { authToggleLink.addEventListener('click', function (e) { e.preventDefault();
     if (registerButton) { registerButton.addEventListener('click', () => {    
     authMode = 'register';
     authModeTitle.textContent = 'Register';
@@ -286,16 +289,16 @@ loginButton.addEventListener('click', () => {
 }
 });
 
-if (authToggleLink) { authToggleLink.addEventListener('click', function (e) { e.preventDefault();
-    const authToggleLink = document.getElementById('authToggleLink');
+    
+authToggleLink.addEventListener('click', (e) => {
     if (authToggleLink) { authToggleLink.innerHTML = 'Already have an account? <a href="#">Login</a>'; }
+    e.preventDefault();
     if (authMode === 'login') {
         registerButton.click(); // Simulate click on register button
     } else {
         loginButton.click(); // Simulate click on login button
     }
 });
-}
 
 closeAuthModalBtn.addEventListener('click', () => {
     authModal.classList.remove('visible');
@@ -1453,4 +1456,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchNews('all'); // Initial fetch of all news from backend
 
 });
-
+}
+    });
