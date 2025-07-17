@@ -282,6 +282,7 @@ loginButton.addEventListener('click', () => {
     authModal.classList.add('visible');
     document.body.style.overflow = 'hidden';
 });
+}
 
 authToggleLink.addEventListener('click', (e) => {
     e.preventDefault();
