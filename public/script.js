@@ -20,7 +20,9 @@ let userProfile = {
 let authToken = null; // Store JWT token
 
 // --- DOM Elements ---
-document.addEventListener("DomContentLoaded", function() {
+document.addEventListener("DomContentLoaded",function() {
+const loginButton = document.getElementById('loginButton');
+const registerButton = document.getElementById('registerButton');
 const menuToggle = document.getElementById('menuToggle');
 const navContainer = document.getElementById('navContainer');
 const themeToggle = document.getElementById('themeToggle');
@@ -73,8 +75,7 @@ const scrollToTopBtn = document.querySelector('.scroll-to-top');
 
 // --- NEW AUTHENTICATION DOM Elements ---
 const authButtons = document.getElementById('authButtons');
-const loginButton = document.getElementById('loginButton');
-const registerButton = document.getElementById('registerButton');
+
 const adminPanelLink = document.getElementById('adminPanelLink');
 
 const authModal = document.getElementById('authModal');
@@ -1447,5 +1448,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchNews('all'); // Initial fetch of all news from backend
 
 });
-
 
