@@ -3,7 +3,7 @@ const BASE_API_URL = 'https://flashnews-7l5y.onrender.com/api'; // <--- सु�
 
 // Removed MY_POSTS_AUTHOR_ID as it will now come from authenticated user
 const USER_PROFILE_KEY = 'globalNewsUserProfile'; // LocalStorage for user profile (client-specific)
-const JWT_TOKEN_KEY = 'globalNewsJwtToken'; // LocalStorage for JWT token
+
 
 // Initial default news data (No longer used directly by frontend for news)
 const DEFAULT_NEWS_DATA = []; // Clear this as it's not used by script.js anymore
