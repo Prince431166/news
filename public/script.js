@@ -270,7 +270,7 @@ loginButton.addEventListener('click', () => {
     document.body.style.overflow = 'hidden';
 });
 
-registerButton.addEventListener('click', () => {
+    if (registerButton) registerButton.addEventListener('click', () => {
     authMode = 'register';
     authModeTitle.textContent = 'Register';
     authSubmitBtn.textContent = 'Register';
