@@ -321,7 +321,6 @@ authAvatarUpload.addEventListener('change', function() {
         };
         reader.readAsDataURL(file);
     } else {
-        authAvatarPreview.src = 'https://placehold.co/100x100?text=User';
     }
 });
 
