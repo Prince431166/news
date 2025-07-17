@@ -272,11 +272,12 @@ loginButton.addEventListener('click', () => {
 
     document.addEventListener("DomContentLoaded",function() { 
     const registerButton = document.getElementById('registerButton'); 
+    const authToggleLink = document.getElementById('authToggleLink');
+    if (authToggleLink) { authToggleLink.innerHTML = 'Already have an account? <a href="#">Login</a>'; }
     if (registerButton) { registerButton.addEventListener('click', () => {    
     authMode = 'register';
     authModeTitle.textContent = 'Register';
     authSubmitBtn.textContent = 'Register';
-    authToggleLink.innerHTML = 'Already have an account? <a href="#">Login</a>';
     authNameContainer.classList.remove('hidden');
     authAvatarContainer.classList.remove('hidden');
     authForm.reset();
