@@ -21,6 +21,7 @@ let authToken = null; // Store JWT token
 
 // --- DOM Elements ---
 document.addEventListener("DomContentLoaded",function() { 
+const authmodal = document.getElementById('authmodal'); if (authmodal){}
 const registerButton = document.getElementById('registerButton');     
 const loginButton = document.getElementById('loginButton');
 const menuToggle = document.getElementById('menuToggle');
