@@ -286,16 +286,16 @@ loginButton.addEventListener('click', () => {
 }
 });
 
-authToggleLink.addEventListener('click', (e) => {
-const authToggleLink = document.getElementById('authToggleLink');
-if (authToggleLink) { authToggleLink.innerHTML = 'Already have an account? <a href="#">Login</a>'; }
-    e.preventDefault();
+if (authToggleLink) { authToggleLink.addEventListener('click', function (e) { e.preventDefault();
+    const authToggleLink = document.getElementById('authToggleLink');
+    if (authToggleLink) { authToggleLink.innerHTML = 'Already have an account? <a href="#">Login</a>'; }
     if (authMode === 'login') {
         registerButton.click(); // Simulate click on register button
     } else {
         loginButton.click(); // Simulate click on login button
     }
 });
+}
 
 closeAuthModalBtn.addEventListener('click', () => {
     authModal.classList.remove('visible');
