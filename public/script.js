@@ -269,9 +269,6 @@ loginButton.addEventListener('click', () => {
     authModal.classList.add('visible');
     document.body.style.overflow = 'hidden';
 });
-
-    
-    document.addEventListener("DOMContentLoaded",function() { 
     const registerButton = document.getElementById('registerButton'); 
     const authToggleLink = document.getElementById('authToggleLink');
     if (authToggleLink) { authToggleLink.addEventListener('click', function (e) { e.preventDefault();
