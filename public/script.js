@@ -289,6 +289,8 @@ loginButton.addEventListener('click', () => {
 });
 
 authToggleLink.addEventListener('click', (e) => {
+const authToggleLink = document.getElementById('authToggleLink');
+if (authToggleLink) { authToggleLink.innerHTML = 'Already have an account? <a href="#">Login</a>'; }
     e.preventDefault();
     if (authMode === 'login') {
         registerButton.click(); // Simulate click on register button
