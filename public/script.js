@@ -270,7 +270,9 @@ loginButton.addEventListener('click', () => {
     document.body.style.overflow = 'hidden';
 });
 
-    if (registerButton) registerButton.addEventListener('click', () => {
+    document.addEventListener("DomContentLoaded",function() { 
+    const registerButton = document.getElementById('registerButton'); 
+    if (registerButton) { registerButton.addEventListener('click', () => {    
     authMode = 'register';
     authModeTitle.textContent = 'Register';
     authSubmitBtn.textContent = 'Register';
@@ -281,8 +283,9 @@ loginButton.addEventListener('click', () => {
     authAvatarPreview.src = 'https://placehold.co/100x100?text=User'; // Default for register
     authModal.classList.add('visible');
     document.body.style.overflow = 'hidden';
-});
+    });
 }
+});
 
 authToggleLink.addEventListener('click', (e) => {
     e.preventDefault();
