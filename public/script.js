@@ -428,23 +428,35 @@ authForm.addEventListener('submit', async (e) => {
     }
 });
 
-logoutButton.addEventListener('click', () => {
-    if (confirm('Are you sure you want to log out?')) {
+document.addEventListener("DOMContentLoaded", function () {
+  const authToggleLink = document.getElementById('authToggleLink');
+  const logoutButton = document.getElementById('logoutButton');
+
+  if (authToggleLink) {
+    authToggleLink.addEventListener('click', () => {
+      // Toggle login/register view
+    });
+  }
+
+  if (logoutButton) {
+    logoutButton.addEventListener('click', () => {
+      if (confirm('Are you sure you want to log out?')) {
         clearAuthToken();
         userProfile = {
-            id: null,
-            username: 'guest',
-            name: 'Guest User',
-            avatar: 'https://placehold.co/100x100?text=User'
+          id: null,
+          username: 'guest',
+          name: 'Guest User',
+          avatar: 'https://placehold.co/100x100?text=User'
         };
         saveUserProfile();
         updateAuthUI();
         displaySuccess('Logged out successfully!');
         addNotification('You have been logged out.', 'fas fa-sign-out-alt');
-        // Re-fetch news to reflect public view (e.g., cannot edit own posts anymore)
         fetchNews(currentActiveCategory, searchInput.value);
-    }
-});
+      }
+    });
+  }
+});                         
 
 // --- THEME TOGGLE ---
 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
