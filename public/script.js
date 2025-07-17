@@ -271,7 +271,7 @@ loginButton.addEventListener('click', () => {
 });
 
     
-    document.addEventListener("DomContentLoaded",function() { 
+    document.addEventListener("DOMContentLoaded",function() { 
     const registerButton = document.getElementById('registerButton'); 
     const authToggleLink = document.getElementById('authToggleLink');
     if (authToggleLink) { authToggleLink.addEventListener('click', function (e) { e.preventDefault();
