@@ -297,6 +297,7 @@ authToggleLink.addEventListener('click', (e) => {
     }
 });
 
+const closeAuthModalBtn = authModal ? authModal.querySelector('.close-button') : null;                         
 closeAuthModalBtn.addEventListener('click', () => {
     authModal.classList.remove('visible');
     document.body.style.overflow = 'auto';
