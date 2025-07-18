@@ -741,12 +741,13 @@ navCategoryLinks.forEach(link => {
     });
 });
                          
-const footerCategoryLinks = document.querySelectorAll(".footer=link-category");
+const footerCategoryLinks = document.querySelectorAll(".footer-link-category");
+
 footerCategoryLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        filterNewsByCategory(this.dataset.category);
-    });
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    filterNewsByCategory(this.dataset.category);
+  });
 });
 
 // --- SEARCH BAR FUNCTIONALITY ---
