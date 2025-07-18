@@ -1290,7 +1290,8 @@ window.addEventListener('scroll', () => {
         scrollToTopBtn.classList.remove('visible');
     }
 });
-
+                         
+const scrollToTopBtn = document.getElementById("scrollToTopBtn");
 scrollToTopBtn.addEventListener('click', () => {
     smoothScrollTo(0);
 });
