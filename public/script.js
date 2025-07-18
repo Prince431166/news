@@ -1347,7 +1347,8 @@ profileIcon.addEventListener('click', async () => {
     profileModal.classList.add('visible');
     document.body.style.overflow = 'hidden';
 });
-
+                         
+const closeProfileModalBtn = document.querySelector(".close-profile-modal-button");
 closeProfileModalBtn.addEventListener('click', () => {
     profileModal.classList.remove('visible');
     document.body.style.overflow = 'auto';
