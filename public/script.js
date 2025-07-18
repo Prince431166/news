@@ -740,7 +740,8 @@ navCategoryLinks.forEach(link => {
         filterNewsByCategory(this.dataset.category);
     });
 });
-
+                         
+const footerCategoryLinks = document.querySelectorAll(".footer=link-category");
 footerCategoryLinks.forEach(link => {
     link.addEventListener('click', function(e) {
         e.preventDefault();
