@@ -732,7 +732,8 @@ function filterNewsByCategory(category) {
     searchInput.value = '';
     document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
 }
-
+                         
+const navCategoryLinks = document.querySelectorAll('.nav-link-category');
 navCategoryLinks.forEach(link => {
     link.addEventListener('click', function(e) {
         e.preventDefault();
