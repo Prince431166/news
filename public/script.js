@@ -1253,6 +1253,7 @@ document.addEventListener('click', async function(e) {
 });
 
 // Close modal event listener
+const closeModalButton = document.querySelector(".close-modal-button");                         
 closeModalButton.addEventListener('click', () => {
     newsDetailModal.classList.remove('visible');
     document.body.style.overflow = 'auto';
