@@ -3,837 +3,1079 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoveLens News | Romantic Stories & World Updates</title>
+    <meta name="description" content="Calculate love compatibility, birthday matches, and zodiac compatibility with our romantic love calculator">
+    <title>Romantic Love Calculator - Discover Your Compatibility</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6452903048072621"
+    crossorigin="anonymous"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-        
-        :root {
-            --primary: #e83e8c;
-            --secondary: #6a0dad;
-            --accent: #ff6b6b;
-            --light: #fff9fb;
-            --dark: #2c2c54;
-            --gray: #a5b1c2;
-            --transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #fff9fb 0%, #fef5f8 100%);
-            color: #444;
-            line-height: 1.6;
+            background: linear-gradient(135deg, #fdf2f8, #fce7f3, #fae8ff);
+            min-height: 100vh;
+            padding: 20px;
+            color: #4a154b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.5s ease;
+        }
+        
+        body.dark-mode {
+            background: linear-gradient(135deg, #1f0710, #30130d, #130101);
+            color: #f0e6ef;
         }
         
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: all 0.5s ease;
         }
         
-        /* Header Styles */
+        body.dark-mode .container {
+            background: rgba(30, 10, 30, 0.85);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
         header {
-            background: linear-gradient(to right, var(--secondary), var(--primary));
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(to right, #d1478c, #c6428e);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body.dark-mode header {
+            background: linear-gradient(to right, #8a2c62, #6d2250);
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            transform: rotate(30deg);
         }
         
         .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .nav-container {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
         }
         
-        .logo {
+        body.dark-mode .nav-container {
+            background: rgba(50, 15, 45, 0.3);
+        }
+        
+        .main-nav {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         
-        .logo-icon {
-            font-size: 28px;
-            color: white;
-        }
-        
-        .logo-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: white;
-            letter-spacing: 1px;
-        }
-        
-        .logo-text span {
-            color: var(--accent);
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-        }
-        
-        nav a {
+        .nav-link {
             color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
             font-weight: 500;
-            font-size: 16px;
-            transition: var(--transition);
-            padding: 5px 0;
-            position: relative;
-        }
-        
-        nav a:hover {
-            color: white;
-        }
-        
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: white;
-            transition: var(--transition);
-        }
-        
-        nav a:hover::after {
-            width: 100%;
-        }
-        
-        /* Hero Section */
-        .hero {
-            background: url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80') no-repeat center center/cover;
-            height: 500px;
-            display: flex;
-            align-items: flex-end;
-            position: relative;
-            border-radius: 0 0 20px 20px;
-            overflow: hidden;
-            margin: 20px 20px 0;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, rgba(106, 13, 173, 0.8) 0%, rgba(232, 62, 140, 0.4) 100%);
-        }
-        
-        .hero-content {
-            position: relative;
-            padding: 40px;
-            color: white;
-            max-width: 700px;
-        }
-        
-        .hero-content .category-tag {
-            background: var(--accent);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
-        
-        .hero-content h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            line-height: 1.2;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .hero-content p {
-            font-size: 18px;
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-        
-        /* Main Content */
-        .main-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            padding: 40px 0;
-        }
-        
-        .section-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: var(--dark);
-            position: relative;
-            padding-bottom: 10px;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 80px;
-            height: 3px;
-            background: var(--primary);
-            border-radius: 3px;
-        }
-        
-        /* News Grid */
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-        
-        .news-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: var(--transition);
-        }
-        
-        .news-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .news-card-img {
-            height: 200px;
-            width: 100%;
-            overflow: hidden;
-        }
-        
-        .news-card-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-        
-        .news-card:hover .news-card-img img {
-            transform: scale(1.05);
-        }
-        
-        .news-card-content {
-            padding: 20px;
-        }
-        
-        .news-card .category-tag {
-            background: rgba(232, 62, 140, 0.1);
-            color: var(--primary);
-            padding: 3px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        
-        .news-card h3 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 22px;
-            margin-bottom: 10px;
-            color: var(--dark);
-        }
-        
-        .news-card p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-        
-        .news-card .meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--gray);
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .popular-posts {
-            margin-bottom: 30px;
-        }
-        
-        .popular-post {
-            display: flex;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .popular-post:last-child {
-            border: none;
-        }
-        
-        .popular-post-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .popular-post-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .popular-post-content h4 {
-            font-size: 16px;
-            margin-bottom: 5px;
-            color: var(--dark);
-        }
-        
-        .popular-post-content .meta {
-            font-size: 12px;
-            color: var(--gray);
-        }
-        
-        .categories-widget {
-            margin-bottom: 30px;
-        }
-        
-        .categories-list {
-            list-style: none;
-        }
-        
-        .categories-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .categories-list li:last-child {
-            border: none;
-        }
-        
-        .categories-list a {
-            text-decoration: none;
-            color: var(--dark);
-            transition: var(--transition);
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .categories-list a:hover {
-            color: var(--primary);
-        }
-        
-        .categories-list span {
-            background: rgba(106, 13, 173, 0.1);
-            color: var(--secondary);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
-        
-        /* Newsletter */
-        .newsletter {
-            background: linear-gradient(to right, var(--secondary), var(--primary));
-            padding: 25px;
-            border-radius: 15px;
-            color: white;
-            text-align: center;
-        }
-        
-        .newsletter h3 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-        
-        .newsletter p {
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-        
-        .newsletter-form {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .newsletter-form input {
-            flex: 1;
-            padding: 12px 15px;
-            border: none;
+            padding: 8px 20px;
             border-radius: 30px;
-            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(180, 60, 130, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .newsletter-form button {
-            background: var(--accent);
-            color: white;
+        .nav-link:hover {
+            background: rgba(210, 80, 160, 0.9);
+            transform: translateY(-2px);
+        }
+        
+        .dark-toggle {
+            background: rgba(180, 60, 130, 0.7);
             border: none;
-            padding: 12px 25px;
-            border-radius: 30px;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 500;
-        }
-        
-        .newsletter-form button:hover {
-            background: #ff5252;
-        }
-        
-        /* AdSense Placeholders */
-        .ad-container {
-            background: #f0f4f8;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            margin: 30px 0;
-            border: 1px dashed #a5b1c2;
-        }
-        
-        .ad-label {
-            display: block;
-            font-size: 12px;
-            color: var(--gray);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .ad-placeholder {
-            width: 100%;
-            height: 250px;
-            background: linear-gradient(45deg, #e0e7ff, #fce7f3);
-            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-toggle:hover {
+            background: rgba(210, 80, 160, 0.9);
+            transform: translateY(-2px);
+        }
+        
+        .page {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .input-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .input-box {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            position: relative;
+        }
+        
+        .input-box label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            text-align: left;
+            color: #6d3d6d;
             font-weight: 500;
         }
         
-        .ad-placeholder.sidebar-ad {
-            height: 300px;
+        body.dark-mode .input-box label {
+            color: #e0c0db;
         }
         
-        /* Footer */
-        footer {
-            background: var(--dark);
-            color: white;
-            padding: 60px 0 30px;
+        .input-box input, 
+        .input-box select {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid #e9cfe9;
+            background: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            color: #4a154b;
+            transition: all 0.3s ease;
         }
         
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 30px;
-            margin-bottom: 40px;
+        body.dark-mode .input-box input,
+        body.dark-mode .input-box select {
+            background: rgba(50, 20, 45, 0.7);
+            border: 1px solid #5a2d5a;
+            color: #f0e6ef;
         }
         
-        .footer-column h4 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 20px;
-            margin-bottom: 20px;
+        .input-box input:focus,
+        .input-box select:focus {
+            outline: none;
+            border-color: #d1478c;
+            box-shadow: 0 0 15px rgba(209, 71, 140, 0.2);
+        }
+        
+        .calculate-btn {
+            padding: 16px 40px;
+            background: linear-gradient(to right, #d1478c, #c6428e);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(209, 71, 140, 0.3);
             position: relative;
-            padding-bottom: 10px;
-        }
-        
-        .footer-column h4::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background: var(--primary);
-        }
-        
-        .footer-column p {
-            font-size: 14px;
-            opacity: 0.8;
-            margin-bottom: 20px;
-        }
-        
-        .footer-links {
-            list-style: none;
-        }
-        
-        .footer-links li {
-            margin-bottom: 12px;
-        }
-        
-        .footer-links a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: var(--transition);
-            display: inline-block;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-            transform: translateX(5px);
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 15px;
+            overflow: hidden;
             margin-top: 20px;
         }
         
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-        
-        .social-links a:hover {
-            background: var(--primary);
+        .calculate-btn:hover {
             transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(209, 71, 140, 0.4);
         }
         
-        .copyright {
+        .result-section {
+            padding: 40px 20px;
             text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 14px;
-            opacity: 0.7;
+            background: rgba(255, 240, 245, 0.6);
+            margin: 20px 30px;
+            border-radius: 15px;
+            display: none;
+            animation: scaleIn 0.5s ease;
         }
         
-        /* Responsive */
-        @media (max-width: 992px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .footer-content {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        body.dark-mode .result-section {
+            background: rgba(50, 15, 45, 0.4);
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .result-title {
+            font-size: 1.8rem;
+            color: #d1478c;
+            margin-bottom: 20px;
+        }
+        
+        .names {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #c6428e;
+        }
+        
+        .percentage {
+            font-size: 5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #d1478c, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+            text-shadow: 0 0 10px rgba(209, 71, 140, 0.2);
+        }
+        
+        .message {
+            font-size: 1.3rem;
+            color: #9c27b0;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(245, 220, 235, 0.5);
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 80%;
+        }
+        
+        body.dark-mode .message {
+            background: rgba(70, 25, 60, 0.5);
+        }
+        
+        .love-quotes {
+            padding: 30px;
+            text-align: center;
+            margin: 30px;
+            background: rgba(255, 240, 245, 0.6);
+            border-radius: 15px;
+        }
+        
+        body.dark-mode .love-quotes {
+            background: rgba(50, 15, 45, 0.4);
+        }
+        
+        .quote-title {
+            font-size: 1.5rem;
+            color: #d1478c;
+            margin-bottom: 20px;
+        }
+        
+        .quote {
+            font-style: italic;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #6d3d6d;
+            position: relative;
+            padding: 0 20px;
+        }
+        
+        body.dark-mode .quote {
+            color: #e0c0db;
+        }
+        
+        .quote::before, .quote::after {
+            content: '"';
+            font-size: 2.5rem;
+            position: absolute;
+            color: rgba(209, 71, 140, 0.3);
+        }
+        
+        .quote::before {
+            top: -20px;
+            left: -10px;
+        }
+        
+        .quote::after {
+            bottom: -40px;
+            right: -10px;
+        }
+        
+        .quote-author {
+            font-size: 1.1rem;
+            color: #9c27b0;
+            font-weight: 500;
+        }
+        
+        .content-section {
+            padding: 30px;
+            line-height: 1.8;
+        }
+        
+        .content-section h2 {
+            color: #d1478c;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            border-bottom: 2px solid rgba(209, 71, 140, 0.2);
+            padding-bottom: 10px;
+        }
+        
+        .content-section h3 {
+            color: #9c27b0;
+            margin: 25px 0 15px;
+            font-size: 1.5rem;
+        }
+        
+        .content-section p {
+            margin-bottom: 15px;
+            color: #6d3d6d;
+        }
+        
+        body.dark-mode .content-section p {
+            color: #e0c0db;
+        }
+        
+        .content-section ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .content-section li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 30px;
+            color: #6d3d6d;
+        }
+        
+        body.dark-mode .content-section li {
+            color: #e0c0db;
+        }
+        
+        .content-section li:before {
+            content: "❤";
+            position: absolute;
+            left: 0;
+            color: #d1478c;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(245, 220, 235, 0.6);
+            margin-top: 20px;
+        }
+        
+        body.dark-mode footer {
+            background: rgba(50, 15, 45, 0.4);
+        }
+        
+        footer p {
+            margin: 10px 0;
+            color: #6d3d6d;
+        }
+        
+        body.dark-mode footer p {
+            color: #e0c0db;
+        }
+        
+        footer a {
+            color: #d1478c;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        footer a:hover {
+            color: #9c27b0;
+            text-decoration: underline;
+        }
+        
+        .heart-beat {
+            animation: heartbeat 1.2s infinite;
+            color: #d1478c;
+            display: inline-block;
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            5% { transform: scale(1.1); }
+            10% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+        
+        .ad-container {
+            margin: 30px auto;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            max-width: 90%;
+        }
+        
+        body.dark-mode .ad-container {
+            background: rgba(50, 20, 45, 0.5);
+        }
+        
+        .ad-label {
+            font-size: 0.9rem;
+            color: #9c27b0;
+            margin-bottom: 10px;
+            display: block;
         }
         
         @media (max-width: 768px) {
-            .header-content {
+            h1 {
+                font-size: 2.3rem;
+            }
+            
+            .tagline {
+                font-size: 1.1rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .input-box {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .percentage {
+                font-size: 3.5rem;
+            }
+            
+            .message {
+                font-size: 1.1rem;
+            }
+            
+            .main-nav {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+            
+            .nav-container {
                 flex-direction: column;
                 gap: 15px;
+                align-items: center;
             }
             
-            nav ul {
-                gap: 15px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .hero {
-                height: 400px;
-            }
-            
-            .hero-content h1 {
-                font-size: 36px;
-            }
-            
-            .news-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .footer-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .newsletter-form {
-                flex-direction: column;
+            .ad-container {
+                padding: 10px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container header-content">
-            <a href="#" class="logo">
-                <div class="logo-icon"><i class="fas fa-heart"></i></div>
-                <div class="logo-text">Love<span>Lens</span> News</div>
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="#"><i class="fas fa-heart"></i> Relationships</a></li>
-                    <li><a href="#"><i class="fas fa-globe"></i> World</a></li>
-                    <li><a href="#"><i class="fas fa-star"></i> Lifestyle</a></li>
-                    <li><a href="#"><i class="fas fa-film"></i> Entertainment</a></li>
-                    <li><a href="#"><i class="fas fa-utensils"></i> Food</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="category-tag">Relationships</div>
-            <h1>The Art of Keeping Romance Alive in Long-Term Relationships</h1>
-            <p>Discover the secrets to maintaining passion and connection through the years, according to relationship experts.</p>
-            <a href="#" class="btn">Read More <i class="fas fa-arrow-right"></i></a>
-        </div>
-    </section>
-
-    <!-- Main Content -->
     <div class="container">
-        <div class="main-content">
-            <div class="content">
-                <!-- AdSense Top Banner -->
-                <div class="ad-container">
-                    <span class="ad-label">Advertisement</span>
-                    <div class="ad-placeholder">AdSense Banner (728x90)</div>
-                </div>
-                
-                <h2 class="section-title">Latest Stories</h2>
-                
-                <div class="news-grid">
-                    <!-- News Card 1 -->
-                    <div class="news-card">
-                        <div class="news-card-img">
-                            <img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?q=80" alt="Romantic Dinner">
-                        </div>
-                        <div class="news-card-content">
-                            <div class="category-tag">Lifestyle</div>
-                            <h3>10 Most Romantic Restaurants in Paris for Your Next Getaway</h3>
-                            <p>Discover the top dining spots that offer not just exquisite cuisine but an unforgettable romantic ambiance.</p>
-                            <div class="meta">
-                                <span><i class="far fa-user"></i> Sarah Johnson</span>
-                                <span><i class="far fa-clock"></i> 3 hours ago</span>
-                            </div>
-                        </div>
+        <header>
+            <div class="header-content">
+                <h1><i class="fas fa-heart"></i> Romantic Love Calculator</h1>
+                <p class="tagline">Discover the magic of your connection with someone special</p>
+            </div>
+        </header>
+        
+        <div class="nav-container">
+            <div class="main-nav">
+                <a href="#" class="nav-link active" data-page="home">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="#" class="nav-link" data-page="birthday">
+                    <i class="fas fa-birthday-cake"></i> Birthday Match
+                </a>
+                <a href="#" class="nav-link" data-page="zodiac">
+                    <i class="fas fa-star"></i> Zodiac Match
+                </a>
+                <a href="#" class="nav-link" data-page="tips">
+                    <i class="fas fa-heart"></i> Love Tips
+                </a>
+                <a href="#" class="nav-link" data-page="about">
+                    <i class="fas fa-info-circle"></i> About
+                </a>
+            </div>
+            <button class="dark-toggle" id="darkModeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="input-section">
+                <div class="input-group">
+                    <div class="input-box">
+                        <label for="name1"><i class="fas fa-user"></i> Your Name</label>
+                        <input type="text" id="name1" placeholder="Enter your name">
                     </div>
-                    
-                    <!-- News Card 2 -->
-                    <div class="news-card">
-                        <div class="news-card-img">
-                            <img src="https://images.unsplash.com/photo-1529254479751-fbacb4c7b3c8?q=80" alt="Couple traveling">
-                        </div>
-                        <div class="news-card-content">
-                            <div class="category-tag">Travel</div>
-                            <h3>Hidden Romantic Getaways: Unexplored Destinations for Couples</h3>
-                            <p>Escape the crowds and discover these secluded romantic destinations perfect for reconnecting.</p>
-                            <div class="meta">
-                                <span><i class="far fa-user"></i> Michael Chen</span>
-                                <span><i class="far fa-clock"></i> 5 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- News Card 3 -->
-                    <div class="news-card">
-                        <div class="news-card-img">
-                            <img src="https://images.unsplash.com/photo-1529338296731-c4280a44fc48?q=80" alt="Love letters">
-                        </div>
-                        <div class="news-card-content">
-                            <div class="category-tag">Relationships</div>
-                            <h3>The Lost Art of Love Letters: Why Handwritten Notes Still Matter</h3>
-                            <p>In our digital age, rediscover the power of handwritten expressions of love and affection.</p>
-                            <div class="meta">
-                                <span><i class="far fa-user"></i> Emma Rodriguez</span>
-                                <span><i class="far fa-clock"></i> 1 day ago</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- News Card 4 -->
-                    <div class="news-card">
-                        <div class="news-card-img">
-                            <img src="https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?q=80" alt="Couple cooking">
-                        </div>
-                        <div class="news-card-content">
-                            <div class="category-tag">Food & Love</div>
-                            <h3>Cooking Together: How Shared Meals Can Strengthen Your Bond</h3>
-                            <p>Discover how preparing meals together can become a meaningful ritual in your relationship.</p>
-                            <div class="meta">
-                                <span><i class="far fa-user"></i> David Miller</span>
-                                <span><i class="far fa-clock"></i> 2 days ago</span>
-                            </div>
-                        </div>
+                    <div class="input-box">
+                        <label for="name2"><i class="fas fa-user"></i> Partner's Name</label>
+                        <input type="text" id="name2" placeholder="Enter partner's name">
                     </div>
                 </div>
                 
-                <!-- Middle AdSense -->
-                <div class="ad-container">
-                    <span class="ad-label">Advertisement</span>
-                    <div class="ad-placeholder">AdSense Banner (728x90)</div>
-                </div>
-                
-                <h2 class="section-title">Relationship Advice</h2>
-                
-                <div class="news-grid">
-                    <!-- Additional News Cards -->
-                    <div class="news-card">
-                        <div class="news-card-img">
-                            <img src="https://images.unsplash.com/photo-1567532939604-b6b5b0e16019?q=80" alt="Communication">
-                        </div>
-                        <div class="news-card-content">
-                            <div class="category-tag">Advice</div>
-                            <h3>5 Communication Mistakes That Can Harm Your Relationship</h3>
-                            <p>Learn to recognize and avoid these common pitfalls that can create distance between partners.</p>
-                            <div class="meta">
-                                <span><i class="far fa-user"></i> Dr. Lisa Parker</span>
-                                <span><i class="far fa-clock"></i> 2 days ago</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="news-card">
-                        <div class="news-card-img">
-                            <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3a?q=80" alt="Long distance">
-                        </div>
-                        <div class="news-card-content">
-                            <div class="category-tag">Long Distance</div>
-                            <h3>Making Long Distance Work: Creative Ways to Stay Connected</h3>
-                            <p>Physical separation doesn't have to mean emotional distance. Try these innovative approaches.</p>
-                            <div class="meta">
-                                <span><i class="far fa-user"></i> James Wilson</span>
-                                <span><i class="far fa-clock"></i> 3 days ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <button class="calculate-btn" id="calculateBtn">
+                    <i class="fas fa-heart"></i> Calculate Love Percentage
+                </button>
             </div>
             
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <!-- Sidebar Ad -->
-                <div class="ad-container">
-                    <span class="ad-label">Advertisement</span>
-                    <div class="ad-placeholder sidebar-ad">AdSense Rectangle (300x250)</div>
-                </div>
+            <div class="result-section" id="resultSection">
+                <h2 class="result-title">Your Love Compatibility</h2>
+                <div class="names" id="namesDisplay">Alex ❤️ Taylor</div>
+                <div class="percentage" id="percentageDisplay">86%</div>
+                <div class="message" id="messageDisplay">🌟 A true cosmic connection! Your bond is extraordinary</div>
+            </div>
+            
+            <div class="love-quotes">
+                <h3 class="quote-title"><i class="fas fa-quote-left"></i> Romantic Quotes</h3>
+                <p class="quote" id="quoteText">Love is not about how many days, weeks or months you've been together, it's all about how much you love each other every day.</p>
+                <p class="quote-author" id="quoteAuthor">- Unknown</p>
+            </div>
+            
+            <div class="ad-container">
+                <span class="ad-label">Advertisement</span>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-6452903048072621"
+                     data-ad-slot="3171168179"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            
+            <div class="content-section">
+                <h2>How Our Love Calculator Works</h2>
+                <p>Our love compatibility algorithm uses a combination of numerology and psychological principles to determine the potential harmony between two individuals. The calculation is based on the letters in your names and their corresponding numerological values.</p>
                 
-                <div class="popular-posts">
-                    <h3 class="section-title">Popular Now</h3>
-                    
-                    <div class="popular-post">
-                        <div class="popular-post-img">
-                            <img src="https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80" alt="Proposal">
-                        </div>
-                        <div class="popular-post-content">
-                            <h4>10 Most Creative Marriage Proposal Ideas of 2023</h4>
-                            <div class="meta">5K views | 2 days ago</div>
-                        </div>
-                    </div>
-                    
-                    <div class="popular-post">
-                        <div class="popular-post-img">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80" alt="Date night">
-                        </div>
-                        <div class="popular-post-content">
-                            <h4>Affordable Date Night Ideas That Feel Luxurious</h4>
-                            <div class="meta">3.8K views | 3 days ago</div>
-                        </div>
-                    </div>
-                    
-                    <div class="popular-post">
-                        <div class="popular-post-img">
-                            <img src="https://images.unsplash.com/photo-1532710093739-9470acff878f?q=80" alt="Gifts">
-                        </div>
-                        <div class="popular-post-content">
-                            <h4>Thoughtful Gift Ideas for Every Relationship Stage</h4>
-                            <div class="meta">3.2K views | 4 days ago</div>
-                        </div>
-                    </div>
-                </div>
+                <h3>The Science Behind Love Compatibility</h3>
+                <p>While love is a complex emotion, research has shown that compatibility can be measured through several factors:</p>
+                <ul>
+                    <li><strong>Shared values and interests</strong></li>
+                    <li><strong>Communication styles</strong></li>
+                    <li><strong>Emotional intelligence compatibility</strong></li>
+                    <li><strong>Conflict resolution approaches</strong></li>
+                </ul>
                 
-                <div class="categories-widget">
-                    <h3 class="section-title">Categories</h3>
-                    <ul class="categories-list">
-                        <li><a href="#">Relationships <span>24</span></a></li>
-                        <li><a href="#">Love Stories <span>18</span></a></li>
-                        <li><a href="#">Weddings <span>15</span></a></li>
-                        <li><a href="#">Dating Advice <span>22</span></a></li>
-                        <li><a href="#">Romantic Travel <span>16</span></a></li>
-                        <li><a href="#">Self-Love <span>12</span></a></li>
-                    </ul>
-                </div>
-                
-                <div class="newsletter">
-                    <h3>Love Letters Newsletter</h3>
-                    <p>Get weekly romantic inspiration, relationship tips, and exclusive content</p>
-                    <form class="newsletter-form">
-                        <input type="email" placeholder="Your email address">
-                        <button type="submit">Subscribe</button>
-                    </form>
-                </div>
+                <p>Our algorithm simulates these factors through a mathematical model that analyzes the vibrational frequencies of names to determine potential harmony.</p>
             </div>
         </div>
+        
+        <!-- Birthday Match Page -->
+        <div id="birthday" class="page">
+            <div class="input-section">
+                <div class="input-group">
+                    <div class="input-box">
+                        <label for="bday1"><i class="fas fa-calendar"></i> Your Birthday</label>
+                        <input type="date" id="bday1">
+                    </div>
+                    <div class="input-box">
+                        <label for="bday2"><i class="fas fa-calendar"></i> Partner's Birthday</label>
+                        <input type="date" id="bday2">
+                    </div>
+                </div>
+                
+                <button class="calculate-btn" id="calculateBdayBtn">
+                    <i class="fas fa-heart"></i> Calculate Birthday Match
+                </button>
+            </div>
+            
+            <div class="result-section" id="bdayResultSection">
+                <h2 class="result-title">Your Birthday Compatibility</h2>
+                <div class="names" id="bdayNamesDisplay">Jan 15 ❤️ Feb 28</div>
+                <div class="percentage" id="bdayPercentageDisplay">72%</div>
+                <div class="message" id="bdayMessageDisplay">💖 Your birthdays create a beautiful harmony!</div>
+            </div>
+            
+            <div class="content-section">
+                <h3>How Birthday Compatibility Works</h3>
+                <p>Our algorithm calculates compatibility based on the numerology of your birth dates. It considers the unique energy patterns and life paths associated with your birthdays to reveal your potential harmony.</p>
+                
+                <h4>The Significance of Birth Dates</h4>
+                <p>Numerology assigns meaning to numbers derived from birth dates. Each date carries specific vibrational energies that influence personality traits and relationship dynamics:</p>
+                <ul>
+                    <li><strong>Life Path Number:</strong> The most important number in numerology, calculated from your full birth date</li>
+                    <li><strong>Expression Number:</strong> Reveals your natural talents and abilities</li>
+                    <li><strong>Soul Urge Number:</strong> Represents your inner desires and motivations</li>
+                </ul>
+                
+                <p>By comparing these core numbers between partners, we can identify areas of natural alignment and potential challenges in a relationship.</p>
+            </div>
+            
+            <div class="ad-container">
+                <span class="ad-label">Advertisement</span>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-6452903048072621"
+                     data-ad-slot="3171168179"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+        
+        <!-- Zodiac Match Page -->
+        <div id="zodiac" class="page">
+            <div class="input-section">
+                <div class="input-group">
+                    <div class="input-box">
+                        <label for="zodiac1"><i class="fas fa-star"></i> Your Zodiac Sign</label>
+                        <select id="zodiac1">
+                            <option value="">-- Select --</option>
+                            <option>Aries</option>
+                            <option>Taurus</option>
+                            <option>Gemini</option>
+                            <option>Cancer</option>
+                            <option>Leo</option>
+                            <option>Virgo</option>
+                            <option>Libra</option>
+                            <option>Scorpio</option>
+                            <option>Sagittarius</option>
+                            <option>Capricorn</option>
+                            <option>Aquarius</option>
+                            <option>Pisces</option>
+                        </select>
+                    </div>
+                    <div class="input-box">
+                        <label for="zodiac2"><i class="fas fa-star"></i> Partner's Sign</label>
+                        <select id="zodiac2">
+                            <option value="">-- Select --</option>
+                            <option>Aries</option>
+                            <option>Taurus</option>
+                            <option>Gemini</option>
+                            <option>Cancer</option>
+                            <option>Leo</option>
+                            <option>Virgo</option>
+                            <option>Libra</option>
+                            <option>Scorpio</option>
+                            <option>Sagittarius</option>
+                            <option>Capricorn</option>
+                            <option>Aquarius</option>
+                            <option>Pisces</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="calculate-btn" id="calculateZodiacBtn">
+                    <i class="fas fa-heart"></i> Calculate Zodiac Match
+                </button>
+            </div>
+            
+            <div class="result-section" id="zodiacResultSection">
+                <h2 class="result-title">Your Zodiac Compatibility</h2>
+                <div class="names" id="zodiacNamesDisplay">Leo ❤️ Sagittarius</div>
+                <div class="percentage" id="zodiacPercentageDisplay">94%</div>
+                <div class="message" id="zodiacMessageDisplay">✨ A stellar match! Your signs are perfectly aligned</div>
+            </div>
+            
+            <div class="content-section">
+                <h3>Zodiac Compatibility Explained</h3>
+                <p>Your zodiac signs reveal how compatible you are based on elemental groups (Fire, Earth, Air, Water) and planetary alignments. Fire signs (Aries, Leo, Sagittarius) are often compatible with other Fire and Air signs, while Earth signs (Taurus, Virgo, Capricorn) connect well with Water signs.</p>
+                
+                <h4>Elemental Compatibility Guide</h4>
+                <p>Understanding the elements can help explain relationship dynamics:</p>
+                <ul>
+                    <li><strong>Fire Signs (Aries, Leo, Sagittarius):</strong> Passionate, energetic, and spontaneous</li>
+                    <li><strong>Earth Signs (Taurus, Virgo, Capricorn):</strong> Grounded, practical, and reliable</li>
+                    <li><strong>Air Signs (Gemini, Libra, Aquarius):</strong> Intellectual, communicative, and social</li>
+                    <li><strong>Water Signs (Cancer, Scorpio, Pisces):</strong> Emotional, intuitive, and sensitive</li>
+                </ul>
+                
+                <p>Generally, signs of the same element get along well, and complementary elements (Fire/Air, Earth/Water) often form harmonious relationships. Opposing elements may create challenges but can also offer growth opportunities.</p>
+            </div>
+            
+            <div class="ad-container">
+                <span class="ad-label">Advertisement</span>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-6452903048072621"
+                     data-ad-slot="3171168179"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+        
+        <!-- Love Tips Page -->
+        <div id="tips" class="page">
+            <div class="content-section">
+                <h2>Romantic Relationship Tips</h2>
+                <p>Nurturing a loving relationship takes effort and understanding. Here are some heartfelt tips to deepen your connection:</p>
+                
+                <h3><i class="fas fa-comments heart-beat"></i> Communicate Openly</h3>
+                <p>Share your thoughts, feelings, and dreams with each other. Honest communication builds trust and intimacy. Practice active listening by giving your partner your full attention without interrupting.</p>
+                
+                <h3><i class="fas fa-gift heart-beat"></i> Surprise Each Other</h3>
+                <p>Small, thoughtful gestures keep the romance alive. Leave love notes, plan surprise dates, or bring their favorite treat. These acts show you're thinking about them even when you're apart.</p>
+                
+                <h3><i class="fas fa-heart heart-beat"></i> Show Appreciation</h3>
+                <p>Regularly express gratitude for the little things they do. Feeling appreciated strengthens your bond. A simple "thank you" for everyday tasks can make a big difference.</p>
+                
+                <h3><i class="fas fa-hands heart-beat"></i> Support Each Other</h3>
+                <p>Be each other's biggest cheerleader. Celebrate successes and provide comfort during challenges. Knowing you have unwavering support creates security in the relationship.</p>
+                
+                <h3><i class="fas fa-laugh heart-beat"></i> Keep Laughing Together</h3>
+                <p>Shared laughter creates joyful memories and eases tensions. Find humor in everyday moments. Watch comedies, share funny stories, or reminisce about amusing experiences.</p>
+                
+                <h3><i class="fas fa-clock heart-beat"></i> Make Quality Time</h3>
+                <p>Prioritize uninterrupted time together, free from distractions. These moments deepen your connection. Schedule regular date nights or simple activities you both enjoy.</p>
+                
+                <h3><i class="fas fa-balance-scale heart-beat"></i> Maintain Independence</h3>
+                <p>While togetherness is important, maintaining individual interests and friendships keeps the relationship healthy. Personal growth contributes to relationship growth.</p>
+            </div>
+            
+            <div class="ad-container">
+                <span class="ad-label">Advertisement</span>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-6452903048072621"
+                     data-ad-slot="3171168179"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+        
+        <!-- About Page -->
+        <div id="about" class="page">
+            <div class="content-section">
+                <h2>About Our Love Calculator</h2>
+                <p>This romantic love calculator was created to celebrate the magic of human connection. Our mission is to spread love and positivity through a fun, interactive experience.</p>
+                
+                <h3>How It Works</h3>
+                <p>Our algorithm combines numerology, symbolism, and a touch of magic to calculate compatibility. For name matching, we convert letters to their numerical values and analyze the harmony between them. Birthday compatibility considers numerological life path numbers, while zodiac matching uses astrological principles.</p>
+                
+                <h3>Our Philosophy</h3>
+                <p>While our calculator provides entertaining insights, we believe true love is built on mutual respect, communication, and shared values. Use these results as a fun conversation starter, not as relationship advice. Every relationship is unique and requires effort from both partners to thrive.</p>
+                
+                <h3>For the Hopeless Romantics</h3>
+                <p>This tool was crafted with love for those who believe in romance. Whether you're in a relationship or dreaming of one, may it bring a smile to your face and warmth to your heart. Remember that the most important measure of love is how you treat each other every day.</p>
+                
+                <h3>Our Commitment to Quality Content</h3>
+                <p>We strive to provide valuable, engaging content that enhances your experience. Our relationship tips and explanations are based on psychological research and relationship counseling principles, offering practical advice for nurturing healthy relationships.</p>
+            </div>
+            
+            <div class="ad-container">
+                <span class="ad-label">Advertisement</span>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-6452903048072621"
+                     data-ad-slot="3171168179"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Made with <i class="fas fa-heart heart-beat"></i> PRINCE KUMAR</p>
+            <a href="https://instagram.com/prince__xharma777" target="_blank">
+            <i class="fab fa-instagram"></i> Instagram </a>
+            <a href="mailto:princexharmaji@gmail.com" target="_blank">
+            <i class="fas fa-envelope"></i> Gmail</a>
+            <p>© 2025 Romantic Love Calculator. All rights reserved.</p>
+        </footer>
     </div>
-    
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h4>About LoveLens</h4>
-                    <p>LoveLens News brings you the latest in romance, relationships, and lifestyle with a focus on meaningful connections and heartfelt stories.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-pinterest"></i></a>
-                    </div>
-                </div>
-                
-                <div class="footer-column">
-                    <h4>Quick Links</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h4>Categories</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Relationships</a></li>
-                        <li><a href="#">Dating Advice</a></li>
-                        <li><a href="#">Romantic Travel</a></li>
-                        <li><a href="#">Wedding Inspiration</a></li>
-                        <li><a href="#">Self-Care & Love</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h4>Contact Us</h4>
-                    <ul class="footer-links">
-                        <li><i class="fas fa-envelope"></i> contact@lovelens.com</li>
-                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
-                        <li><i class="fas fa-map-marker-alt"></i> New York, NY 10001</li>
-                    </ul>
-                </div>
-            </div>
+
+    <script>
+        // Quotes data
+        const quotes = [
+            {
+                text: "Love is composed of a single soul inhabiting two bodies.",
+                author: "Aristotle"
+            },
+            {
+                text: "The best thing to hold onto in life is each other.",
+                author: "Audrey Hepburn"
+            },
+            {
+                text: "We are most alive when we're in love.",
+                author: "John Updike"
+            },
+            {
+                text: "True love stories never have endings.",
+                author: "Richard Bach"
+            },
+            {
+                text: "Love doesn't make the world go round. Love is what makes the ride worthwhile.",
+                author: "Franklin P. Jones"
+            },
+            {
+                text: "In all the world, there is no heart for me like yours. In all the world, there is no love for you like mine.",
+                author: "Maya Angelou"
+            }
+        ];
+        
+        // Messages for different percentages
+        const messages = {
+            0: "💔 New beginnings often start with endings. Keep your heart open.",
+            10: "🌱 Every great love starts with a single spark. Nurture this connection.",
+            20: "👯 Friendship is a beautiful foundation for something more.",
+            30: "😊 Enjoy discovering each other. Love often grows with time.",
+            40: "🔥 There's definite chemistry here! Explore your connection.",
+            50: "🤝 A balanced connection - with effort, this could blossom beautifully.",
+            60: "💖 Strong feelings are developing! Cherish this connection.",
+            70: "💞 A deep and meaningful connection. This is special.",
+            80: "🌟 A true cosmic connection! Your bond is extraordinary.",
+            90: "😍 An almost perfect match - cherish this rare connection.",
+            100: "💘 Soulmates! This is the love stories are made of."
+        };
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            showRandomQuote();
             
-            <div class="copyright">
-                <p>&copy; 2023 LoveLens News. All rights reserved. Designed with <i class="fas fa-heart" style="color: var(--accent);"></i> for romantics.</p>
-            </div>
-        </div>
-    </footer>
+            // Set up button click
+            document.getElementById('calculateBtn').addEventListener('click', calculateLove);
+            document.getElementById('calculateBdayBtn').addEventListener('click', calculateBday);
+            document.getElementById('calculateZodiacBtn').addEventListener('click', calculateZodiac);
+            
+            // Set up navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.getAttribute('data-page');
+                    navigateToPage(pageId);
+                });
+            });
+            
+            // Set up dark mode toggle
+            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+            
+            // Initialize ads
+            initializeAds();
+        });
+        
+        // Initialize AdSense
+        function initializeAds() {
+            // Push ads after page is fully loaded
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        }
+        
+        // Show random quote
+        function showRandomQuote() {
+            const quote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('quoteText').textContent = quote.text;
+            document.getElementById('quoteAuthor').textContent = `- ${quote.author}`;
+        }
+        
+        // Calculate love percentage
+        function calculateLove() {
+            const name1 = document.getElementById('name1').value.trim();
+            const name2 = document.getElementById('name2').value.trim();
+            
+            if (!name1 || !name2) {
+                alert('Please enter both names!');
+                return;
+            }
+            
+            // Display names
+            document.getElementById('namesDisplay').textContent = `${name1} ❤️ ${name2}`;
+            
+            // Calculate percentage (fun algorithm)
+            const combined = (name1 + name2).toLowerCase().replace(/\s/g, '');
+            let sum = 0;
+            
+            for (let char of combined) {
+                sum += char.charCodeAt(0);
+            }
+            
+            const percentage = (sum % 91) + 10; // Ensure between 10-100
+            
+            // Animate result
+            animateResult(percentage, 'resultSection', 'percentageDisplay', 'messageDisplay');
+            
+            // Show new quote
+            setTimeout(showRandomQuote, 1500);
+        }
+        
+        // Calculate birthday match
+        function calculateBday() {
+            const bday1 = document.getElementById('bday1').value;
+            const bday2 = document.getElementById('bday2').value;
+            
+            if (!bday1 || !bday2) {
+                alert('Please select both birthdays!');
+                return;
+            }
+            
+            // Display dates
+            const date1 = new Date(bday1);
+            const date2 = new Date(bday2);
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            
+            const display1 = `${monthNames[date1.getMonth()]} ${date1.getDate()}`;
+            const display2 = `${monthNames[date2.getMonth()]} ${date2.getDate()}`;
+            document.getElementById('bdayNamesDisplay').textContent = `${display1} ❤️ ${display2}`;
+            
+            // Calculate percentage (based on day difference)
+            const diff = Math.abs(date1 - date2);
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const percentage = 100 - (days % 90); // Ensure between 10-100
+            
+            // Animate result
+            animateResult(percentage, 'bdayResultSection', 'bdayPercentageDisplay', 'bdayMessageDisplay');
+        }
+        
+        // Calculate zodiac match
+        function calculateZodiac() {
+            const zodiac1 = document.getElementById('zodiac1').value;
+            const zodiac2 = document.getElementById('zodiac2').value;
+            
+            if (!zodiac1 || !zodiac2) {
+                alert('Please select both zodiac signs!');
+                return;
+            }
+            
+            // Display signs
+            document.getElementById('zodiacNamesDisplay').textContent = `${zodiac1} ❤️ ${zodiac2}`;
+            
+            // Calculate percentage from matrix
+            const compatibilityMatrix = {
+                Aries: { Aries: 70, Taurus: 40, Gemini: 80, Cancer: 30, Leo: 90, Virgo: 50, Libra: 70, Scorpio: 60, Sagittarius: 95, Capricorn: 40, Aquarius: 80, Pisces: 50 },
+                Taurus: { Aries: 40, Taurus: 75, Gemini: 50, Cancer: 85, Leo: 50, Virgo: 90, Libra: 70, Scorpio: 80, Sagittarius: 40, Capricorn: 95, Aquarius: 60, Pisces: 85 },
+                Gemini: { Aries: 80, Taurus: 50, Gemini: 75, Cancer: 60, Leo: 70, Virgo: 60, Libra: 90, Scorpio: 50, Sagittarius: 85, Capricorn: 50, Aquarius: 95, Pisces: 65 },
+                Cancer: { Aries: 30, Taurus: 85, Gemini: 60, Cancer: 80, Leo: 50, Virgo: 75, Libra: 60, Scorpio: 90, Sagittarius: 40, Capricorn: 70, Aquarius: 50, Pisces: 95 },
+                Leo: { Aries: 90, Taurus: 50, Gemini: 70, Cancer: 50, Leo: 85, Virgo: 60, Libra: 80, Scorpio: 70, Sagittarius: 95, Capricorn: 60, Aquarius: 75, Pisces: 65 },
+                Virgo: { Aries: 50, Taurus: 90, Gemini: 60, Cancer: 75, Leo: 60, Virgo: 80, Libra: 70, Scorpio: 85, Sagittarius: 50, Capricorn: 95, Aquarius: 70, Pisces: 80 },
+                Libra: { Aries: 70, Taurus: 70, Gemini: 90, Cancer: 60, Leo: 80, Virgo: 70, Libra: 85, Scorpio: 75, Sagittarius: 80, Capricorn: 70, Aquarius: 95, Pisces: 75 },
+                Scorpio: { Aries: 60, Taurus: 80, Gemini: 50, Cancer: 90, Leo: 70, Virgo: 85, Libra: 75, Scorpio: 85, Sagittarius: 65, Capricorn: 80, Aquarius: 70, Pisces: 95 },
+                Sagittarius: { Aries: 95, Taurus: 40, Gemini: 85, Cancer: 40, Leo: 95, Virgo: 50, Libra: 80, Scorpio: 65, Sagittarius: 90, Capricorn: 50, Aquarius: 90, Pisces: 60 },
+                Capricorn: { Aries: 40, Taurus: 95, Gemini: 50, Cancer: 70, Leo: 60, Virgo: 95, Libra: 70, Scorpio: 80, Sagittarius: 50, Capricorn: 85, Aquarius: 60, Pisces: 75 },
+                Aquarius: { Aries: 80, Taurus: 60, Gemini: 95, Cancer: 50, Leo: 75, Virgo: 70, Libra: 95, Scorpio: 70, Sagittarius: 90, Capricorn: 60, Aquarius: 80, Pisces: 70 },
+                Pisces: { Aries: 50, Taurus: 85, Gemini: 65, Cancer: 95, Leo: 65, Virgo: 80, Libra: 75, Scorpio: 95, Sagittarius: 60, Capricorn: 75, Aquarius: 70, Pisces: 85 }
+            };
+            
+            const percentage = compatibilityMatrix[zodiac1][zodiac2];
+            
+            // Animate result
+            animateResult(percentage, 'zodiacResultSection', 'zodiacPercentageDisplay', 'zodiacMessageDisplay');
+        }
+        
+        // Animate the percentage counter
+        function animateResult(finalPercentage, sectionId, displayId, messageId) {
+            const section = document.getElementById(sectionId);
+            const display = document.getElementById(displayId);
+            const message = document.getElementById(messageId);
+            
+            section.style.display = 'block';
+            let current = 0;
+            const increment = Math.ceil(finalPercentage / 30); // Dynamic increment
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= finalPercentage) {
+                    current = finalPercentage;
+                    clearInterval(timer);
+                    
+                    // Set message based on percentage
+                    const messageKey = Math.floor(finalPercentage / 10) * 10;
+                    message.textContent = messages[messageKey];
+                }
+                display.textContent = `${current}%`;
+            }, 30);
+        }
+        
+        // Navigation between pages
+        function navigateToPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            document.querySelector(`.nav-link[data-page="${pageId}"]`).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Refresh ads when navigating
+            initializeAds();
+        }
+        
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('#darkModeToggle i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+    </script>
 </body>
-</html>
+    </html>
