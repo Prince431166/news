@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Romantic Adventure | Games for Couples</title>
+    <title>LovePlay | Romantic Games for Couples</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -11,6 +11,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.5s, color 0.3s;
         }
 
         :root {
@@ -20,10 +21,29 @@
             --dark: #a83264;
             --light: #fff5f7;
             --text: #4a2a3c;
+            --bg: #fef6f9;
+            --card: #ffffff;
+            --nav: linear-gradient(to right, var(--primary), var(--secondary));
+            --shadow: 0 4px 15px rgba(168, 50, 100, 0.15);
+            --game-bg: #ffffff;
+        }
+
+        .dark-mode {
+            --primary: #ff7e9d;
+            --secondary: #e76d8c;
+            --accent: #a83264;
+            --dark: #ffb6c1;
+            --light: #1a0f14;
+            --text: #f8d7e0;
+            --bg: #140b0f;
+            --card: #24171d;
+            --nav: linear-gradient(to right, #a83264, #7a2a52);
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --game-bg: #1f1217;
         }
 
         body {
-            background: linear-gradient(135deg, #fff5f7, #ffeef2);
+            background: var(--bg);
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
@@ -37,9 +57,9 @@
 
         /* Header Styles */
         header {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            background: var(--nav);
             padding: 20px 0;
-            box-shadow: 0 4px 15px rgba(168, 50, 100, 0.2);
+            box-shadow: var(--shadow);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -69,6 +89,7 @@
         .nav-links {
             display: flex;
             gap: 30px;
+            align-items: center;
         }
 
         .nav-links a {
@@ -85,16 +106,57 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(20deg);
+        }
+
         /* Hero Section */
         .hero {
             display: flex;
             align-items: center;
             padding: 80px 0;
             gap: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            color: var(--accent);
+            opacity: 0.7;
+            animation: float 15s infinite linear;
         }
 
         .hero-content {
             flex: 1;
+            z-index: 2;
         }
 
         .hero h1 {
@@ -102,6 +164,7 @@
             color: var(--dark);
             margin-bottom: 20px;
             line-height: 1.2;
+            animation: fadeInUp 1s ease;
         }
 
         .hero h1 span {
@@ -113,6 +176,8 @@
             font-size: 20px;
             margin-bottom: 30px;
             line-height: 1.6;
+            animation: fadeInUp 1s ease 0.2s;
+            animation-fill-mode: both;
         }
 
         .btn {
@@ -128,6 +193,8 @@
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            animation: fadeInUp 1s ease 0.4s;
+            animation-fill-mode: both;
         }
 
         .btn:hover {
@@ -142,6 +209,7 @@
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(168, 50, 100, 0.3);
+            animation: fadeInRight 1s ease;
         }
 
         .hero-image::before {
@@ -177,6 +245,7 @@
         .section-title {
             text-align: center;
             margin-bottom: 50px;
+            animation: fadeIn 1s ease;
         }
 
         .section-title h2 {
@@ -206,13 +275,14 @@
         }
 
         .game-card {
-            background: white;
+            background: var(--card);
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(168, 50, 100, 0.15);
+            box-shadow: var(--shadow);
             transition: all 0.3s ease;
             position: relative;
             cursor: pointer;
+            animation: fadeIn 0.5s ease;
         }
 
         .game-card:hover {
@@ -241,22 +311,24 @@
         }
 
         .game-content p {
-            color: #7a5a6c;
+            color: var(--text);
             line-height: 1.6;
+            opacity: 0.9;
         }
 
         /* Game Area */
         .game-area {
-            background: white;
+            background: var(--game-bg);
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 15px 40px rgba(168, 50, 100, 0.1);
+            box-shadow: var(--shadow);
             margin-top: 50px;
             min-height: 500px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            animation: fadeIn 0.8s ease;
         }
 
         .game-header {
@@ -271,9 +343,10 @@
         }
 
         .game-header p {
-            color: #7a5a6c;
+            color: var(--text);
             max-width: 600px;
             margin: 0 auto;
+            opacity: 0.9;
         }
 
         /* Love Calculator Game */
@@ -301,6 +374,8 @@
             font-size: 18px;
             outline: none;
             transition: all 0.3s ease;
+            background: var(--card);
+            color: var(--text);
         }
 
         .input-box input:focus {
@@ -321,7 +396,7 @@
         .input-box input:not(:placeholder-shown) + label {
             top: -10px;
             left: 15px;
-            background: white;
+            background: var(--card);
             padding: 0 10px;
             font-size: 14px;
             color: var(--primary);
@@ -408,9 +483,112 @@
             color: var(--dark);
         }
 
+        /* Contact Section */
+        .contact-section {
+            padding: 80px 0;
+            background: var(--light);
+            border-radius: 20px;
+            margin: 50px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .contact-container {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-info h3 {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .contact-info p {
+            margin-bottom: 30px;
+            line-height: 1.8;
+            font-size: 18px;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .contact-text h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .contact-form {
+            flex: 1;
+            background: var(--card);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--accent);
+            border-radius: 10px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 139, 0.3);
+            outline: none;
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
         /* Footer */
         footer {
-            background: linear-gradient(to right, var(--dark), #7a2a52);
+            background: var(--nav);
             color: white;
             padding: 50px 0 20px;
             margin-top: 80px;
@@ -498,14 +676,24 @@
         }
 
         @keyframes float {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            50% { transform: translate(-50%, -55%) rotate(10deg); }
-            100% { transform: translate(-50%, -50%) rotate(0deg); }
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         /* Responsive Design */
@@ -515,7 +703,7 @@
                 text-align: center;
             }
             
-            .nav-links {
+            .nav-links a:not(:last-child) {
                 display: none;
             }
             
@@ -526,6 +714,10 @@
             .memory-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
+            
+            .contact-container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -535,22 +727,25 @@
         <div class="container navbar">
             <div class="logo">
                 <i class="fas fa-heart"></i>
-                <span>Romantic Adventure</span>
+                <span>LovePlay</span>
             </div>
             <div class="nav-links">
                 <a href="#"><i class="fas fa-home"></i> Home</a>
                 <a href="#games"><i class="fas fa-gamepad"></i> Games</a>
-                <a href="#"><i class="fas fa-gift"></i> Gifts</a>
-                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
+                <button class="theme-toggle" id="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
+        <div class="hearts" id="hearts-container"></div>
         <div class="container">
             <div class="hero-content">
-                <h1>Spark <span>Romance</span> with Fun Games for Couples</h1>
+                <h1>Ignite <span>Romance</span> with Fun Games for Couples</h1>
                 <p>Rediscover the joy of connection through our collection of romantic games designed to bring couples closer, create lasting memories, and add a touch of playfulness to your relationship.</p>
                 <a href="#games" class="btn">Explore Games</a>
             </div>
@@ -563,6 +758,7 @@
         <div class="container">
             <div class="section-title">
                 <h2>Romantic Games Collection</h2>
+                <p>12 interactive games to spark romance and connection</p>
             </div>
             
             <div class="games-container">
@@ -589,7 +785,7 @@
                 </div>
                 
                 <!-- Game Card 3 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('quiz-game')">
                     <div class="game-icon">
                         <i class="fas fa-question"></i>
                     </div>
@@ -600,7 +796,7 @@
                 </div>
                 
                 <!-- Game Card 4 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('puzzle-game')">
                     <div class="game-icon">
                         <i class="fas fa-puzzle-piece"></i>
                     </div>
@@ -611,7 +807,7 @@
                 </div>
                 
                 <!-- Game Card 5 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('rather-game')">
                     <div class="game-icon">
                         <i class="fas fa-comments"></i>
                     </div>
@@ -622,7 +818,7 @@
                 </div>
                 
                 <!-- Game Card 6 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('chess-game')">
                     <div class="game-icon">
                         <i class="fas fa-chess"></i>
                     </div>
@@ -633,7 +829,7 @@
                 </div>
                 
                 <!-- Game Card 7 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('gift-game')">
                     <div class="game-icon">
                         <i class="fas fa-gift"></i>
                     </div>
@@ -644,7 +840,7 @@
                 </div>
                 
                 <!-- Game Card 8 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('music-game')">
                     <div class="game-icon">
                         <i class="fas fa-music"></i>
                     </div>
@@ -655,7 +851,7 @@
                 </div>
                 
                 <!-- Game Card 9 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('bucket-game')">
                     <div class="game-icon">
                         <i class="fas fa-list"></i>
                     </div>
@@ -666,7 +862,7 @@
                 </div>
                 
                 <!-- Game Card 10 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('memory-game')">
                     <div class="game-icon">
                         <i class="fas fa-history"></i>
                     </div>
@@ -677,7 +873,7 @@
                 </div>
                 
                 <!-- Game Card 11 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('photo-game')">
                     <div class="game-icon">
                         <i class="fas fa-camera"></i>
                     </div>
@@ -688,7 +884,7 @@
                 </div>
                 
                 <!-- Game Card 12 -->
-                <div class="game-card">
+                <div class="game-card" onclick="loadGame('stars-game')">
                     <div class="game-icon">
                         <i class="fas fa-star"></i>
                     </div>
@@ -745,6 +941,107 @@
                     
                     <button class="btn" id="restart-memory" style="margin-top: 30px; display: none;">Play Again</button>
                 </div>
+                
+                <div id="quiz-game" style="display: none; text-align: center;">
+                    <div class="game-header">
+                        <h2>Romance Quiz Challenge</h2>
+                        <p>Test how well you know your partner with these romantic questions</p>
+                    </div>
+                    
+                    <div class="quiz-container" style="max-width: 600px; margin: 0 auto;">
+                        <div class="quiz-question" style="font-size: 22px; margin-bottom: 30px;">
+                            What is your partner's favorite romantic movie?
+                        </div>
+                        
+                        <div class="quiz-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                            <button class="btn" style="width: 100%;">The Notebook</button>
+                            <button class="btn" style="width: 100%;">Titanic</button>
+                            <button class="btn" style="width: 100%;">Pride & Prejudice</button>
+                            <button class="btn" style="width: 100%;">La La Land</button>
+                        </div>
+                        
+                        <div class="quiz-result" style="font-size: 20px; color: var(--primary); display: none;">
+                            Correct! You know your partner well!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>Get in Touch</h2>
+                <p>We'd love to hear from you! Send us a message</p>
+            </div>
+            
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <p>Have questions about our romantic games? Want to suggest a new game idea? Reach out to us using the contact form or through our contact details below.</p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Our Location</h4>
+                                <p>123 Romance Avenue, Love City</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Phone Number</h4>
+                                <p>+1 (555) LOVE-PLAY</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Email Address</h4>
+                                <p>contact@loveplay.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <h3 style="text-align: center; margin-bottom: 30px; color: var(--primary);">Send Us a Message</h3>
+                    
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn" style="width: 100%;">Send Message</button>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
@@ -754,7 +1051,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Romantic Adventure</h3>
+                    <h3>LovePlay</h3>
                     <p>Bringing couples closer through fun and meaningful experiences since 2023.</p>
                     <div class="social-icons">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -771,7 +1068,7 @@
                         <li><a href="#games">Games</a></li>
                         <li><a href="#">Date Ideas</a></li>
                         <li><a href="#">Romantic Tips</a></li>
-                        <li><a href="#">Gift Guide</a></li>
+                        <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
                 
@@ -780,9 +1077,9 @@
                     <ul class="footer-links">
                         <li><a href="#" onclick="loadGame('love-calculator')">Love Calculator</a></li>
                         <li><a href="#" onclick="loadGame('memory-game')">Memory Match</a></li>
-                        <li><a href="#">Romance Quiz</a></li>
-                        <li><a href="#">Couple's Bucket List</a></li>
-                        <li><a href="#">Virtual Love Notes</a></li>
+                        <li><a href="#" onclick="loadGame('quiz-game')">Romance Quiz</a></li>
+                        <li><a href="#" onclick="loadGame('bucket-game')">Couple's Bucket List</a></li>
+                        <li><a href="#" onclick="loadGame('gift-game')">Virtual Love Notes</a></li>
                     </ul>
                 </div>
                 
@@ -797,17 +1094,55 @@
             </div>
             
             <div class="copyright">
-                &copy; 2023 Romantic Adventure. All rights reserved. Made with <i class="fas fa-heart" style="color: var(--accent);"></i> for couples.
+                &copy; 2023 LovePlay. All rights reserved. Made with <i class="fas fa-heart" style="color: var(--accent);"></i> for couples.
             </div>
         </div>
     </footer>
 
     <script>
+        // Floating hearts animation
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts-container');
+            const heartCount = 25;
+            
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                
+                // Random position and animation
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.top = `${Math.random() * 100}%`;
+                heart.style.fontSize = `${Math.random() * 20 + 15}px`;
+                heart.style.animationDuration = `${Math.random() * 15 + 10}s`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                
+                heartsContainer.appendChild(heart);
+            }
+        }
+        
+        // Dark mode toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        });
+        
         // Game loading function
         function loadGame(gameId) {
             // Hide all games
             document.getElementById('love-calculator').style.display = 'none';
             document.getElementById('memory-game').style.display = 'none';
+            document.getElementById('quiz-game').style.display = 'none';
             
             // Show selected game
             document.getElementById(gameId).style.display = 'block';
@@ -860,6 +1195,28 @@
             
             // Show result with animation
             document.getElementById('result').classList.add('show');
+            
+            // Add hearts animation to result
+            const hearts = ['❤️', '💖', '💕', '💞', '💓', '💗'];
+            const resultContainer = document.getElementById('result');
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('span');
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.position = 'absolute';
+                    heart.style.fontSize = '20px';
+                    heart.style.left = `${Math.random() * 100}%`;
+                    heart.style.top = `${Math.random() * 100}%`;
+                    heart.style.opacity = '0';
+                    heart.style.animation = 'fadeIn 0.5s forwards, float 5s ease-in forwards';
+                    resultContainer.appendChild(heart);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 5000);
+                }, i * 200);
+            }
         });
         
         // Memory Match Game
@@ -935,6 +1292,25 @@
                 memoryGame.matchedPairs++;
                 document.getElementById('pairs-found').textContent = memoryGame.matchedPairs + '/8';
                 
+                // Add celebration effect
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.textContent = '❤️';
+                        heart.style.position = 'absolute';
+                        heart.style.fontSize = '24px';
+                        heart.style.left = `${Math.random() * 100}%`;
+                        heart.style.top = `${Math.random() * 100}%`;
+                        heart.style.opacity = '0';
+                        heart.style.animation = 'fadeIn 0.3s forwards, float 3s ease-in forwards';
+                        document.querySelector('.game-area').appendChild(heart);
+                        
+                        setTimeout(() => {
+                            heart.remove();
+                        }, 3000);
+                    }, i * 100);
+                }
+                
                 if (memoryGame.matchedPairs === 8) {
                     endGame();
                 }
@@ -968,9 +1344,24 @@
         // Initialize memory game on restart button click
         document.getElementById('restart-memory').addEventListener('click', initializeMemoryGame);
         
-        // Initialize the first game (Love Calculator) on page load
+        // Contact form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show success message
+            alert('Thank you for your message! We will get back to you soon.');
+            
+            // Reset form
+            this.reset();
+        });
+        
+        // Initialize the website
         window.onload = function() {
+            createHearts();
             loadGame('love-calculator');
+            
+            // Initialize all game placeholders
+            initializeMemoryGame();
         };
     </script>
 </body>
