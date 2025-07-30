@@ -48,6 +48,7 @@
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
         .container {
@@ -61,7 +62,7 @@
             background: var(--nav);
             padding: 20px 0;
             box-shadow: var(--shadow);
-            position: fixed; /* Changed from sticky to fixed for hide/show behavior */
+            position: fixed;
             width: 100%;
             top: 0;
             z-index: 100;
@@ -112,6 +113,7 @@
 
         .nav-links a:hover {
             background: rgba(255, 255, 255, 0.2);
+            animation: bounce 0.5s ease;
         }
 
         .theme-toggle {
@@ -142,7 +144,7 @@
             gap: 40px;
             position: relative;
             overflow: hidden;
-            margin-top: 80px; /* To account for fixed header */
+            margin-top: 80px;
         }
 
         .hearts {
@@ -209,6 +211,7 @@
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(255, 107, 139, 0.6);
+            animation: pulse 0.5s ease;
         }
 
         .hero-image {
@@ -231,6 +234,7 @@
             background: linear-gradient(45deg, #ff9a9e, #fad0c4);
             opacity: 0.8;
             z-index: 1;
+            animation: gradientShift 10s infinite alternate;
         }
 
         .hero-image::after {
@@ -249,6 +253,8 @@
         .games-section {
             padding: 80px 0;
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="20" cy="20" r="3" fill="%23ffb6c1" opacity="0.6"/><circle cx="50" cy="50" r="2" fill="%23ffb6c1" opacity="0.4"/><circle cx="80" cy="30" r="4" fill="%23ffb6c1" opacity="0.5"/></svg>');
+            position: relative;
+            overflow: hidden;
         }
 
         .section-title {
@@ -275,6 +281,7 @@
             height: 4px;
             background: var(--primary);
             border-radius: 2px;
+            animation: growWidth 1.5s ease-out;
         }
 
         .games-container {
@@ -292,10 +299,12 @@
             position: relative;
             cursor: pointer;
             animation: fadeIn 0.5s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
         .game-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-10px) rotate(2deg);
             box-shadow: 0 15px 40px rgba(168, 50, 100, 0.25);
         }
 
@@ -307,6 +316,7 @@
             justify-content: center;
             font-size: 60px;
             color: white;
+            animation: iconPulse 3s infinite ease-in-out;
         }
 
         .game-content {
@@ -338,6 +348,8 @@
             align-items: center;
             justify-content: center;
             animation: fadeIn 0.8s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .game-header {
@@ -349,6 +361,7 @@
             font-size: 32px;
             color: var(--primary);
             margin-bottom: 15px;
+            animation: colorChange 8s infinite;
         }
 
         .game-header p {
@@ -391,6 +404,7 @@
         .input-box input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(255, 107, 139, 0.3);
+            animation: inputPulse 0.5s ease;
         }
 
         .input-box label {
@@ -410,6 +424,7 @@
             padding: 0 10px;
             font-size: 14px;
             color: var(--primary);
+            animation: bounce 0.5s ease;
         }
 
         #calculate-love {
@@ -423,8 +438,9 @@
             border-radius: 20px;
             max-width: 500px;
             display: none;
-            position: relative; /* For heart animations */
-            overflow: hidden; /* Keep hearts inside */
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(168, 50, 100, 0.2);
         }
 
         .result-container.show {
@@ -438,12 +454,14 @@
             color: var(--primary);
             margin: 20px 0;
             text-shadow: 0 4px 10px rgba(255, 107, 139, 0.3);
+            animation: pulse 2s infinite;
         }
 
         .love-message {
             font-size: 22px;
             color: var(--dark);
             margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease;
         }
 
         /* Memory Match Game */
@@ -473,18 +491,21 @@
             transition: all 0.3s ease;
             transform-style: preserve-3d;
             transform: rotateY(180deg);
+            animation: cardAppear 0.5s ease;
         }
 
         .memory-card.flipped {
             transform: rotateY(0deg);
             color: white;
             background: var(--dark);
+            animation: flipCard 0.6s ease;
         }
 
         .memory-card.matched {
             background: linear-gradient(135deg, #b0e57c, #85d262);
             transform: rotateY(0deg);
             color: white;
+            animation: matchedPulse 0.8s ease;
         }
 
         .game-stats {
@@ -507,6 +528,7 @@
             font-size: 28px;
             color: var(--primary);
             margin-bottom: 20px;
+            animation: colorChange 6s infinite;
         }
 
         .game-placeholder p {
@@ -519,7 +541,7 @@
             font-size: 100px;
             color: var(--accent);
             margin-bottom: 30px;
-            animation: bounceIn 1s ease;
+            animation: bounceIn 1s ease, spin 8s infinite linear;
         }
 
         /* Contact Section */
@@ -529,6 +551,8 @@
             border-radius: 20px;
             margin: 50px 0;
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
 
         .contact-container {
@@ -545,24 +569,34 @@
             font-size: 28px;
             color: var(--primary);
             margin-bottom: 20px;
+            animation: fadeInLeft 1s ease;
         }
 
         .contact-info p {
             margin-bottom: 30px;
             line-height: 1.8;
             font-size: 18px;
+            animation: fadeInLeft 1s ease 0.2s;
+            animation-fill-mode: both;
         }
 
         .contact-details {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            animation: fadeInLeft 1s ease 0.4s;
+            animation-fill-mode: both;
         }
 
         .contact-item {
             display: flex;
             align-items: center;
             gap: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-item:hover {
+            transform: translateX(10px);
         }
 
         .contact-icon {
@@ -575,6 +609,7 @@
             justify-content: center;
             color: white;
             font-size: 20px;
+            animation: iconPulse 3s infinite ease-in-out;
         }
 
         .contact-text h4 {
@@ -588,6 +623,7 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: var(--shadow);
+            animation: fadeInRight 1s ease;
         }
 
         .form-group {
@@ -618,6 +654,7 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(255, 107, 139, 0.3);
             outline: none;
+            animation: inputPulse 0.5s ease;
         }
 
         .form-group textarea {
@@ -631,6 +668,8 @@
             color: white;
             padding: 50px 0 20px;
             margin-top: 80px;
+            position: relative;
+            overflow: hidden;
         }
 
         .footer-content {
@@ -655,6 +694,7 @@
             width: 50px;
             height: 3px;
             background: var(--accent);
+            animation: growWidth 1.5s ease-out;
         }
 
         .footer-links {
@@ -663,6 +703,11 @@
 
         .footer-links li {
             margin-bottom: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-links li:hover {
+            transform: translateX(5px);
         }
 
         .footer-links a {
@@ -696,7 +741,7 @@
 
         .social-icons a:hover {
             background: var(--primary);
-            transform: translateY(-3px);
+            transform: translateY(-3px) rotate(10deg);
         }
 
         .copyright {
@@ -709,11 +754,11 @@
 
         /* Scroll to Top Button */
         #scrollToTopBtn {
-            display: none; /* Hidden by default */
-            position: fixed; /* Fixed position */
-            bottom: 30px; /* Place at the bottom */
-            right: 30px; /* Place at the right */
-            z-index: 99; /* Higher z-index to be on top of other elements */
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
             background: var(--primary);
             color: white;
             border: none;
@@ -724,11 +769,30 @@
             cursor: pointer;
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
+            animation: pulse 2s infinite;
         }
 
         #scrollToTopBtn:hover {
             background: var(--dark);
             transform: translateY(-5px);
+        }
+
+        /* Floating hearts throughout the site */
+        .global-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .global-heart {
+            position: absolute;
+            font-size: 24px;
+            color: rgba(255, 182, 193, 0.5);
+            animation: floatGlobal 15s infinite linear;
         }
 
         /* Animations */
@@ -738,10 +802,32 @@
             100% { transform: scale(1); }
         }
 
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
             100% { transform: translateY(0px); }
+        }
+
+        @keyframes floatGlobal {
+            0% { 
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% { 
+                transform: translateY(-100px) translateX(calc(100vw * var(--x-offset)));
+                opacity: 0;
+            }
         }
 
         @keyframes fadeIn {
@@ -752,6 +838,16 @@
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes fadeInRight {
@@ -772,6 +868,63 @@
                 transform: scale(1);
             }
         }
+
+        @keyframes growWidth {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        @keyframes flipCard {
+            0% { transform: rotateY(180deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+
+        @keyframes matchedPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes colorChange {
+            0% { color: var(--primary); }
+            25% { color: #ff8e9e; }
+            50% { color: #a83264; }
+            75% { color: #ffb6c1; }
+            100% { color: var(--primary); }
+        }
+
+        @keyframes inputPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 139, 0.3); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 107, 139, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 139, 0); }
+        }
+
+        @keyframes iconPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes floatUpDown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
         
         /* Responsive Design */
         @media (max-width: 900px) {
@@ -780,12 +933,12 @@
                 text-align: center;
             }
             
-            .nav-links a:not(:last-child) { /* Keep theme toggle visible */
+            .nav-links a:not(:last-child) {
                 display: none;
             }
 
             .nav-links {
-                gap: 15px; /* Adjust gap for smaller screens */
+                gap: 15px;
             }
             
             .hero h1 {
@@ -830,6 +983,8 @@
     </style>
 </head>
 <body>
+    <div class="global-hearts" id="global-hearts-container"></div>
+    
     <header id="main-header">
         <div class="container navbar">
             <div class="logo">
@@ -1231,8 +1386,11 @@
         // Floating hearts animation
         function createHearts() {
             const heartsContainer = document.getElementById('hearts-container');
+            const globalHeartsContainer = document.getElementById('global-hearts-container');
             const heartCount = 25;
+            const globalHeartCount = 40;
             
+            // Hero section hearts
             for (let i = 0; i < heartCount; i++) {
                 const heart = document.createElement('div');
                 heart.classList.add('heart');
@@ -1246,6 +1404,26 @@
                 heart.style.animationDelay = `${Math.random() * 5}s`;
                 
                 heartsContainer.appendChild(heart);
+            }
+            
+            // Global floating hearts
+            for (let i = 0; i < globalHeartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('global-heart');
+                heart.innerHTML = '❤️';
+                
+                // Set custom property for horizontal offset
+                const xOffset = Math.random() * 0.8 + 0.1; // Between 0.1 and 0.9
+                heart.style.setProperty('--x-offset', xOffset);
+                
+                // Random size and animation
+                heart.style.fontSize = `${Math.random() * 15 + 10}px`;
+                heart.style.opacity = Math.random() * 0.5 + 0.1; // Between 0.1 and 0.6
+                const duration = Math.random() * 20 + 10; // Between 10 and 30 seconds
+                const delay = Math.random() * 15; // Up to 15 seconds delay
+                heart.style.animation = `floatGlobal ${duration}s linear ${delay}s infinite`;
+                
+                globalHeartsContainer.appendChild(heart);
             }
         }
         
